@@ -651,4 +651,63 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get settingsLicenses => 'オープンソースライセンス';
+
+  @override
+  String get settingsSync => '同期';
+
+  @override
+  String get syncGoogleDrive => 'Google ドライブで同期';
+
+  @override
+  String get syncDesc =>
+      '同じ Google アカウントでログインしたパソコンどうしで、書籍とノートを揃えます。データは、あなたの Google ドライブの中にある、このアプリ専用の非公開の領域に保存されます。';
+
+  @override
+  String get syncUnavailable => 'このビルドでは同期を使えません（Google ログインの設定を含めずに作られています）。';
+
+  @override
+  String get syncSignIn => 'ログイン';
+
+  @override
+  String get syncSignOut => 'ログアウト';
+
+  @override
+  String syncSignedInAs(String email) {
+    return 'ログイン中: $email';
+  }
+
+  @override
+  String get syncSignedIn => 'ログイン中';
+
+  @override
+  String get syncSignInTitle => 'ブラウザでログイン';
+
+  @override
+  String get syncSignInBody =>
+      'ブラウザで Google アカウントを選び、Colophon へのアクセスを許可してください。ブラウザが開かないときや、別のブラウザで開きたいときは、リンクをコピーして貼り付けてください。';
+
+  @override
+  String get syncCopyLink => 'リンクをコピー';
+
+  @override
+  String get syncLinkCopied => 'リンクをコピーしました';
+
+  @override
+  String get syncSignInDone => 'ログインしました。';
+
+  @override
+  String get syncSignInDenied => 'ログインが取り消されました。';
+
+  @override
+  String get syncSignInFailed => 'ログインできませんでした。ネットワークの接続を確認して、もう一度お試しください。';
+
+  @override
+  String get syncSignOutTitle => 'ログアウトしますか？';
+
+  @override
+  String get syncSignOutBody =>
+      'このパソコンでの同期を止めます。このパソコンと Google ドライブのデータは、どちらも削除されません。';
+
+  @override
+  String get syncBrowserPage => 'Colophon にログインしました。このタブを閉じて、アプリに戻ってください。';
 }

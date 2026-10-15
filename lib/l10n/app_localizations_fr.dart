@@ -675,4 +675,66 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get settingsLicenses => 'Licences open source';
+
+  @override
+  String get settingsSync => 'Synchronisation';
+
+  @override
+  String get syncGoogleDrive => 'Synchroniser avec Google Drive';
+
+  @override
+  String get syncDesc =>
+      'Gardez vos livres et vos notes identiques sur tous les ordinateurs connectés au même compte Google. Les données sont enregistrées dans un espace privé de votre Google Drive, réservé à l’application.';
+
+  @override
+  String get syncUnavailable =>
+      'La synchronisation n’est pas disponible dans cette version (elle a été compilée sans les réglages de connexion Google).';
+
+  @override
+  String get syncSignIn => 'Se connecter';
+
+  @override
+  String get syncSignOut => 'Se déconnecter';
+
+  @override
+  String syncSignedInAs(String email) {
+    return 'Connecté en tant que $email';
+  }
+
+  @override
+  String get syncSignedIn => 'Connecté';
+
+  @override
+  String get syncSignInTitle => 'Connexion dans le navigateur';
+
+  @override
+  String get syncSignInBody =>
+      'Dans votre navigateur, choisissez votre compte Google et autorisez l’accès à Colophon. Si le navigateur ne s’ouvre pas, ou pour utiliser un autre navigateur, copiez le lien et collez-le dans celui-ci.';
+
+  @override
+  String get syncCopyLink => 'Copier le lien';
+
+  @override
+  String get syncLinkCopied => 'Lien copié';
+
+  @override
+  String get syncSignInDone => 'Connecté.';
+
+  @override
+  String get syncSignInDenied => 'La connexion a été annulée.';
+
+  @override
+  String get syncSignInFailed =>
+      'Connexion impossible. Vérifiez votre connexion réseau et réessayez.';
+
+  @override
+  String get syncSignOutTitle => 'Se déconnecter ?';
+
+  @override
+  String get syncSignOutBody =>
+      'La synchronisation s’arrête sur cet ordinateur. Rien n’est supprimé de cet ordinateur ni de Google Drive.';
+
+  @override
+  String get syncBrowserPage =>
+      'Vous êtes connecté à Colophon. Fermez cet onglet et revenez à l’application.';
 }

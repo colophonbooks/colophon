@@ -649,4 +649,62 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsLicenses => '开源许可';
+
+  @override
+  String get settingsSync => '同步';
+
+  @override
+  String get syncGoogleDrive => '通过 Google 云端硬盘同步';
+
+  @override
+  String get syncDesc =>
+      '在登录同一 Google 账号的各台电脑之间保持书籍和笔记一致。数据保存在您的 Google 云端硬盘中仅供本应用使用的私有区域。';
+
+  @override
+  String get syncUnavailable => '此版本无法使用同步（构建时未包含 Google 登录设置）。';
+
+  @override
+  String get syncSignIn => '登录';
+
+  @override
+  String get syncSignOut => '退出登录';
+
+  @override
+  String syncSignedInAs(String email) {
+    return '已登录：$email';
+  }
+
+  @override
+  String get syncSignedIn => '已登录';
+
+  @override
+  String get syncSignInTitle => '在浏览器中登录';
+
+  @override
+  String get syncSignInBody =>
+      '请在浏览器中选择您的 Google 账号，并允许 Colophon 访问。如果浏览器没有打开，或想使用其他浏览器，请复制链接并粘贴到浏览器中。';
+
+  @override
+  String get syncCopyLink => '复制链接';
+
+  @override
+  String get syncLinkCopied => '已复制链接';
+
+  @override
+  String get syncSignInDone => '已登录。';
+
+  @override
+  String get syncSignInDenied => '登录已取消。';
+
+  @override
+  String get syncSignInFailed => '无法登录。请检查网络连接后重试。';
+
+  @override
+  String get syncSignOutTitle => '要退出登录吗？';
+
+  @override
+  String get syncSignOutBody => '将停止此电脑上的同步。此电脑和 Google 云端硬盘中的数据都不会被删除。';
+
+  @override
+  String get syncBrowserPage => '已登录 Colophon。请关闭此标签页并返回应用。';
 }

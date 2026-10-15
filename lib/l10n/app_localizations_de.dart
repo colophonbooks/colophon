@@ -674,4 +674,66 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get settingsLicenses => 'Open-Source-Lizenzen';
+
+  @override
+  String get settingsSync => 'Synchronisierung';
+
+  @override
+  String get syncGoogleDrive => 'Mit Google Drive synchronisieren';
+
+  @override
+  String get syncDesc =>
+      'Halten Sie Bücher und Notizen auf allen Computern gleich, die mit demselben Google-Konto angemeldet sind. Die Daten werden in einem privaten, nur für die App bestimmten Bereich Ihres Google Drive gespeichert.';
+
+  @override
+  String get syncUnavailable =>
+      'Die Synchronisierung ist in diesem Build nicht verfügbar (er wurde ohne Google-Anmeldeeinstellungen erstellt).';
+
+  @override
+  String get syncSignIn => 'Anmelden';
+
+  @override
+  String get syncSignOut => 'Abmelden';
+
+  @override
+  String syncSignedInAs(String email) {
+    return 'Angemeldet als $email';
+  }
+
+  @override
+  String get syncSignedIn => 'Angemeldet';
+
+  @override
+  String get syncSignInTitle => 'Im Browser anmelden';
+
+  @override
+  String get syncSignInBody =>
+      'Wählen Sie im Browser Ihr Google-Konto aus und erlauben Sie Colophon den Zugriff. Wenn sich der Browser nicht öffnet oder Sie einen anderen Browser verwenden möchten, kopieren Sie den Link und fügen Sie ihn dort ein.';
+
+  @override
+  String get syncCopyLink => 'Link kopieren';
+
+  @override
+  String get syncLinkCopied => 'Link kopiert';
+
+  @override
+  String get syncSignInDone => 'Angemeldet.';
+
+  @override
+  String get syncSignInDenied => 'Die Anmeldung wurde abgebrochen.';
+
+  @override
+  String get syncSignInFailed =>
+      'Anmeldung nicht möglich. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.';
+
+  @override
+  String get syncSignOutTitle => 'Abmelden?';
+
+  @override
+  String get syncSignOutBody =>
+      'Die Synchronisierung wird auf diesem Computer beendet. Weder auf diesem Computer noch in Google Drive wird etwas gelöscht.';
+
+  @override
+  String get syncBrowserPage =>
+      'Sie sind bei Colophon angemeldet. Schließen Sie diesen Tab und kehren Sie zur App zurück.';
 }

@@ -14,8 +14,10 @@ finish-args:
   - --socket=wayland
   - --socket=fallback-x11
   - --device=dri
-  # ISBN からの書籍情報取得に使う
+  # ISBN からの書籍情報取得と、Google ドライブ同期に使う
   - --share=network
+  # Google ドライブ同期のログイン情報を、デスクトップの鍵束（Secret Service）に保存する
+  - --talk-name=org.freedesktop.secrets
   # ファイルの選択・保存は xdg-desktop-portal 経由なので、ファイルシステムへの権限は付けない
 modules:
   - name: colophon

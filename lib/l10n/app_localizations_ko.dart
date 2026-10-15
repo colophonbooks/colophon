@@ -652,4 +652,64 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get settingsLicenses => '오픈소스 라이선스';
+
+  @override
+  String get settingsSync => '동기화';
+
+  @override
+  String get syncGoogleDrive => 'Google 드라이브로 동기화';
+
+  @override
+  String get syncDesc =>
+      '같은 Google 계정으로 로그인한 컴퓨터끼리 책과 노트를 똑같이 맞춥니다. 데이터는 Google 드라이브 안의 이 앱 전용 비공개 영역에 저장됩니다.';
+
+  @override
+  String get syncUnavailable =>
+      '이 빌드에서는 동기화를 사용할 수 없습니다(Google 로그인 설정 없이 빌드되었습니다).';
+
+  @override
+  String get syncSignIn => '로그인';
+
+  @override
+  String get syncSignOut => '로그아웃';
+
+  @override
+  String syncSignedInAs(String email) {
+    return '로그인됨: $email';
+  }
+
+  @override
+  String get syncSignedIn => '로그인됨';
+
+  @override
+  String get syncSignInTitle => '브라우저에서 로그인';
+
+  @override
+  String get syncSignInBody =>
+      '브라우저에서 Google 계정을 선택하고 Colophon의 액세스를 허용하세요. 브라우저가 열리지 않거나 다른 브라우저를 사용하려면 링크를 복사해 붙여 넣으세요.';
+
+  @override
+  String get syncCopyLink => '링크 복사';
+
+  @override
+  String get syncLinkCopied => '링크를 복사했습니다';
+
+  @override
+  String get syncSignInDone => '로그인했습니다.';
+
+  @override
+  String get syncSignInDenied => '로그인이 취소되었습니다.';
+
+  @override
+  String get syncSignInFailed => '로그인할 수 없습니다. 네트워크 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get syncSignOutTitle => '로그아웃할까요?';
+
+  @override
+  String get syncSignOutBody =>
+      '이 컴퓨터에서 동기화를 중지합니다. 이 컴퓨터와 Google 드라이브의 데이터는 삭제되지 않습니다.';
+
+  @override
+  String get syncBrowserPage => 'Colophon에 로그인했습니다. 이 탭을 닫고 앱으로 돌아가세요.';
 }

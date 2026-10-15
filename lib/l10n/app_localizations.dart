@@ -1247,6 +1247,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open source licenses'**
   String get settingsLicenses;
+
+  /// No description provided for @settingsSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get settingsSync;
+
+  /// No description provided for @syncGoogleDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync with Google Drive'**
+  String get syncGoogleDrive;
+
+  /// No description provided for @syncDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your books and notes the same on every computer signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.'**
+  String get syncDesc;
+
+  /// No description provided for @syncUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync is not available in this build (it was built without Google sign-in settings).'**
+  String get syncUnavailable;
+
+  /// No description provided for @syncSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get syncSignIn;
+
+  /// No description provided for @syncSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get syncSignOut;
+
+  /// No description provided for @syncSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {email}'**
+  String syncSignedInAs(String email);
+
+  /// No description provided for @syncSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in'**
+  String get syncSignedIn;
+
+  /// No description provided for @syncSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your browser'**
+  String get syncSignInTitle;
+
+  /// No description provided for @syncSignInBody.
+  ///
+  /// In en, this message translates to:
+  /// **'In your browser, choose your Google account and allow Colophon access. If the browser does not open, or you want to use a different browser, copy the link and paste it there.'**
+  String get syncSignInBody;
+
+  /// No description provided for @syncCopyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get syncCopyLink;
+
+  /// No description provided for @syncLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get syncLinkCopied;
+
+  /// No description provided for @syncSignInDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in.'**
+  String get syncSignInDone;
+
+  /// No description provided for @syncSignInDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in was cancelled.'**
+  String get syncSignInDenied;
+
+  /// No description provided for @syncSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign in. Check your network connection and try again.'**
+  String get syncSignInFailed;
+
+  /// No description provided for @syncSignOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get syncSignOutTitle;
+
+  /// No description provided for @syncSignOutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing stops on this computer. Nothing is deleted from this computer or from Google Drive.'**
+  String get syncSignOutBody;
+
+  /// No description provided for @syncBrowserPage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are signed in to Colophon. Close this tab and return to the app.'**
+  String get syncBrowserPage;
 }
 
 class _AppLocalizationsDelegate

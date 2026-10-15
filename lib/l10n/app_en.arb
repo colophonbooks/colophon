@@ -251,5 +251,26 @@
   },
   "settingsDataSources": "Book data sources",
   "settingsDataSourcesDesc": "ISBN lookup uses National Diet Library Search (Japan), Open Library, the Library of Congress, the Bibliothèque nationale de France, and the German National Library.",
-  "settingsLicenses": "Open source licenses"
+  "settingsLicenses": "Open source licenses",
+  "settingsSync": "Sync",
+  "syncGoogleDrive": "Sync with Google Drive",
+  "syncDesc": "Keep your books and notes the same on every computer signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.",
+  "syncUnavailable": "Sync is not available in this build (it was built without Google sign-in settings).",
+  "syncSignIn": "Sign in",
+  "syncSignOut": "Sign out",
+  "syncSignedInAs": "Signed in as {email}",
+  "@syncSignedInAs": {
+    "placeholders": { "email": { "type": "String" } }
+  },
+  "syncSignedIn": "Signed in",
+  "syncSignInTitle": "Sign in with your browser",
+  "syncSignInBody": "In your browser, choose your Google account and allow Colophon access. If the browser does not open, or you want to use a different browser, copy the link and paste it there.",
+  "syncCopyLink": "Copy link",
+  "syncLinkCopied": "Link copied",
+  "syncSignInDone": "Signed in.",
+  "syncSignInDenied": "Sign-in was cancelled.",
+  "syncSignInFailed": "Could not sign in. Check your network connection and try again.",
+  "syncSignOutTitle": "Sign out?",
+  "syncSignOutBody": "Syncing stops on this computer. Nothing is deleted from this computer or from Google Drive.",
+  "syncBrowserPage": "You are signed in to Colophon. Close this tab and return to the app."
 }

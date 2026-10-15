@@ -10,6 +10,7 @@ import '../state/settings_controller.dart';
 import 'app_theme.dart';
 import 'common.dart';
 import 'data_transfer.dart';
+import 'sync_settings.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -102,6 +103,8 @@ class SettingsScreen extends StatelessWidget {
                   value: settings.autoResize,
                   onChanged: settings.setAutoResize,
                 ),
+                section(l.settingsSync),
+                const SyncSettingsSection(),
                 section(l.settingsData),
                 ListTile(
                   leading: Icon(Icons.delete_forever_outlined, color: Theme.of(context).colorScheme.error),

@@ -666,4 +666,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLicenses => 'Open source licenses';
+
+  @override
+  String get settingsSync => 'Sync';
+
+  @override
+  String get syncGoogleDrive => 'Sync with Google Drive';
+
+  @override
+  String get syncDesc =>
+      'Keep your books and notes the same on every computer signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.';
+
+  @override
+  String get syncUnavailable =>
+      'Sync is not available in this build (it was built without Google sign-in settings).';
+
+  @override
+  String get syncSignIn => 'Sign in';
+
+  @override
+  String get syncSignOut => 'Sign out';
+
+  @override
+  String syncSignedInAs(String email) {
+    return 'Signed in as $email';
+  }
+
+  @override
+  String get syncSignedIn => 'Signed in';
+
+  @override
+  String get syncSignInTitle => 'Sign in with your browser';
+
+  @override
+  String get syncSignInBody =>
+      'In your browser, choose your Google account and allow Colophon access. If the browser does not open, or you want to use a different browser, copy the link and paste it there.';
+
+  @override
+  String get syncCopyLink => 'Copy link';
+
+  @override
+  String get syncLinkCopied => 'Link copied';
+
+  @override
+  String get syncSignInDone => 'Signed in.';
+
+  @override
+  String get syncSignInDenied => 'Sign-in was cancelled.';
+
+  @override
+  String get syncSignInFailed =>
+      'Could not sign in. Check your network connection and try again.';
+
+  @override
+  String get syncSignOutTitle => 'Sign out?';
+
+  @override
+  String get syncSignOutBody =>
+      'Syncing stops on this computer. Nothing is deleted from this computer or from Google Drive.';
+
+  @override
+  String get syncBrowserPage =>
+      'You are signed in to Colophon. Close this tab and return to the app.';
 }

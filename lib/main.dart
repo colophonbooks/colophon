@@ -7,7 +7,9 @@ import 'package:sqlite3/sqlite3.dart';
 import 'app.dart';
 import 'data/app_database.dart';
 import 'data/book_repository.dart';
+import 'services/google_auth.dart';
 import 'state/settings_controller.dart';
+import 'state/sync_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,9 +20,13 @@ Future<void> main() async {
 
   try {
     final db = openAppDatabase(dbPath);
+    const oauth = GoogleOAuthConfig.fromEnvironment();
     runApp(ColophonApp(
       settings: SettingsController(prefs),
       repository: BookRepository(db),
+      sync: SyncController(
+        oauth.isConfigured ? GoogleAuthService(oauth, SecureCredentialStore()) : const UnconfiguredGoogleAuth(),
+      ),
     ));
   } on SqliteException catch (e) {
     runApp(_StartupErrorApp('Could not open the library database.\n$dbPath\n\n$e'));

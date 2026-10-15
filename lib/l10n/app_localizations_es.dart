@@ -673,4 +673,66 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsLicenses => 'Licencias de código abierto';
+
+  @override
+  String get settingsSync => 'Sincronización';
+
+  @override
+  String get syncGoogleDrive => 'Sincronizar con Google Drive';
+
+  @override
+  String get syncDesc =>
+      'Mantén tus libros y notas iguales en todos los ordenadores con la misma cuenta de Google. Los datos se guardan en un área privada de tu Google Drive reservada para la aplicación.';
+
+  @override
+  String get syncUnavailable =>
+      'La sincronización no está disponible en esta compilación (se creó sin la configuración de inicio de sesión de Google).';
+
+  @override
+  String get syncSignIn => 'Iniciar sesión';
+
+  @override
+  String get syncSignOut => 'Cerrar sesión';
+
+  @override
+  String syncSignedInAs(String email) {
+    return 'Sesión iniciada como $email';
+  }
+
+  @override
+  String get syncSignedIn => 'Sesión iniciada';
+
+  @override
+  String get syncSignInTitle => 'Inicia sesión en el navegador';
+
+  @override
+  String get syncSignInBody =>
+      'En el navegador, elige tu cuenta de Google y permite el acceso a Colophon. Si el navegador no se abre o quieres usar otro, copia el enlace y pégalo allí.';
+
+  @override
+  String get syncCopyLink => 'Copiar enlace';
+
+  @override
+  String get syncLinkCopied => 'Enlace copiado';
+
+  @override
+  String get syncSignInDone => 'Sesión iniciada.';
+
+  @override
+  String get syncSignInDenied => 'Se canceló el inicio de sesión.';
+
+  @override
+  String get syncSignInFailed =>
+      'No se pudo iniciar sesión. Comprueba la conexión de red e inténtalo de nuevo.';
+
+  @override
+  String get syncSignOutTitle => '¿Cerrar sesión?';
+
+  @override
+  String get syncSignOutBody =>
+      'La sincronización se detiene en este ordenador. No se elimina nada de este ordenador ni de Google Drive.';
+
+  @override
+  String get syncBrowserPage =>
+      'Has iniciado sesión en Colophon. Cierra esta pestaña y vuelve a la aplicación.';
 }
