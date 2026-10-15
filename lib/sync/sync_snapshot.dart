@@ -232,7 +232,9 @@ class SyncSnapshot {
   /// 形式の版が新しすぎる場合は [UnsupportedSyncFormatException]。
   factory SyncSnapshot.fromJson(Map<String, dynamic> j) {
     final version = j['version'];
-    if (version is! int || version > syncFormatVersion) throw UnsupportedSyncFormatException(version);
+    // 版番号がないのは、壊れている（Colophon の同期データではない）。新しい版の場合とは分けて知らせる
+    if (version is! int) throw FormatException('sync data has no version: $version');
+    if (version > syncFormatVersion) throw UnsupportedSyncFormatException(version);
     // 読めない記録（uuid がないなど）は飛ばして数える。1件のせいで統合全体を止めないため
     final rawBooks = j['books'] as List? ?? const [];
     final rawNotes = j['notes'] as List? ?? const [];

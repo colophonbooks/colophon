@@ -358,6 +358,10 @@ void main() {
       expect(p.booksToApply.single.uuid, 'r', reason: '読めた記録はこの端末へ取り込む');
     });
 
+    test('版番号のない同期データは、壊れたものとして扱う', () {
+      expect(() => SyncSnapshot.fromJson({'books': []}), throwsFormatException);
+    });
+
     test('新しい版の形式は読まない', () {
       expect(() => SyncSnapshot.fromJson({'version': syncFormatVersion + 1}),
           throwsA(isA<UnsupportedSyncFormatException>()));
