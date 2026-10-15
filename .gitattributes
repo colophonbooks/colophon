@@ -1,0 +1,5 @@
+# Mac・Linux 用のスクリプトと設定は、Windows でチェックアウトしても改行を LF のままにする
+# （CRLF になると bash で実行できなくなる）
+*.sh text eol=lf
+installer/linux/* text eol=lf
+installer/macos/* text eol=lf

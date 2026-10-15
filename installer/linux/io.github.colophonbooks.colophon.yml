@@ -1,0 +1,41 @@
+# Colophon の Flatpak マニフェスト。通常は build-flatpak.sh から使う。
+#
+# 先に flutter build linux --release で作った bundle を、そのまま Flatpak に詰める。
+# アンインストール時に `flatpak uninstall --delete-data io.github.colophonbooks.colophon` とすると、
+# 書籍データ（~/.var/app/io.github.colophonbooks.colophon）も消える。
+app-id: io.github.colophonbooks.colophon
+runtime: org.freedesktop.Platform
+# 新しい版が出ていれば上げる（flatpak remote-info flathub org.freedesktop.Platform//<版> で確認できる）
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+command: colophon
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # ISBN からの書籍情報取得に使う
+  - --share=network
+  # ファイルの選択・保存は xdg-desktop-portal 経由なので、ファイルシステムへの権限は付けない
+modules:
+  - name: colophon
+    buildsystem: simple
+    build-commands:
+      - mkdir -p /app/lib/colophon /app/bin
+      - cp -r bundle/. /app/lib/colophon/
+      - ln -s /app/lib/colophon/colophon /app/bin/colophon
+      - install -Dm644 io.github.colophonbooks.colophon.desktop /app/share/applications/io.github.colophonbooks.colophon.desktop
+      - install -Dm644 io.github.colophonbooks.colophon.metainfo.xml /app/share/metainfo/io.github.colophonbooks.colophon.metainfo.xml
+      - mkdir -p /app/share/icons
+      - cp -r icons/hicolor /app/share/icons/
+    sources:
+      - type: dir
+        path: ../../build/linux/x64/release/bundle
+        dest: bundle
+      - type: file
+        path: io.github.colophonbooks.colophon.desktop
+      - type: file
+        path: io.github.colophonbooks.colophon.metainfo.xml
+      - type: dir
+        path: icons
+        dest: icons

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Colophon
+GenericName=Book Library
+GenericName[ja]=書籍管理
+Comment=Manage your books, reading status, and notes
+Comment[ja]=蔵書・読書の記録・ノートを管理する
+Exec=colophon
+Icon=io.github.colophonbooks.colophon
+Terminal=false
+Categories=Office;Education;
+Keywords=book;library;reading;notes;ISBN;
+Keywords[ja]=本;書籍;蔵書;読書;ノート;
+StartupWMClass=io.github.colophonbooks.colophon

@@ -1,0 +1,27 @@
+How to uninstall Colophon (macOS)
+=================================
+
+1. (Optional) To delete your library as well, open Colophon and choose
+   Settings > Data > Delete all data. Export first if you want to keep anything.
+2. Quit Colophon.
+3. Drag Colophon from the Applications folder to the Trash.
+
+macOS keeps the app's data even after the app is deleted. If you skipped step 1,
+you can delete the data later by removing this folder in Finder
+(Go > Go to Folder...):
+
+  ~/Library/Containers/io.github.colophonbooks.colophon
+
+
+Colophon のアンインストール方法（macOS）
+=======================================
+
+1. （任意）書籍データも消す場合は、Colophon を開いて
+   「設定」→「データ」→「すべてのデータを削除」を選びます。残したいデータがあれば先にエクスポートしてください。
+2. Colophon を終了します。
+3. 「アプリケーション」フォルダの Colophon を、ゴミ箱へドラッグします。
+
+macOS では、アプリを削除してもデータは残ります。手順 1 を省いた場合は、Finder の
+「移動」→「フォルダへ移動...」で次のフォルダを開き、削除するとデータを消せます。
+
+  ~/Library/Containers/io.github.colophonbooks.colophon

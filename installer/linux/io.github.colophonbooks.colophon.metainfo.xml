@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Colophon の AppStream 情報（ソフトウェアセンターや Flathub が読む） -->
+<component type="desktop-application">
+  <id>io.github.colophonbooks.colophon</id>
+  <name>Colophon</name>
+  <summary>A book library for book lovers</summary>
+  <summary xml:lang="ja">本好きのための書籍管理アプリ</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="io.github.colophonbooks">
+    <name>colophonbooks</name>
+  </developer>
+  <description>
+    <p>
+      Keep track of the books you own, your reading status, cover images, notes
+      (impressions, learnings, memos, excerpts), tags, and the dates you finished each book.
+    </p>
+    <p xml:lang="ja">
+      蔵書の登録、読書ステータス、書影、ノート（感想・学び・メモ・抜粋）、タグ、読了日を管理できます。
+    </p>
+    <ul>
+      <li>Fetch book details from an ISBN</li>
+      <li>Search books and notes</li>
+      <li>Export and import (text, JSON + images, SQLite)</li>
+      <li>7 display languages and 6 color themes, including a color-vision friendly theme</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">io.github.colophonbooks.colophon.desktop</launchable>
+  <url type="homepage">https://github.com/colophonbooks</url>
+  <url type="bugtracker">https://github.com/colophonbooks</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="1.0.0" date="2026-10-15"/>
+  </releases>
+</component>
