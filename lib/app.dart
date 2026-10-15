@@ -36,7 +36,12 @@ class ColophonApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: settings),
         Provider.value(value: repository),
-        ChangeNotifierProvider(create: (_) => LibraryController(repository, settings.sort)),
+        ChangeNotifierProvider(create: (_) {
+          final library = LibraryController(repository, settings.sort);
+          // 同期でこの端末のデータが変わったら、一覧を読み直す
+          sync?.onLocalDataChanged = library.reload;
+          return library;
+        }),
         Provider<IsbnLookupService>(
           create: (_) => lookupService ?? IsbnLookupService(),
           dispose: (_, service) => service.close(),

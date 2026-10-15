@@ -296,11 +296,15 @@ class BookRepository {
     db.execute('VACUUM');
   }
 
-  /// すべての書籍に削除済みの印を付ける（インポートの「すべて置き換える」で使用）。
-  void deleteAllBooks({DateTime? at}) => transaction(() {
+  /// すべての書籍に削除済みの印を付ける（インポートの「すべて置き換える」、すべてのデータの削除で使用）。
+  ///
+  /// [afterEachUpdate] なら、印の日時を各書籍の更新日時より必ず後にする。時計が進んでいた端末で
+  /// 未来の日時が付いた書籍も、同期で確実に削除されるようにするため。
+  void deleteAllBooks({DateTime? at, bool afterEachUpdate = false}) => transaction(() {
         final now = (at ?? AppClock.now()).toUtc();
-        for (final r in db.select('SELECT id FROM books WHERE deleted_at IS NULL')) {
-          _markDeleted(r['id'] as int, now);
+        for (final r in db.select('SELECT id, updated_at FROM books WHERE deleted_at IS NULL')) {
+          final after = DateTime.parse(r['updated_at'] as String).add(const Duration(microseconds: 1));
+          _markDeleted(r['id'] as int, afterEachUpdate && after.isAfter(now) ? after : now);
         }
         _deleteUnusedTags();
       });

@@ -735,4 +735,119 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get syncBrowserPage =>
       'Has iniciado sesión en Colophon. Cierra esta pestaña y vuelve a la aplicación.';
+
+  @override
+  String get syncNow => 'Sincronizar ahora';
+
+  @override
+  String get syncing => 'Sincronizando…';
+
+  @override
+  String syncLastAt(String time) {
+    return 'Última sincronización: $time';
+  }
+
+  @override
+  String get syncNever => 'Aún no se ha sincronizado';
+
+  @override
+  String get syncDone => 'Sincronizado.';
+
+  @override
+  String get syncFirstTitle => 'Primera sincronización';
+
+  @override
+  String syncFirstBody(int local, int remote) {
+    return 'Este ordenador tiene $local libros y Google Drive tiene $remote. Elige cómo combinarlos. Antes de sincronizar, se guarda automáticamente una copia de seguridad de los datos de este ordenador.';
+  }
+
+  @override
+  String get syncFirstMerge => 'Combinar (recomendado)';
+
+  @override
+  String get syncFirstMergeDesc =>
+      'Conserva los libros de ambos. Los libros con el mismo ISBN se unen en uno.';
+
+  @override
+  String get syncFirstUseRemote => 'Reemplazar con Google Drive';
+
+  @override
+  String get syncFirstUseRemoteDesc =>
+      'Se eliminan los libros y notas que solo existen en este ordenador.';
+
+  @override
+  String get syncFirstUseLocal => 'Reemplazar con este ordenador';
+
+  @override
+  String get syncFirstUseLocalDesc =>
+      'Los libros y notas que solo existen en Google Drive se eliminan de todos los ordenadores sincronizados.';
+
+  @override
+  String get syncFirstStart => 'Sincronizar';
+
+  @override
+  String get syncErrorNetwork =>
+      'No se pudo conectar. Comprueba la conexión de red e inténtalo más tarde.';
+
+  @override
+  String get syncErrorAuth =>
+      'Colophon ya no tiene permiso para usar tu Google Drive. Cierra sesión y vuelve a iniciarla.';
+
+  @override
+  String get syncErrorNewerFormat =>
+      'Estos datos se sincronizaron con una versión más reciente de Colophon. Actualiza la aplicación.';
+
+  @override
+  String get syncErrorRemoteCorrupt =>
+      'Los datos de sincronización de Google Drive están dañados, así que se detuvo la sincronización.';
+
+  @override
+  String get syncErrorBusy =>
+      'Otro ordenador estaba sincronizando al mismo tiempo. Inténtalo de nuevo en un momento.';
+
+  @override
+  String get syncErrorMissingCover =>
+      'Algunas portadas aún no han llegado. Inténtalo de nuevo en un momento.';
+
+  @override
+  String get syncErrorQuota => 'El almacenamiento de Google Drive está lleno.';
+
+  @override
+  String get syncErrorLocalStorage =>
+      'No se pudo guardar en este ordenador. Comprueba el espacio libre en disco.';
+
+  @override
+  String get syncErrorOther => 'No se pudo sincronizar.';
+
+  @override
+  String get syncWarningUnreadable =>
+      'No se pudo leer parte de los datos de sincronización de Google Drive, así que este ordenador no envió sus cambios.';
+
+  @override
+  String get deleteScopeTitle => 'Qué eliminar';
+
+  @override
+  String get deleteScopeThisPc => 'Solo este ordenador';
+
+  @override
+  String get deleteScopeThisPcDesc =>
+      'Se desactiva la sincronización (se cierra la sesión). Se conservan los datos de Google Drive y de otros ordenadores.';
+
+  @override
+  String get deleteScopeEverywhere => 'Google Drive y todos los ordenadores';
+
+  @override
+  String get deleteScopeEverywhereDesc =>
+      'Los demás ordenadores también eliminarán sus libros y notas en la próxima sincronización.';
+
+  @override
+  String get deleteEverywhereSyncFailed =>
+      'No se pudo conectar con Google Drive, así que no se eliminó nada. Comprueba la conexión de red e inténtalo de nuevo.';
+
+  @override
+  String get deleteEverywherePartial =>
+      'Los libros se eliminaron en este ordenador, pero no se pudo enviar la eliminación a Google Drive. Se enviará en la próxima sincronización.';
+
+  @override
+  String get deleteEverywhereProgress => 'Eliminando de Google Drive…';
 }

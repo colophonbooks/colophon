@@ -737,4 +737,120 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get syncBrowserPage =>
       'Vous êtes connecté à Colophon. Fermez cet onglet et revenez à l’application.';
+
+  @override
+  String get syncNow => 'Synchroniser';
+
+  @override
+  String get syncing => 'Synchronisation…';
+
+  @override
+  String syncLastAt(String time) {
+    return 'Dernière synchronisation : $time';
+  }
+
+  @override
+  String get syncNever => 'Pas encore synchronisé';
+
+  @override
+  String get syncDone => 'Synchronisé.';
+
+  @override
+  String get syncFirstTitle => 'Première synchronisation';
+
+  @override
+  String syncFirstBody(int local, int remote) {
+    return 'Cet ordinateur contient $local livres et Google Drive $remote. Choisissez comment les combiner. Avant la synchronisation, une sauvegarde des données de cet ordinateur est enregistrée automatiquement.';
+  }
+
+  @override
+  String get syncFirstMerge => 'Combiner (recommandé)';
+
+  @override
+  String get syncFirstMergeDesc =>
+      'Conserve les livres des deux côtés. Les livres ayant le même ISBN sont réunis en un seul.';
+
+  @override
+  String get syncFirstUseRemote => 'Remplacer par Google Drive';
+
+  @override
+  String get syncFirstUseRemoteDesc =>
+      'Les livres et notes présents uniquement sur cet ordinateur sont supprimés.';
+
+  @override
+  String get syncFirstUseLocal => 'Remplacer par cet ordinateur';
+
+  @override
+  String get syncFirstUseLocalDesc =>
+      'Les livres et notes présents uniquement sur Google Drive sont supprimés de tous les ordinateurs synchronisés.';
+
+  @override
+  String get syncFirstStart => 'Synchroniser';
+
+  @override
+  String get syncErrorNetwork =>
+      'Connexion impossible. Vérifiez votre connexion réseau et réessayez plus tard.';
+
+  @override
+  String get syncErrorAuth =>
+      'Colophon n’est plus autorisé à utiliser votre Google Drive. Déconnectez-vous, puis reconnectez-vous.';
+
+  @override
+  String get syncErrorNewerFormat =>
+      'Ces données ont été synchronisées par une version plus récente de Colophon. Mettez l’application à jour.';
+
+  @override
+  String get syncErrorRemoteCorrupt =>
+      'Les données de synchronisation sur Google Drive sont endommagées ; la synchronisation a été arrêtée.';
+
+  @override
+  String get syncErrorBusy =>
+      'Un autre ordinateur se synchronisait en même temps. Réessayez dans un instant.';
+
+  @override
+  String get syncErrorMissingCover =>
+      'Certaines couvertures ne sont pas encore arrivées. Réessayez dans un instant.';
+
+  @override
+  String get syncErrorQuota =>
+      'Votre espace de stockage Google Drive est plein.';
+
+  @override
+  String get syncErrorLocalStorage =>
+      'Impossible d’enregistrer sur cet ordinateur. Vérifiez l’espace disque disponible.';
+
+  @override
+  String get syncErrorOther => 'Synchronisation impossible.';
+
+  @override
+  String get syncWarningUnreadable =>
+      'Une partie des données de synchronisation sur Google Drive est illisible ; cet ordinateur n’a pas envoyé ses modifications.';
+
+  @override
+  String get deleteScopeTitle => 'Que supprimer';
+
+  @override
+  String get deleteScopeThisPc => 'Cet ordinateur uniquement';
+
+  @override
+  String get deleteScopeThisPcDesc =>
+      'La synchronisation est désactivée (vous êtes déconnecté). Les données sur Google Drive et les autres ordinateurs sont conservées.';
+
+  @override
+  String get deleteScopeEverywhere => 'Google Drive et tous les ordinateurs';
+
+  @override
+  String get deleteScopeEverywhereDesc =>
+      'Les autres ordinateurs suppriment aussi leurs livres et notes lors de leur prochaine synchronisation.';
+
+  @override
+  String get deleteEverywhereSyncFailed =>
+      'Impossible de joindre Google Drive : rien n’a été supprimé. Vérifiez votre connexion réseau et réessayez.';
+
+  @override
+  String get deleteEverywherePartial =>
+      'Les livres ont été supprimés sur cet ordinateur, mais la suppression n’a pas pu être envoyée à Google Drive. Elle le sera lors de la prochaine synchronisation.';
+
+  @override
+  String get deleteEverywhereProgress => 'Suppression sur Google Drive…';
 }

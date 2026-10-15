@@ -712,4 +712,113 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get syncBrowserPage => 'Colophon에 로그인했습니다. 이 탭을 닫고 앱으로 돌아가세요.';
+
+  @override
+  String get syncNow => '지금 동기화';
+
+  @override
+  String get syncing => '동기화 중…';
+
+  @override
+  String syncLastAt(String time) {
+    return '마지막 동기화: $time';
+  }
+
+  @override
+  String get syncNever => '아직 동기화하지 않았습니다';
+
+  @override
+  String get syncDone => '동기화했습니다.';
+
+  @override
+  String get syncFirstTitle => '첫 동기화';
+
+  @override
+  String syncFirstBody(int local, int remote) {
+    return '이 컴퓨터에 $local권, Google 드라이브에 $remote권의 책이 있습니다. 어떻게 합칠지 선택하세요. 동기화 전에 이 컴퓨터 데이터의 백업을 자동으로 저장합니다.';
+  }
+
+  @override
+  String get syncFirstMerge => '통합하기(권장)';
+
+  @override
+  String get syncFirstMergeDesc => '양쪽의 책을 모두 남깁니다. ISBN이 같은 책은 한 권으로 합칩니다.';
+
+  @override
+  String get syncFirstUseRemote => 'Google 드라이브 내용으로 바꾸기';
+
+  @override
+  String get syncFirstUseRemoteDesc => '이 컴퓨터에만 있는 책과 노트는 삭제됩니다.';
+
+  @override
+  String get syncFirstUseLocal => '이 컴퓨터 내용으로 바꾸기';
+
+  @override
+  String get syncFirstUseLocalDesc =>
+      'Google 드라이브에만 있는 책과 노트는 동기화된 모든 컴퓨터에서 삭제됩니다.';
+
+  @override
+  String get syncFirstStart => '동기화';
+
+  @override
+  String get syncErrorNetwork => '연결할 수 없습니다. 네트워크 연결을 확인하고 잠시 후 다시 시도하세요.';
+
+  @override
+  String get syncErrorAuth =>
+      'Colophon이 더 이상 Google 드라이브를 사용할 수 없습니다. 로그아웃한 뒤 다시 로그인하세요.';
+
+  @override
+  String get syncErrorNewerFormat =>
+      '더 새로운 버전의 Colophon으로 동기화된 데이터입니다. 앱을 업데이트하세요.';
+
+  @override
+  String get syncErrorRemoteCorrupt =>
+      'Google 드라이브의 동기화 데이터가 손상되어 동기화를 중지했습니다.';
+
+  @override
+  String get syncErrorBusy => '다른 컴퓨터가 동시에 동기화하고 있었습니다. 잠시 후 다시 시도하세요.';
+
+  @override
+  String get syncErrorMissingCover =>
+      '일부 표지 이미지가 아직 도착하지 않았습니다. 잠시 후 다시 시도하세요.';
+
+  @override
+  String get syncErrorQuota => 'Google 드라이브 저장 공간이 가득 찼습니다.';
+
+  @override
+  String get syncErrorLocalStorage => '이 컴퓨터에 저장하지 못했습니다. 디스크 여유 공간을 확인하세요.';
+
+  @override
+  String get syncErrorOther => '동기화할 수 없습니다.';
+
+  @override
+  String get syncWarningUnreadable =>
+      'Google 드라이브의 동기화 데이터 일부를 읽을 수 없어, 이 컴퓨터의 변경 내용 전송을 보류했습니다.';
+
+  @override
+  String get deleteScopeTitle => '삭제할 범위';
+
+  @override
+  String get deleteScopeThisPc => '이 컴퓨터만';
+
+  @override
+  String get deleteScopeThisPcDesc =>
+      '동기화를 끕니다(로그아웃). Google 드라이브와 다른 컴퓨터의 데이터는 남습니다.';
+
+  @override
+  String get deleteScopeEverywhere => 'Google 드라이브와 모든 컴퓨터';
+
+  @override
+  String get deleteScopeEverywhereDesc => '다른 컴퓨터에서도 다음 동기화 때 책과 노트가 삭제됩니다.';
+
+  @override
+  String get deleteEverywhereSyncFailed =>
+      'Google 드라이브에 연결할 수 없어 아무것도 삭제하지 않았습니다. 네트워크 연결을 확인하고 다시 시도하세요.';
+
+  @override
+  String get deleteEverywherePartial =>
+      '이 컴퓨터의 책은 삭제했지만 Google 드라이브에 반영하지 못했습니다. 다음 동기화 때 반영됩니다.';
+
+  @override
+  String get deleteEverywhereProgress => 'Google 드라이브에서 삭제하는 중…';
 }

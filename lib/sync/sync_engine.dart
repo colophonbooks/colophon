@@ -119,9 +119,10 @@ class SyncEngine {
   /// サーバー時刻との差が、これ以上変わったときだけ補正し直す。
   final Duration clockTolerance;
 
-  Future<SyncResult> sync({FirstSyncMode? firstSync}) async {
+  /// [purgeUnusedCovers] なら、使われていない書影を猶予なしで Drive から消す（すべてのデータの削除で使う）。
+  Future<SyncResult> sync({FirstSyncMode? firstSync, bool purgeUnusedCovers = false}) async {
     try {
-      return await _sync(firstSync);
+      return await _sync(firstSync, purgeUnusedCovers);
     } on SyncException {
       rethrow;
     } on UnsupportedSyncFormatException {
@@ -153,7 +154,7 @@ class SyncEngine {
     }
   }
 
-  Future<SyncResult> _sync(FirstSyncMode? requestedMode) async {
+  Future<SyncResult> _sync(FirstSyncMode? requestedMode, bool purgeUnusedCovers) async {
     final saved = state.load();
     var hasSynced = saved.hasSynced;
     for (var attempt = 0; attempt < maxAttempts; attempt++) {
@@ -217,7 +218,7 @@ class SyncEngine {
       repository.applySync(books: toApply.booksToApply, notes: toApply.notesToApply, covers: covers);
 
       // 読めない記録があるときは、その記録が使う書影を消さないよう片付けをしない
-      if (!plan.remoteUnreadable) await _tidyCovers(plan, remoteCovers);
+      if (!plan.remoteUnreadable) await _tidyCovers(plan, remoteCovers, purge: purgeUnusedCovers);
       await state.save(SyncState(hasSynced: true, lastSyncAt: AppClock.now(), clockOffset: AppClock.offset));
       return SyncDone(
         booksChanged: toApply.booksToApply.length,
@@ -288,7 +289,7 @@ class SyncEngine {
 
   /// 使われなくなった書影に「使われなくなった日時」を付け、[coverRetention] が過ぎたら消す。
   /// また使われるようになった書影からは印を外す。失敗しても同期は成功とする。
-  Future<void> _tidyCovers(SyncPlan plan, Map<String, RemoteFile> remoteCovers) async {
+  Future<void> _tidyCovers(SyncPlan plan, Map<String, RemoteFile> remoteCovers, {bool purge = false}) async {
     final used = plan.coverHashes;
     final now = AppClock.now();
     try {
@@ -296,6 +297,8 @@ class SyncEngine {
         final since = file.unusedSince;
         if (used.contains(hash)) {
           if (since != null) await drive.setUnusedSince(file.id, null);
+        } else if (purge) {
+          await drive.delete(file.id);
         } else if (since == null) {
           await drive.setUnusedSince(file.id, now);
         } else if (now.difference(since) >= coverRetention) {

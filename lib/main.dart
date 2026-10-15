@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -10,6 +12,10 @@ import 'data/book_repository.dart';
 import 'services/google_auth.dart';
 import 'state/settings_controller.dart';
 import 'state/sync_controller.dart';
+import 'sync/drive_store.dart';
+import 'sync/sync_backup.dart';
+import 'sync/sync_engine.dart';
+import 'sync/sync_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,11 +27,24 @@ Future<void> main() async {
   try {
     final db = openAppDatabase(dbPath);
     const oauth = GoogleOAuthConfig.fromEnvironment();
+    final repository = BookRepository(db);
+    final syncState = PrefsSyncStateStore(prefs);
+    final syncBackups = Directory(p.join(dir.path, 'sync-backups'));
     runApp(ColophonApp(
       settings: SettingsController(prefs),
-      repository: BookRepository(db),
+      repository: repository,
       sync: SyncController(
         oauth.isConfigured ? GoogleAuthService(oauth, SecureCredentialStore()) : const UnconfiguredGoogleAuth(),
+        stateStore: syncState,
+        backupDirectory: syncBackups,
+        engineFactory: (client) => SyncEngine(
+          repository: repository,
+          drive: GoogleDriveStore(client),
+          state: syncState,
+          backupBeforeFirstSync: () async {
+            await writeSyncBackup(repository, syncBackups, now: DateTime.now());
+          },
+        ),
       ),
     ));
   } on SqliteException catch (e) {

@@ -710,4 +710,112 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get syncBrowserPage => 'Colophon にログインしました。このタブを閉じて、アプリに戻ってください。';
+
+  @override
+  String get syncNow => '今すぐ同期';
+
+  @override
+  String get syncing => '同期中…';
+
+  @override
+  String syncLastAt(String time) {
+    return '最終同期: $time';
+  }
+
+  @override
+  String get syncNever => 'まだ同期していません';
+
+  @override
+  String get syncDone => '同期しました。';
+
+  @override
+  String get syncFirstTitle => '初めての同期';
+
+  @override
+  String syncFirstBody(int local, int remote) {
+    return 'このパソコンに$local冊、Google ドライブに$remote冊の書籍があります。どのように合わせるか選んでください。同期の前に、このパソコンのデータのバックアップを自動で保存します。';
+  }
+
+  @override
+  String get syncFirstMerge => '統合する（おすすめ）';
+
+  @override
+  String get syncFirstMergeDesc => '両方の書籍を残します。ISBN が同じ書籍は1冊にまとめます。';
+
+  @override
+  String get syncFirstUseRemote => 'Google ドライブの内容に置き換える';
+
+  @override
+  String get syncFirstUseRemoteDesc => 'このパソコンだけにある書籍とノートは削除されます。';
+
+  @override
+  String get syncFirstUseLocal => 'このパソコンの内容に置き換える';
+
+  @override
+  String get syncFirstUseLocalDesc =>
+      'Google ドライブだけにある書籍とノートは、同期しているすべてのパソコンから削除されます。';
+
+  @override
+  String get syncFirstStart => '同期する';
+
+  @override
+  String get syncErrorNetwork =>
+      '接続できませんでした。ネットワークの接続を確認して、しばらくしてからもう一度お試しください。';
+
+  @override
+  String get syncErrorAuth =>
+      'Google ドライブを使う許可が無効になっています。いったんログアウトして、もう一度ログインしてください。';
+
+  @override
+  String get syncErrorNewerFormat =>
+      '新しいバージョンの Colophon で同期されたデータです。アプリを最新版に更新してください。';
+
+  @override
+  String get syncErrorRemoteCorrupt => 'Google ドライブの同期データが壊れているため、同期を中止しました。';
+
+  @override
+  String get syncErrorBusy => 'ほかのパソコンの同期と重なりました。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get syncErrorMissingCover => '表紙の画像がまだ届いていません。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get syncErrorQuota => 'Google ドライブの空き容量が足りません。';
+
+  @override
+  String get syncErrorLocalStorage => 'このパソコンへの保存に失敗しました。ディスクの空き容量を確認してください。';
+
+  @override
+  String get syncErrorOther => '同期できませんでした。';
+
+  @override
+  String get syncWarningUnreadable =>
+      'Google ドライブの同期データの一部が読めなかったため、このパソコンからの送信を見合わせました。';
+
+  @override
+  String get deleteScopeTitle => '削除する範囲';
+
+  @override
+  String get deleteScopeThisPc => 'このパソコンだけ';
+
+  @override
+  String get deleteScopeThisPcDesc =>
+      '同期をオフにします（ログアウトします）。Google ドライブとほかのパソコンのデータは残ります。';
+
+  @override
+  String get deleteScopeEverywhere => 'Google ドライブとすべてのパソコン';
+
+  @override
+  String get deleteScopeEverywhereDesc => 'ほかのパソコンでも、次の同期のときに書籍とノートが削除されます。';
+
+  @override
+  String get deleteEverywhereSyncFailed =>
+      'Google ドライブに接続できなかったため、何も削除していません。ネットワークの接続を確認して、もう一度お試しください。';
+
+  @override
+  String get deleteEverywherePartial =>
+      'このパソコンの書籍は削除しましたが、Google ドライブへの反映に失敗しました。次の同期で反映されます。';
+
+  @override
+  String get deleteEverywhereProgress => 'Google ドライブから削除しています…';
 }

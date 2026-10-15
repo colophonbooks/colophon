@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:colophon/l10n/app_localizations.dart';
 import 'package:colophon/services/google_auth.dart';
@@ -6,62 +5,13 @@ import 'package:colophon/state/sync_controller.dart';
 import 'package:colophon/ui/sync_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:provider/provider.dart';
 
-GoogleAccount _account([String? email = 'reader@example.com']) => GoogleAccount(
-      credentials: AccessCredentials(
-        AccessToken('Bearer', 'access', DateTime.utc(2026, 10, 15, 12)),
-        'refresh',
-        googleDriveScopes,
-      ),
-      email: email,
-    );
+import 'sync_fakes.dart';
 
-class FakeGoogleAuth implements GoogleAuth {
-  FakeGoogleAuth({this.stored});
+GoogleAccount _account([String? email = 'reader@example.com']) => fakeAccount(email);
 
-  GoogleAccount? stored;
-  Completer<GoogleAccount>? pending;
-  bool cancelled = false;
-  final signedOut = <GoogleAccount>[];
-
-  @override
-  bool get isConfigured => true;
-
-  @override
-  Future<GoogleAccount?> restore() async => stored;
-
-  @override
-  Future<GoogleSignInFlow> beginSignIn({required String successPage}) async {
-    pending = Completer<GoogleAccount>();
-    return GoogleSignInFlow(
-      authorizationUri: Uri.parse('https://accounts.google.com/o/oauth2/v2/auth?state=x'),
-      result: pending!.future,
-      cancel: () async {
-        cancelled = true;
-        if (!pending!.isCompleted) {
-          pending!.completeError(const GoogleSignInException(GoogleSignInFailure.cancelled));
-        }
-      },
-    );
-  }
-
-  @override
-  AutoRefreshingAuthClient clientFor(GoogleAccount account) => throw UnimplementedError();
-
-  @override
-  Future<void> signOut(GoogleAccount account) async {
-    signedOut.add(account);
-    stored = null;
-  }
-}
-
-Future<void> _settle(SyncController c) async {
-  while (c.state == SyncAuthState.loading) {
-    await Future<void>.delayed(Duration.zero);
-  }
-}
+Future<void> _settle(SyncController c) => settle(c);
 
 void main() {
   group('SyncController', () {

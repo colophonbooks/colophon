@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/app_localizations.dart';
 import '../services/google_auth.dart';
 import '../state/sync_controller.dart';
+import '../sync/sync_engine.dart';
+import '../sync/sync_plan.dart';
 
 /// 設定画面の「同期」欄。ログイン状態に応じて表示とボタンを切り替える。
 class SyncSettingsSection extends StatelessWidget {
@@ -40,13 +43,137 @@ class SyncSettingsSection extends StatelessWidget {
             child: Text(l.syncSignIn),
           ),
         ),
-      SyncAuthState.signedIn => ListTile(
-          leading: icon,
-          title: Text(l.syncGoogleDrive),
-          subtitle: Text(sync.accountEmail == null ? l.syncSignedIn : l.syncSignedInAs(sync.accountEmail!)),
-          trailing: TextButton(onPressed: () => _signOutFlow(context), child: Text(l.syncSignOut)),
+      SyncAuthState.signedIn => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              leading: icon,
+              title: Text(l.syncGoogleDrive),
+              subtitle: Text(sync.accountEmail == null ? l.syncSignedIn : l.syncSignedInAs(sync.accountEmail!)),
+              trailing: TextButton(
+                onPressed: sync.syncing ? null : () => _signOutFlow(context),
+                child: Text(l.syncSignOut),
+              ),
+            ),
+            ListTile(
+              leading: const SizedBox(width: 24),
+              title: Text(sync.syncing
+                  ? l.syncing
+                  : sync.lastSyncAt == null
+                      ? l.syncNever
+                      : l.syncLastAt(formatDateTime(context, sync.lastSyncAt!))),
+              subtitle: _status(context, sync),
+              trailing: sync.syncing
+                  ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  : FilledButton.tonalIcon(
+                      icon: const Icon(Icons.sync),
+                      label: Text(l.syncNow),
+                      onPressed: () => syncNowFlow(context),
+                    ),
+            ),
+          ],
         ),
     };
+  }
+
+  /// 失敗・注意があれば、その内容（失敗は赤字）。
+  Widget? _status(BuildContext context, SyncController sync) {
+    final l = AppLocalizations.of(context);
+    if (sync.lastFailure case final failure?) {
+      return Text(syncFailureMessage(l, failure), style: TextStyle(color: Theme.of(context).colorScheme.error));
+    }
+    if (sync.lastRemoteUnreadable) return Text(l.syncWarningUnreadable);
+    return null;
+  }
+}
+
+String formatDateTime(BuildContext context, DateTime time) =>
+    DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag()).add_Hm().format(time.toLocal());
+
+String syncFailureMessage(AppLocalizations l, SyncFailure failure) => switch (failure) {
+      SyncFailure.network => l.syncErrorNetwork,
+      SyncFailure.auth => l.syncErrorAuth,
+      SyncFailure.newerFormat => l.syncErrorNewerFormat,
+      SyncFailure.remoteCorrupt => l.syncErrorRemoteCorrupt,
+      SyncFailure.busy => l.syncErrorBusy,
+      SyncFailure.missingCover => l.syncErrorMissingCover,
+      SyncFailure.quota => l.syncErrorQuota,
+      SyncFailure.localStorage => l.syncErrorLocalStorage,
+      SyncFailure.other => l.syncErrorOther,
+    };
+
+/// 今すぐ同期する。初めての同期で両方にデータがあれば、扱いを選んでもらってから同期する。
+Future<void> syncNowFlow(BuildContext context) async {
+  final l = AppLocalizations.of(context);
+  final sync = context.read<SyncController>();
+  final messenger = ScaffoldMessenger.of(context);
+  var result = await sync.syncNow();
+  if (result case SyncNeedsFirstChoice(:final localBooks, :final remoteBooks)) {
+    if (!context.mounted) return;
+    final mode = await showDialog<FirstSyncMode>(
+      context: context,
+      builder: (_) => _FirstSyncDialog(localBooks: localBooks, remoteBooks: remoteBooks),
+    );
+    if (mode == null) return;
+    result = await sync.syncNow(firstSync: mode);
+  }
+  if (result is SyncDone) {
+    messenger.showSnackBar(SnackBar(content: Text(result.remoteUnreadable ? l.syncWarningUnreadable : l.syncDone)));
+  } else if (sync.lastFailure case final failure?) {
+    messenger.showSnackBar(SnackBar(content: Text(syncFailureMessage(l, failure))));
+  }
+}
+
+/// 初めての同期で、この端末とクラウドの両方にデータがあるときの選択。
+class _FirstSyncDialog extends StatefulWidget {
+  const _FirstSyncDialog({required this.localBooks, required this.remoteBooks});
+
+  final int localBooks;
+  final int remoteBooks;
+
+  @override
+  State<_FirstSyncDialog> createState() => _FirstSyncDialogState();
+}
+
+class _FirstSyncDialogState extends State<_FirstSyncDialog> {
+  FirstSyncMode _mode = FirstSyncMode.merge;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    RadioListTile<FirstSyncMode> option(FirstSyncMode mode, String title, String desc) => RadioListTile(
+          contentPadding: EdgeInsets.zero,
+          value: mode,
+          title: Text(title),
+          subtitle: Text(desc),
+        );
+    return AlertDialog(
+      title: Text(l.syncFirstTitle),
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: SingleChildScrollView(
+          child: RadioGroup<FirstSyncMode>(
+            groupValue: _mode,
+            onChanged: (m) => setState(() => _mode = m ?? _mode),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l.syncFirstBody(widget.localBooks, widget.remoteBooks)),
+                const SizedBox(height: 12),
+                option(FirstSyncMode.merge, l.syncFirstMerge, l.syncFirstMergeDesc),
+                option(FirstSyncMode.useRemote, l.syncFirstUseRemote, l.syncFirstUseRemoteDesc),
+                option(FirstSyncMode.useLocal, l.syncFirstUseLocal, l.syncFirstUseLocalDesc),
+              ],
+            ),
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l.cancel)),
+        FilledButton(onPressed: () => Navigator.pop(context, _mode), child: Text(l.syncFirstStart)),
+      ],
+    );
   }
 }
 
