@@ -32,6 +32,8 @@ Colophon を Windows / macOS / Linux でビルドするための、環境の準�
 - [Visual Studio 2022 Community](https://visualstudio.microsoft.com/ja/vs/community/)（無料の統合開発環境）
 - [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/ja/downloads/#build-tools-for-visual-studio-2022)（ビルドに必要な部分だけ。画面を使わないなら軽くて十分）
 
+あわせて、「個別のコンポーネント」から **「最新の v143 ビルド ツール用 C++ ATL」**（C++ ATL for latest v143 build tools）も選んでください。同期のログイン情報を保存する部品のビルドに必要です。
+
 > Visual Studio と Visual Studio **Code** は別の製品です。VS Code をエディターとして使う場合でも、ビルドには上記が必要です。
 
 ### 3. 開発者モードを有効にする
@@ -134,8 +136,10 @@ Ubuntu / Debian 系での手順です。ほかのディストリビューショ�
 ```sh
 sudo apt-get update -y
 sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa \
-  clang cmake ninja-build pkg-config libgtk-3-dev libstdc++-12-dev
+  clang cmake ninja-build pkg-config libgtk-3-dev libstdc++-12-dev libsecret-1-dev
 ```
+
+`libsecret-1-dev` は、同期のログイン情報をデスクトップの鍵束に保存する部品のビルドに使います。
 
 > `libstdc++-12-dev` が見つからない場合は、そのディストリビューションで提供されている版（例: `libstdc++-14-dev`）を指定してください。
 
@@ -270,6 +274,57 @@ node tool/icon/generate.mjs
 - Windows のアイコンは前回のビルド結果に残りやすいため、作り直した後は `flutter clean` してからビルドしてください（配布用スクリプトは毎回 clean します）。
 
 ---
+## Google ドライブ同期の設定（任意）
+
+同期機能を使えるアプリをビルドするには、Google の OAuth クライアント ID が必要です。ID はリポジトリに含めず、ビルド時に渡します。渡さずにビルドしたアプリでは、設定画面の同期欄が「使えません」と表示されるだけで、ほかの機能はそのまま使えます。
+
+### 1. Google Cloud でクライアントを作る
+
+1. [Google Cloud コンソール](https://console.cloud.google.com/)でプロジェクトを作る
+2. 「Google Drive API」を有効にする
+3. 「Google Auth Platform」で、アプリ名・サポートのメールアドレスを入力し、対象を「外部」にする
+4. 「データアクセス」で、スコープ `https://www.googleapis.com/auth/drive.appdata` だけを追加する
+5. 「クライアント」で、種類が「デスクトップアプリ」のクライアントを作り、JSON をダウンロードする
+
+`drive.appdata` は Google の区分で「非機密」のスコープです。デスクトップアプリのクライアントシークレットは、Google の説明どおり秘密として扱えない値で、Colophon は PKCE と組み合わせて使います。
+
+### 2. 設定ファイルを用意する
+
+リポジトリの外（例: `~/.colophon/dart-defines.json`。Windows では `%USERPROFILE%\.colophon\dart-defines.json`）に、次の形式で保存します。値は、ダウンロードした JSON の `client_id` と `client_secret` です。
+
+```json
+{
+  "COLOPHON_GOOGLE_CLIENT_ID": "xxxxxxxx.apps.googleusercontent.com",
+  "COLOPHON_GOOGLE_CLIENT_SECRET": "xxxxxxxx"
+}
+```
+
+### 3. ビルド・起動のときに渡す
+
+```sh
+flutter run -d windows --dart-define-from-file=$HOME/.colophon/dart-defines.json
+flutter build windows --release --dart-define-from-file=$HOME/.colophon/dart-defines.json
+```
+
+配布用パッケージの作成スクリプト（`installer/`）は、`~/.colophon/dart-defines.json` があれば自動で読み込みます。別の場所に置く場合は、環境変数 `COLOPHON_DART_DEFINES` にその場所を指定します。ファイルがなければ警告を出し、同期を使えないアプリを作ります。
+
+### 4. 配布する前に
+
+Google Auth Platform の「対象」で、公開ステータスを「テスト中」から「本番環境」に切り替えます。「テスト中」のままだと、テストユーザーに登録したアカウントしかログインできず、ログイン情報も7日で切れます。
+
+### 試験用の本棚で動かす
+
+開発中のアプリで普段の本棚を開くと、データベースが新しい版へ移行され、配布中の版で開けなくなることがあります。試すときは、ビルド時に `COLOPHON_DATA_DIR` で別のフォルダを指定します。
+
+```sh
+flutter run -d windows --dart-define-from-file=$HOME/.colophon/dart-defines.json \
+  --dart-define=COLOPHON_DATA_DIR=$HOME/.colophon/pc-a
+```
+
+本棚・同期の記録・設定・Google のログイン情報を、普段の版とは別に保存します。フォルダ名ごとに分かれるので、フォルダ名を変えて2つビルドして同時に動かすと、1台のパソコンで2台分の同期を試せます。
+
+---
+
 ## うまくいかないとき
 
 | 症状 | 対処 |
@@ -277,6 +332,9 @@ node tool/icon/generate.mjs
 | 何が足りないか分からない | `flutter doctor -v` を実行し、`[X]` や `[!]` の付いた項目の指示に従う |
 | Windows で `Building with plugins requires symlink support.` と出る | 開発者モードを有効にする（[Windows の手順 3](#3-開発者モードを有効にする)） |
 | Windows で `Unable to find suitable Visual Studio toolchain` と出る | Visual Studio Installer で「C++ によるデスクトップ開発」が入っているか確認する |
+| Windows で `atlstr.h` が見つからないと出る | Visual Studio Installer で「最新の v143 ビルド ツール用 C++ ATL」を追加する（[Windows の手順 2](#2-visual-studio-2022-をインストールする)） |
+| Linux で `libsecret` に関するエラーが出る | `libsecret-1-dev` を入れる（[Linux の手順 1](#1-必要なパッケージをインストールする)） |
+| 設定画面の同期欄が「このビルドでは同期を使えません」になる | クライアント ID を渡さずにビルドしている。[Google ドライブ同期の設定](#google-ドライブ同期の設定任意)を参照 |
 | Linux で GTK や `pkg-config` に関するエラーが出る | [Linux の手順 1](#1-必要なパッケージをインストールする) のパッケージがすべて入っているか確認する |
 | 以前は通ったビルドが急に失敗する | `flutter clean` → `flutter pub get` を実行してからビルドし直す |
 | リリース版で、新しく使い始めたアイコン（★など）が表示されず空白になる | リリース版は使用中のアイコンだけを残すようにアイコン用フォントを小さくするが、繰り返しビルドすると古いフォントが使い回されることがある。`flutter clean` → `flutter pub get` を実行してからビルドし直す（デバッグ版や `flutter test` では起きない） |

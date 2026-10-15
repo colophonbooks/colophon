@@ -4,7 +4,7 @@
 
 | Item | Details |
 |---|---|
-| Scope | Colophon 1.0.0 (DB schema v3 / export format v1) |
+| Scope | Colophon 1.0.0 (DB schema v4 / export format v1 / sync data format v1) |
 | Purpose of this document | Defines *what* the app does and *how it behaves*. Implementation-level classes, methods, and SQL are covered in the [Detailed Design](detail-design.md) |
 | Created | 2026-10-14 |
 
@@ -20,6 +20,7 @@
 | 1.5 | 2026-10-15 | Added a viewer mode (read-only) for books (registered books return to it after saving). Dates now include the year |
 | 1.6 | 2026-10-15 | Added "Delete all data" to Settings. Documented the package format for each OS and what happens to data on uninstall |
 | 1.7 | 2026-10-15 | Added the app icon ("Recognizability" in the non-functional requirements) |
+| 1.8 | 2026-10-15 | Added sync between computers through Google Drive (F-15: the sync section in Settings, the Google sign-in, first sync, and sync-on-exit dialogs, the scope of "Delete all data", data stored in the cloud, sync states and processes, and the Google external interfaces). Revised the offline, data integrity, privacy, and other non-functional requirements, and removed sync from the future extensions |
 
 ## Contents
 
@@ -57,8 +58,8 @@ To let book lovers manage their personal library and reading records in one plac
 |---|---|
 | Supported OS (current) | Windows 10/11, macOS, Linux (all 64-bit) |
 | Supported OS (future) | iPhone / iPad, Android phones / tablets |
-| Network | Generally not required. Used only when fetching book details from an ISBN |
-| Data storage | On the device (a single SQLite database file) |
+| Network | Generally not required. Used when fetching book details from an ISBN and for sync with Google Drive (only after signing in) |
+| Data storage | On the device (a single SQLite database file). When sync is used, the same contents are also stored in the app-specific area of the user's Google Drive ([6.7](#67-data-stored-in-the-cloud)) |
 
 ### 1.4 Glossary
 
@@ -68,7 +69,11 @@ To let book lovers manage their personal library and reading records in one plac
 | Note | Free-form text attached to a book. A category and a page number can optionally be added |
 | Finish date | The date the user finished reading a book. A book can have several, for re-reads |
 | Progress | How far into a book the user is while reading it (0–100%) |
-| Deletion marker | Instead of removing a deleted record's row, the row is kept with the deletion time recorded. Used by future sync to propagate deletions to other devices |
+| Deletion marker | Instead of removing a deleted record's row, the row is kept with the deletion time recorded. Used by sync to propagate deletions to other devices |
+| Sync | Keeping books and notes the same on several computers signed in to the same Google account. Google Drive is used as the relay |
+| App-specific area | A private area in Google Drive reserved for the app (appDataFolder). It is kept separate from the user's other files |
+| Sync data | The contents of books and notes stored in Google Drive for sync. Each cover image is a separate file |
+| First sync | A sync on a computer that has never synced. If both the computer and the cloud have data, the user chooses how to combine them |
 
 ---
 
@@ -88,8 +93,9 @@ To let book lovers manage their personal library and reading records in one plac
 | F-10 | Search | Search book details and note text, with various filters |
 | F-11 | Export | Export as text (optionally with covers), JSON + images (ZIP), or SQLite |
 | F-12 | Import | Restore from ZIP or SQLite by either replacing everything or adding |
-| F-13 | Settings | Display language, color theme, brightness, automatic cover reduction, deleting all data, app information |
+| F-13 | Settings | Display language, color theme, brightness, automatic cover reduction, sync, deleting all data, app information |
 | F-14 | Viewer mode | Shows a registered book read-only: only filled-in fields, no editing controls. Switchable with edit mode |
+| F-15 | Sync | Sign in with a Google account and keep books, notes, finish dates, tags, and covers the same on several computers through the app-specific area of Google Drive. Syncs automatically at startup, after changes, and before exit, and on demand with "Sync now". Nothing is synced unless the user signs in |
 
 ---
 
@@ -102,6 +108,7 @@ flowchart LR
     user((User))
     ndl[["National Diet Library Search"]]
     others[["Open Library, Library of Congress,<br/>BnF, German National Library"]]
+    google[["Google<br/>sign-in, Google Drive"]]
 
     subgraph app["Colophon"]
         direction TB
@@ -118,14 +125,21 @@ flowchart LR
         uc11([Export data])
         uc12([Import data to restore])
         uc13([Change settings])
+        uc14([Sign in to / out of Google])
+        uc15([Sync between computers])
     end
 
-    user --- uc1 & uc2 & uc5 & uc6 & uc7 & uc8 & uc9 & uc10 & uc11 & uc12 & uc13
+    user --- uc1 & uc2 & uc5 & uc6 & uc7 & uc8 & uc9 & uc10 & uc11 & uc12 & uc13 & uc14 & uc15
     uc2 -. includes .-> uc3
     uc2 -. includes .-> uc4
+    uc14 -. includes .-> uc15
     uc3 --- ndl
     uc3 --- others
+    uc14 --- google
+    uc15 --- google
 ```
+
+Besides "Sync now", sync (uc15) runs automatically while signed in: at startup, after changes, and before exit ([8.9](#89-automatic-sync)).
 
 ---
 
@@ -133,32 +147,43 @@ flowchart LR
 
 ### 4.1 Overall structure
 
-The app runs entirely on the device. Its only external communication is with the bibliographic services (5 in total) used for ISBN lookup.
+The app runs entirely on the device. Its only external communication is with the bibliographic services (5 in total) used for ISBN lookup and, when sync is used, with Google (sign-in and Google Drive).
 
 ```mermaid
 flowchart TB
     subgraph device["User's device"]
         subgraph colophon["Colophon (Flutter app)"]
             ui["Screens (UI)"]
-            state["State<br/>settings, book list"]
-            service["Services<br/>search, covers, ISBN, import/export"]
+            state["State<br/>settings, book list, sync state"]
+            service["Services<br/>search, covers, ISBN, import/export, sign-in"]
+            sync["Sync<br/>merging, Google Drive transfer"]
             repo["Data access"]
         end
         db[("SQLite<br/>colophon.db")]
         prefs[("Device settings<br/>display language, etc.")]
-        files[/"Files on the device<br/>images, export files"/]
+        files[/"Files on the device<br/>images, export files,<br/>sync record, pre-sync backups"/]
+        secure[("OS secure storage<br/>Google sign-in credentials")]
+        browser["Browser"]
     end
     ndl["National Diet Library Search API"]
     others["Open Library, Library of Congress,<br/>BnF, and German National Library APIs"]
+    google["Google<br/>sign-in (OAuth 2.0),<br/>Google Drive API"]
 
     ui --> state --> repo
     ui --> service
     service --> repo
+    state --> sync --> repo
     repo --> db
     state --> prefs
     service <--> files
+    sync <--> files
+    service <--> secure
+    ui -- "Opened for sign-in" --> browser
+    browser -- "HTTPS" --> google
     service -- "HTTPS (ISBN lookup only)" --> ndl
     service -- "HTTPS (ISBN lookup only)" --> others
+    service -- "HTTPS (sign-in / sign-out)" --> google
+    sync -- "HTTPS (only while signed in)" --> google
 ```
 
 ### 4.2 Layers
@@ -166,9 +191,10 @@ flowchart TB
 | Layer | Role | Main folder |
 |---|---|---|
 | Screens (UI) | Accept input and display results. No business rules | `lib/ui/` |
-| State | Hold state shared by screens (settings, book list) and notify screens of changes | `lib/state/` |
-| Services | Search, cover reduction, ISBN validation and lookup, export / import | `lib/services/` |
-| Data access | Read and write SQLite; migrate the schema | `lib/data/` |
+| State | Hold state shared by screens (settings, book list, sync sign-in state and progress) and notify screens of changes. Decide when to sync automatically | `lib/state/` |
+| Services | Search, cover reduction, ISBN validation and lookup, export / import, Google sign-in, recorded time (current time corrected by the server time) | `lib/services/` |
+| Sync | Sync data format, merge rules, transfer with Google Drive, sync record, backup before the first sync | `lib/sync/` |
+| Data access | Read and write SQLite; migrate the schema. Extract and write sync data | `lib/data/` |
 | Models | Data types such as books and notes | `lib/models/` |
 
 ### 4.3 Technologies
@@ -182,6 +208,11 @@ flowchart TB
 | File selection / saving | `file_picker` |
 | Image processing | `image` (resizing, format conversion) |
 | ZIP | `archive` |
+| Google Drive | `googleapis` (Drive API v3) |
+| Google sign-in | `googleapis_auth` (authorization code exchange, token refresh) |
+| Storing sign-in credentials | `flutter_secure_storage` (OS secure storage) |
+| Opening the browser | `url_launcher` |
+| Hashing | `crypto` (cover SHA-256, PKCE for sign-in) |
 
 ---
 
@@ -197,9 +228,12 @@ flowchart TB
 | SC-04 | ISBN lookup result | Dialog | Choose which fetched fields to apply |
 | SC-05 | Search | Screen | Search and filter books and notes |
 | SC-06 | Tag manager | Screen | Rename and delete tags |
-| SC-07 | Settings | Screen | Display language, color theme, brightness, automatic cover reduction, app information |
+| SC-07 | Settings | Screen | Display language, color theme, brightness, automatic cover reduction, sync, deleting all data, app information |
 | SC-08 | Export | Dialog | Choose the export format |
 | SC-09 | Import | Dialog | Choose how to restore (replace / add) |
+| SC-10 | Google sign-in | Dialog | Wait for sign-in in the browser. The link can be copied and sign-in cancelled |
+| SC-11 | First sync | Dialog | Choose how to combine data when both this computer and the cloud have some |
+| SC-12 | Sync on exit | Dialog | Sync changes not yet sent before the app exits |
 
 ### 5.2 Screen transitions
 
@@ -218,6 +252,9 @@ stateDiagram-v2
     state "SC-07 Settings" as SC07
     state "SC-08 Export" as SC08
     state "SC-09 Import" as SC09
+    state "SC-10 Google sign-in" as SC10
+    state "SC-11 First sync" as SC11
+    state "SC-12 Sync on exit" as SC12
 
     SC01 --> SC02: Continue
     SC02 --> SC03: + button / select a book
@@ -235,7 +272,16 @@ stateDiagram-v2
     SC07 --> SC02: Back
     SC08 --> SC02: Done / cancel
     SC09 --> SC02: Done / cancel
+    SC07 --> SC10: "Sign in" in the sync section
+    SC10 --> SC07: Sync after sign-in done / cancel / failure
+    SC10 --> SC11: Sync after sign-in needs a choice
+    SC07 --> SC11: "Sync now" needs a choice
+    SC11 --> SC07: Sync / cancel
+    SC02 --> SC12: Close the window (unsent changes)
+    SC12 --> [*]: Sync done / close without syncing
 ```
+
+SC-12 appears when the window is closed from any screen (the diagram shows it from SC-02 only). Without unsent changes, the app exits without showing it.
 
 ### 5.3 Screen summaries
 
@@ -300,6 +346,14 @@ Text can be selected and copied. Dates include the year (e.g. Mar 1, 2025).
 | | Delete book | Deletes after confirmation (edit mode only) |
 | | Back / close window | Asks whether to discard unsaved changes |
 
+**Interaction with sync**
+
+| Situation | Behavior |
+|---|---|
+| The open book changes through sync | If there are no unsaved changes, the screen shows the latest contents (except while a dialog is open). With unsaved changes, the user's input takes priority; saving makes it the newest version |
+| The open book is deleted on another computer | Shows "This book was deleted on another computer." and closes the screen. The same happens if this is noticed on Save or "Discard and view"; the book is not saved (saving would revive it on every computer) |
+| Notes that arrive through sync while editing | Kept when saving (only notes deleted on this screen are marked as deleted) |
+
 #### SC-04 ISBN lookup result
 
 Shows the fetched fields (title, author, translator, supervisor, publisher, edition) with checkboxes. Initially only the fields that are **still empty** in the book being edited are checked. For fields that already have a value, the current value is shown alongside. The source name (attribution) is displayed, along with a note that translators and supervisors may not be detected perfectly.
@@ -329,8 +383,48 @@ Lists tags with the number of books that have them. Tags can be renamed (not to 
 | Color theme | Choose one of 6 from previews. Applied immediately ([5.4](#54-color-themes)) |
 | Brightness | Match system (default) / light / dark |
 | Automatic cover reduction | On (default) / off |
-| Delete all data | Erases all books, notes, tags, finish dates, and settings, returning to the initial state that starts with language selection. Confirmed in two steps: (1) an explanation (with an "Export first" option) and (2) a final confirmation that cannot be pressed until "I understand that deleted data cannot be restored" is checked |
+| Sync | Sign-in state, last sync time, and actions for sync with Google Drive (table below) |
+| Delete all data | Erases all books, notes, tags, finish dates, and settings, returning to the initial state that starts with language selection. Confirmed in two steps: (1) an explanation (with an "Export first" option) and (2) a final confirmation that cannot be pressed until "I understand that deleted data cannot be restored" is checked. While signed in, the final confirmation also asks what to delete (this computer only / Google Drive and every computer) ([8.10](#810-deleting-all-data-and-sync)) |
 | About | Version, book data sources, open source licenses |
+
+**Sync section**
+
+| State | Display / actions |
+|---|---|
+| Unavailable | Shows "Sync is not available in this build" with no actions (an app built without the Google client settings) |
+| Loading | Right after startup, a progress indicator while the saved sign-in is read |
+| Signed out | A description of sync and a "Sign in" button (SC-10) |
+| Signed in | "Signed in as (email address)" ("Signed in" if the address is unknown) and a "Sign out" button. Signing out asks for confirmation and deletes nothing from this computer or Google Drive. Disabled while syncing |
+| | The last sync time ("Not synced yet" if never; "Syncing…" with a progress indicator while syncing) and a "Sync now" button. When finished, shows "Synced." at the bottom, or the reason for a failure |
+| | If the last sync failed, its reason is shown in red ([8.7](#87-sync)). If there is no failure but the first-sync choice is pending, shows "press 'Sync now'"; if the cloud has unreadable records, says that sending was held back |
+
+#### SC-10 Google sign-in
+
+Pressing "Sign in" in the sync section opens Google's sign-in page in the default browser and shows this dialog.
+
+| Item / action | Details |
+|---|---|
+| Instructions | Asks the user to choose a Google account in the browser and allow Colophon access. Shows a progress indicator |
+| Copy link | Copies the sign-in page URL to the clipboard (to paste it when the browser does not open or another browser is preferred) |
+| Cancel | Stops signing in. No message is shown |
+| Allowed | The browser shows "You are signed in to Colophon. Close this tab and return to the app." The app shows "Signed in.", closes the dialog, and syncs right away (SC-11 if needed) |
+| Not allowed / failed | Shows "Sign-in was cancelled." / "Could not sign in. Check your network connection…" and returns to signed out |
+
+#### SC-11 First sync
+
+Shown when this computer has never synced and both this computer and the cloud have books or notes. It shows the book counts on both sides and asks how to combine them ([8.8](#88-first-sync)). It also says that a backup of this computer's data is saved automatically before syncing.
+
+| Option | Details |
+|---|---|
+| Combine (recommended, default) | Keeps the books from both. Books with the same ISBN become one |
+| Replace with Google Drive | Books and notes that exist only on this computer are deleted |
+| Replace with this computer | Books and notes that exist only on Google Drive are deleted from every synced computer |
+
+"Sync" runs it. "Cancel" does nothing, and automatic sync does not proceed until a choice is made (the sync section shows a hint).
+
+#### SC-12 Sync on exit
+
+When the window is closed and there are user changes not yet sent, the app shows "Syncing with Google Drive…" / "Colophon will close when syncing finishes." and exits after syncing. Nothing else can be done while it is shown (so that edits made during the sync are not left unsent). "Close without syncing" exits without waiting (the changes stay on this computer and are sent at the next startup). Even if syncing takes long, the app waits at most 10 seconds for a running sync and at most 10 seconds for one sync, and then exits.
 
 #### SC-08 Export / SC-09 Import
 
@@ -424,7 +518,7 @@ classDiagram
 
 - Notes and finish records belong to a book and are deleted with it (composition).
 - Tags are shared among books. A tag attached to no book is removed automatically.
-- Settings are stored per device, separately from book data, and are not exported or imported.
+- Settings are stored per device, separately from book data, and are not exported, imported, or synced.
 
 ### 6.2 ER diagram
 
@@ -450,6 +544,7 @@ erDiagram
         BLOB cover "cover image"
         TEXT cover_type "MIME type"
         BLOB thumbnail "reduced image for lists"
+        TEXT cover_hash "SHA-256 of the cover, for sync"
         TEXT created_at
         TEXT updated_at
         TEXT deleted_at "deletion marker"
@@ -521,7 +616,43 @@ To stay independent of the display language, the database and export files store
 
 ### 6.6 Deletion
 
-Deleting a book or note keeps its row and records the deletion time (`deleted_at`). The cover image and note text are erased. Deleted items do not appear on screens, in search, or in exports. This mechanism lets future sync between devices propagate deletions to other devices ([12.1](#121-sync-between-devices)).
+Deleting a book or note keeps its row and records the deletion time (`deleted_at`). The cover image and note text are erased. Deleted items do not appear on screens, in search, or in exports. This mechanism lets sync propagate deletions to other devices ([8.7](#87-sync)). Only "Delete all data" in Settings erases everything physically, deletion markers included.
+
+### 6.7 Data stored in the cloud
+
+When sync is used, the following files are stored in the app-specific area (appDataFolder) of the user's Google Drive. Colophon signs in with a permission (`drive.appdata`) that can read and write only this area, so it never touches the user's other files.
+
+```mermaid
+flowchart LR
+    subgraph pcA["Computer A"]
+        a[(colophon.db)]
+    end
+    subgraph pcB["Computer B"]
+        b[(colophon.db)]
+    end
+    subgraph drive["User's Google Drive (app-specific area)"]
+        snap["colophon-sync.json<br/>books, notes"]
+        covers["cover-(SHA-256)<br/>one file per cover image"]
+    end
+    a <-- "Sync (only while signed in)" --> drive
+    b <-- "Sync (only while signed in)" --> drive
+```
+
+| File | Contents |
+|---|---|
+| `colophon-sync.json` | The sync data (normally one file; two computers sending their first sync at the same time can briefly create two, which the next sync merges into one). All books (bibliographic fields, status, progress, finish dates, tags, note order, the cover's SHA-256 and MIME type, created and updated times) and all notes (category, page, text, favorite, created and updated times). Deleted books and notes keep only their ID and times |
+| `cover-{SHA-256}` | A cover image. Named after the SHA-256 of its contents, so the same image is stored only once and only changed images need to be sent. A cover no longer used by any book is deleted by a sync at least 7 days after that is noticed |
+
+- Not stored: settings (display language, color theme, etc.), thumbnails for lists (created on the receiving computer), the bibliographic fields of deleted books, and the text of deleted notes.
+- The data has a format version (sync data format v1). Sync data written by a newer version of the app is neither read nor overwritten by older versions.
+
+Stored on the computer for sync:
+
+| Location | Contents |
+|---|---|
+| OS secure storage (Windows: an encrypted file; macOS: Keychain; Linux: Secret Service) | Google sign-in credentials (access token, refresh token) and the email address for display |
+| `sync-state.json` in the same folder as the library (`colophon.db`) | Whether this computer has ever synced, the last sync time, and the difference from the server time |
+| `sync-backups/` in the same folder as the library | Backups taken before the first sync (the same ZIP format as export, so they can be imported; the newest 3 are kept) |
 
 ---
 
@@ -587,6 +718,38 @@ stateDiagram-v2
 ```
 
 Viewer mode always shows saved content, so switching to "View" with unsaved changes first asks whether to save or discard them.
+
+### 7.3 Sync states
+
+The sync section in Settings ([5.3](#sc-07-settings)) changes its display according to these states.
+
+```mermaid
+stateDiagram-v2
+    state "Unavailable" as unavailable
+    state "Loading" as loading
+    state "Signed out" as signedOut
+    state "Waiting for sign-in in the browser" as signingIn
+    state "Signed in" as signedIn
+    state signedIn {
+        state "Idle" as idle
+        state "Syncing" as syncing
+        [*] --> idle
+        idle --> syncing: Automatic sync / "Sync now"
+        syncing --> idle: Done / failed
+    }
+
+    [*] --> unavailable: Built without client settings
+    [*] --> loading: Built with client settings
+    loading --> signedIn: Saved sign-in exists
+    loading --> signedOut: No saved sign-in / unreadable
+    signedOut --> signingIn: "Sign in"
+    signingIn --> signedIn: Allowed
+    signingIn --> signedOut: Cancelled / denied / failed
+    signedIn --> signedOut: "Sign out" / delete all data
+```
+
+- Signing out also invalidates the token on Google's side and erases the saved sign-in and the sync record (whether this computer has synced, the last sync time). The next sign-in is treated as a first sync (so that data is combined correctly even when another account is used).
+- Signing out deletes nothing from this computer or Google Drive.
 ---
 
 ## 8. Main processes
@@ -770,6 +933,8 @@ flowchart TD
 
 - When replacing, books are not skipped because of a matching ISBN (some users own several copies of the same book).
 - Invalid ISBNs (e.g. "unknown") are not used to detect duplicates.
+- Imported books and notes get the import time as their update time. If they kept the times from the file, sync would judge the cloud version newer and revert the imported contents.
+- Deletion markers set by "Replace all" also reach other computers through sync.
 
 ### 8.6 Search
 
@@ -798,6 +963,123 @@ flowchart TD
 
 - Comparison ignores letter case and full-/half-width differences.
 - ISBNs match with or without hyphens.
+
+### 8.7 Sync
+
+One sync compares and merges the sync data in the cloud with the contents of this computer, sends the merged result to the cloud, and writes it to this computer.
+
+```mermaid
+flowchart TD
+    start([Start sync]) --> get[Get the sync data from Google Drive]
+    get --> first{First sync, and<br/>both sides have data?}
+    first -- Yes --> choose[The user chooses how to combine<br/>SC-11] --> merge
+    first -- No --> merge
+    merge[Match each book and note and<br/>keep the one with the newer update time]
+    merge --> dl[Get covers missing on this computer]
+    dl --> isFirst{First sync?}
+    isFirst -- Yes --> backup[Save a backup of this computer] --> ul
+    isFirst -- No --> ul[Send covers missing in the cloud]
+    ul --> need{Anything to<br/>send to the cloud?}
+    need -- Yes --> race{Did another computer rewrite<br/>the sync data since it was fetched?}
+    race -- "Yes (up to 3 times)" --> get
+    race -- No --> upload[Send the merged result]
+    upload --> race2{Overwritten right<br/>after sending?}
+    race2 -- "Yes (up to 3 times)" --> get
+    race2 -- No --> apply
+    need -- No --> apply[Write the merged result to this computer<br/>keeping edits made during the sync]
+    apply --> tidy[Tidy up covers no longer used]
+    tidy --> done([Record the last sync time])
+```
+
+**Merge rules**
+
+| Situation | Result |
+|---|---|
+| The same book was changed on two computers | The whole book with the newer update time wins (finish dates, tags, and note order count as part of the book) |
+| The same note was changed on two computers | For each note, the one with the newer update time wins (decided separately from its book) |
+| Same update time | Deletion wins. If neither is a deletion, the cloud side wins (so every computer reaches the same result) |
+| Deleted on one, edited on the other | The later action wins. If the deletion is later, all notes of the book are deleted too. If the edit is later, the book is revived and the notes deleted together with it come back (notes deleted individually do not) |
+| Different notes added on different computers | Both are kept. Notes missing from the order are appended in order of creation |
+| Tags differing only in spelling ("SF" and "sf", etc.) | Treated as the same tag, not as a difference |
+| The cloud has unreadable records | Readable records are taken in, but this computer sends nothing (so that overwriting does not erase those records). The user is told so |
+| The cloud sync data uses a newer app's format or is damaged | Sync stops and nothing is overwritten |
+
+- Recorded times (created, updated, deleted) are corrected by the difference from Google's server time, so the newer side is judged correctly even if a computer's clock is off.
+- If a sync fails or is interrupted, this computer's data stays as it was before writing (writing is done at the end in a single transaction).
+- The cloud files are checked before and right after sending; if another computer rewrote them, the sync starts over from fetching (so the other computer's changes are not overwritten). After 3 collisions in a row, the sync fails as "busy".
+- Covers are sent before the sync data (so other computers never refer to covers that have not arrived).
+- When a sync fails, the reason is shown in the sync section.
+
+| Reason | Message | Automatic retry |
+|---|---|---|
+| Cannot connect / temporary trouble on Google's side | Could not connect. … | Yes |
+| Collided with other computers' syncs repeatedly | Another computer was syncing at the same time. … | Yes |
+| A cover that should be in the cloud is not there yet | Some cover images have not arrived yet. … | Yes |
+| Unexpected failure | Could not sync. | Yes |
+| Sign-in needed again (permission revoked, expired, etc.) | Colophon is no longer allowed to use your Google Drive. … | No |
+| Google Drive storage full | Your Google Drive storage is full. | No |
+| Sync data written by a newer version of the app | Please update the app. | No |
+| The cloud sync data is damaged | The sync data on Google Drive is damaged, so syncing stopped. | No |
+| Saving to this computer (DB, backup) failed | Could not save to this computer. … | No |
+
+### 8.8 First sync
+
+Only when this computer has never synced and both the cloud and this computer have (non-deleted) books or notes is the user asked how to combine them (SC-11). If only one side has data, it is merged without asking. Before syncing with the chosen method, this computer's data is saved to `sync-backups/` (before anything is written to Google Drive; if saving fails, nothing is changed).
+
+| Method | Books only on this computer | Books only in the cloud | Books on both with different contents |
+|---|---|---|---|
+| Combine | Kept and sent. However, a book with the same valid ISBN as a book only in the cloud is combined into one | Taken into this computer | The newer one |
+| Replace with Google Drive | Deleted (the sync data is not sent to the cloud) | Taken into this computer | The cloud's contents |
+| Replace with this computer | Kept and sent | Marked as deleted and sent (also removed from other computers) | This computer's contents, sent with the update time set to now so that they beat versions left on other computers |
+
+Notes are handled like books. A book combined by ISBN uses the cloud side's ID (to match other computers); its bibliographic fields come from the newer of the two, its finish dates and tags are the union of both, and the notes of both are kept.
+
+### 8.9 Automatic sync
+
+While signed in, the app syncs automatically at these times.
+
+| Trigger | When it syncs |
+|---|---|
+| Startup (with a saved sign-in) | After 3 seconds |
+| User changes (saving or deleting a book, toggling a favorite, renaming or deleting a tag, importing, etc.) | 30 seconds after the last change. Even if changes continue, it syncs 5 minutes after the first change |
+| Changes made during a sync | Once more, 2 seconds after that sync finishes |
+| Temporary failures ("Yes" in the table in [8.7](#87-sync)) | Retries after 1, 2, 5, 15, and 30 minutes (then every 30 minutes). A success resets the interval |
+| Failures that need the user ("No" in the same table) | No automatic retry |
+| The first-sync choice is pending | No automatic sync until the user chooses |
+| App exit | If there are unsent changes, syncs before exiting (SC-12) |
+| Right after signing in / "Sync now" | Immediately |
+
+When a sync changes data on this computer, the library and an open book screen are reloaded ([5.3](#sc-03-view--add--edit-book)).
+
+### 8.10 Deleting all data and sync
+
+When "Delete all data" is run while signed in, the final confirmation asks what to delete. With either choice, sync on this computer is turned off (signed out) before deleting (so that deleted data is not brought back from the cloud).
+
+```mermaid
+flowchart TD
+    start(["'Delete all' in the final confirmation"]) --> on{Signed in?}
+    on -- No --> wipe
+    on -- Yes --> scope{What to delete}
+    scope -- This computer only --> out
+    scope -- Google Drive and every computer --> s1[Sync to gather books added<br/>on other computers here]
+    s1 --> ok1{Synced?}
+    ok1 -- No --> fail1(["Show 'nothing was deleted' and stop"])
+    ok1 -- Yes --> mark[Mark every book<br/>as deleted]
+    mark --> s2[Sync to send the deletion markers<br/>and delete unused covers at once]
+    s2 --> ok2{Sent?}
+    ok2 -- No --> fail2(["Show 'will be sent at the next sync' and stop<br/>books on this computer are deleted"])
+    ok2 -- Yes --> out[Sign out]
+    out --> wipe[Delete the pre-first-sync backups and<br/>erase all data physically]
+    wipe --> done([Initial state starting with language selection])
+```
+
+| Scope | Result |
+|---|---|
+| This computer only (default) | Signs out, then erases this computer's data. Data on Google Drive and other computers is kept |
+| Google Drive and every computer | Marks the books and notes in the cloud as deleted; other computers delete them at their next sync. Then erases this computer's data |
+
+- With "every computer", if the first sync cannot be completed (no connection, or unreadable records in the cloud), nothing is deleted. If it counts as a first sync, it uses "Combine".
+- The deletion markers get times later than each book's update time, so that books with future update times set on a computer whose clock ran fast are reliably deleted too.
 
 ---
 
@@ -844,6 +1126,30 @@ flowchart TD
 
 For the fields in `books.json`, see ["Export format" in README.md](../../README.md#export-format-json--images).
 
+### 9.4 Google sign-in (OAuth 2.0)
+
+| Item | Details |
+|---|---|
+| Use | Sign-in for sync (authorization with a Google account) |
+| Method | The OAuth 2.0 authorization code flow for installed apps, with PKCE (`S256`) and `state`. The redirect is received on the computer's loopback address (`http://127.0.0.1:{free port}`) |
+| Authorization | Opens `https://accounts.google.com/o/oauth2/v2/auth` in the default browser |
+| Tokens | The returned authorization code is exchanged for an access token and a refresh token. The access token is refreshed automatically when it expires, and the refreshed token is saved again |
+| Permission (scope) | Only `https://www.googleapis.com/auth/drive.appdata` (read and write the app-specific area) |
+| Sign-out | Invalidates the token with `POST https://oauth2.googleapis.com/revoke`. The saved sign-in is erased even if this request fails |
+| Client | A client ID for a desktop app registered in Google Cloud. Not included in the repository; passed at build time ([BUILDING.md](../../BUILDING.md)). An app built without it cannot sync |
+
+### 9.5 Google Drive API (v3)
+
+| Item | Details |
+|---|---|
+| Use | Storing and fetching the sync data and covers |
+| Area | `appDataFolder` (the app-specific area). Files in the trash are ignored |
+| Operations | Listing files (`files.list`), downloading (`files.get`), creating and overwriting (`files.create` / `files.update`), deleting (`files.delete`), updating a cover's extra property (`unusedSince` in `appProperties`), getting the email address for display (`about.get`) |
+| Files | `colophon-sync.json` (sync data, JSON), `cover-{SHA-256}` (covers) |
+| Detecting rewrites | Compares file IDs and content MD5 (`md5Checksum`) to notice rewrites by other computers |
+| Time | Measures the difference from the server time from the `Date` response header and uses it to correct recorded times |
+| Authentication | The access token obtained in [9.4](#94-google-sign-in-oauth-20) |
+
 ---
 
 ## 10. Non-functional requirements
@@ -852,13 +1158,16 @@ For the fields in `books.json`, see ["Export format" in README.md](../../README.
 |---|---|---|
 | Portability | Same features on Windows / macOS / Linux; can expand to mobile later | Flutter builds every OS from one codebase. Layouts adapt to the window width |
 | Localization | 7 languages, with more addable later | UI strings are kept in one file per language. Data stores language-independent codes |
-| Offline use | Works without a network except for ISBN lookup | Data is stored in SQLite on the device |
+| Offline use | Works without a network except for ISBN lookup and sync. Work can continue while sync is not possible | Data is stored in SQLite on the device. Every sync compares the whole contents, so changes that could not be sent are sent at the next successful sync (temporary failures are retried automatically, and the app also syncs at startup) |
 | Data integrity | Data is not corrupted if saving or importing fails midway | Changes are applied in a transaction and rolled back on failure |
-| Data integrity | Existing data keeps working when an update changes the data structure | Schema versioning with automatic migration. Data created by a newer version is not opened; the user is told why |
+| Data integrity | A sync that fails or is interrupted does not corrupt or lose data on any computer | Writing to this computer happens at the end in a single transaction. The cloud is checked for rewrites before and right after sending, so other computers' changes are not overwritten. Covers are sent before the sync data. Nothing is sent while the cloud has unreadable records. A backup is saved before the first sync ([8.7](#87-sync), [8.8](#88-first-sync)) |
+| Data integrity | Editing on several computers leads to the same result on every computer | For each book and note, the newer update time wins; on a tie, deletion wins, then the cloud side. Computer clock differences are corrected by the difference from Google's server time ([8.7](#87-sync)) |
+| Data integrity | Existing data keeps working when an update changes the data structure | Schema versioning with automatic migration. Data created by a newer version is not opened; the user is told why. The sync data also has a format version; data in a newer format is neither read nor overwritten |
 | Data portability | Users can take their data out at any time | Export in 3 formats. The JSON format is simple and documented |
 | Responsiveness | Heavy work does not freeze the UI | Image processing and ZIP creation run in separate isolates, with a progress indicator |
-| Privacy | User data is not sent to outside services | The only communication is sending an ISBN during lookup |
-| Mistake prevention | Ask before irreversible actions | Confirmation dialogs for deletion, replace-all import, and discarding unsaved changes. Deleting all data is confirmed in two steps |
+| Privacy | User data is not sent anywhere the user has not chosen | The only communication is sending an ISBN during lookup and, when sync is used (after signing in), exchanging data with the user's own Google Drive. Sync uses only the app-specific area with the `drive.appdata` permission and does not read the user's other files. Settings are not sent. Signing out also invalidates the token on Google's side |
+| Security | Sign-in credentials do not leak | Credentials are stored in the OS secure storage. Sign-in uses PKCE and `state`, and the redirect from the browser is received only on the computer itself (127.0.0.1). The Google client ID is not included in the repository |
+| Mistake prevention | Ask before irreversible actions | Confirmation dialogs for deletion, replace-all import, discarding unsaved changes, and signing out. Deleting all data is confirmed in two steps and, while signed in, asks what to delete. The user chooses how to combine data on the first sync |
 | Distribution and removal | Ship in each OS's usual format and let users reliably delete their data | Windows installer (asks whether to delete data on uninstall), macOS .dmg, Linux Flatpak (can delete data) and .deb. Because some formats cannot delete data on uninstall, the app offers "Delete all data" ([BUILDING.md](../../BUILDING.md)) |
 | Recognizability | The icon alone says "an app for managing books and notes", and it does not look out of place on any of the 3 OSes | Three book spines (deep green, navy, and burgundy with gold bands) and an orange sticky tab poking out above them, on a pale blue rounded-square plate. The plate shape and margins follow the macOS standard; Windows and Linux use tighter margins at small sizes. Bands and the shelf are omitted at 40 px and below |
 | Accessibility | Readable regardless of color vision or preference | 6 color themes and a brightness setting. Contrast of 4.5:1 or more in every theme. Statuses also distinguished by icon + text. The Universal theme is verified by color-vision simulation ([5.4](#54-color-themes)) |
@@ -874,36 +1183,22 @@ For the fields in `books.json`, see ["Export format" in README.md](../../README.
 | Translator / supervisor detection depends on the source's wording | Users check and correct the result after fetching |
 | Opening the same database from several app instances at once is not expected | Overlapping writes wait up to 3 seconds; a remaining conflict results in a save error |
 | Each OS version can only be built on that OS | See [BUILDING.md](../../BUILDING.md) |
+| Sync supports only Google Drive and needs a Google account | Other cloud services cannot be used |
+| An app built without the Google client settings cannot sync | The sync section in Settings shows that sync is not available ([BUILDING.md](../../BUILDING.md)) |
+| When the same book is changed on two computers, the whole book with the newer update time wins | Fields are not merged individually, so fields changed on the older side are lost (notes are decided one by one) |
+| Settings are not synced | Display language, color theme, etc. are set on each computer |
+| Covers no longer used stay on Google Drive for a while | Deleted after 7 days or more (immediately when "every computer" is chosen in "Delete all data") |
+| Only the library and an open book screen are reloaded automatically after a sync | An open search or tag manager screen shows the changes only after it is reopened |
 
 ---
 
 ## 12. Future extensions (not implemented)
 
 > The contents of this chapter are **not implemented yet**. It records the plan and the preparations already made.
+>
+> "Sync between devices", previously in this chapter, has been implemented and moved to [8.7](#87-sync) and the other chapters (revision 1.8).
 
-### 12.1 Sync between devices
-
-| Item | Plan |
-|---|---|
-| Method | Use the Google Drive API directly and store data in an app-specific area of the user's Google Drive |
-| Enabling | Off by default. Users turn it on by signing in to Google when they want to sync |
-| Reconciliation | Match books and notes by ID (uuid) and keep the version with the newer update time |
-| Preparations done | Deletion markers ([6.6](#66-deletion)), note IDs, and updating a book's update time when its tags change (DB schema v2) |
-
-```mermaid
-flowchart LR
-    subgraph pc["Device A (PC)"]
-        a[(colophon.db)]
-    end
-    subgraph phone["Device B (phone)"]
-        b[(colophon.db)]
-    end
-    drive[("User's Google Drive<br/>app-specific area")]
-    a <-- "Send/receive changes<br/>after sign-in only" --> drive
-    b <-- "Send/receive changes<br/>after sign-in only" --> drive
-```
-
-### 12.2 Smartphone and tablet versions
+### 12.1 Smartphone and tablet versions
 
 - Support iPhone / iPad / Android (layouts already adapt to the window width).
 - Register books by scanning the barcode (ISBN) with the camera.
