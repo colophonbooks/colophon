@@ -186,6 +186,19 @@ void main() {
   });
 
   group('インポートの反映', () {
+    test('取り込んだ書籍とノートの更新日時は取り込んだ時刻にする（同期で元に戻されないように）', () {
+      final backup = repo.getAllBooks();
+      final at = DateTime.utc(2030, 1, 1);
+      applyImport(repo, backup, ImportMode.replace, now: at);
+      for (final b in repo.getAllBooks()) {
+        expect(b.updatedAt, at);
+        expect(b.createdAt, isNot(at), reason: '作成日時はそのまま');
+        for (final n in b.notes) {
+          expect(n.updatedAt, at);
+        }
+      }
+    });
+
     test('置き換えでは既存の書籍を消してから復元する', () async {
       final backup = await readBackup(exportZip(repo.getAllBooks()));
       repo.saveBook(sampleBook(uuid: 'uuid-3', title: 'あとから追加'));

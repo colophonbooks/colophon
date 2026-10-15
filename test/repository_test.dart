@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:colophon/data/app_database.dart';
 import 'package:colophon/data/book_repository.dart';
 import 'package:colophon/models/book.dart';
+import 'package:colophon/sync/sync_snapshot.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 
@@ -44,10 +47,26 @@ void main() {
     db.execute("INSERT INTO books (uuid, title, created_at, updated_at) VALUES ('b', '旧', 'x', 'x')");
     db.execute("INSERT INTO notes (uuid, book_id, position, body, created_at, updated_at) VALUES ('n', 1, 0, 'メモ', 'x', 'x')");
 
-    migrate(db);
+    migrate(db, target: 3);
 
     expect(readSchemaVersion(db), 3);
     expect(db.select('SELECT favorite FROM notes').single['favorite'], 0);
+    db.close();
+  });
+
+  test('v3 のDBは、既存の書影の SHA-256 を空のまま v4 へ移行し、同期データを作るときに埋める', () {
+    final db = sqlite3.openInMemory()..execute('PRAGMA foreign_keys = ON');
+    migrate(db, target: 3);
+    db.execute('INSERT INTO books (uuid, title, cover, cover_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+        ['b', '旧', Uint8List.fromList([1, 2, 3]), 'image/png', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z']);
+
+    migrate(db);
+    expect(readSchemaVersion(db), 4);
+    expect(db.select('SELECT cover_hash FROM books').single['cover_hash'], isNull);
+
+    final snapshot = BookRepository(db).exportSyncSnapshot();
+    expect(snapshot.books.single.coverHash, coverHashOf([1, 2, 3]));
+    expect(db.select('SELECT cover_hash FROM books').single['cover_hash'], coverHashOf([1, 2, 3]));
     db.close();
   });
 

@@ -10,6 +10,7 @@ import '../data/book_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/labels.dart';
 import '../models/book.dart';
+import '../services/app_clock.dart';
 import '../services/cover_image.dart';
 import '../services/isbn.dart';
 import '../services/isbn_lookup.dart';
@@ -201,7 +202,7 @@ class _BookEditScreenState extends State<BookEditScreen> {
   bool _saveBook() {
     if (!_formKey.currentState!.validate()) return false;
     final l = AppLocalizations.of(context);
-    final now = DateTime.now().toUtc();
+    final now = AppClock.now();
     _commitPendingTag();
     // 進捗欄は「読書中」以外では非表示で検証されないため、範囲外の値はここで捨てる
     final progress = int.tryParse(_progress.text.trim());
@@ -230,7 +231,8 @@ class _BookEditScreenState extends State<BookEditScreen> {
     );
     final repo = context.read<BookRepository>();
     try {
-      final id = repo.saveBook(book);
+      // 削除するのは、この画面で消したノートだけ（開いている間に同期で届いたノートは残す）
+      final id = repo.saveBook(book, removedNotes: {for (final n in _original?.notes ?? const <Note>[]) n.uuid});
       _load(repo.getBook(id));
     } catch (_) {
       showMessage(context, l.genericError);
