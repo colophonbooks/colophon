@@ -6,6 +6,8 @@
 
 - 対応OS: Windows / macOS / Linux（iPhone / iPad / Android は今後対応予定）
 - 表示言語: English / 日本語 / 简体中文 / Français / Español / Deutsch / 한국어
+- ダウンロード: [最新版のリリース](https://github.com/colophonbooks/colophon/releases/latest)（Windows 版）
+- 使い方: [操作説明（画面の動画つき）](docs/guide/user-guide.ja.md)
 
 ## 主な機能
 
