@@ -213,23 +213,25 @@ abstract class CredentialStore {
 
 /// OS の安全な保管場所（Windows: DPAPI で暗号化したファイル、macOS: キーチェーン、Linux: Secret Service）。
 class SecureCredentialStore implements CredentialStore {
-  SecureCredentialStore()
+  /// [key] は開発用に別の名前で保存するときだけ変える（試験版のログインを普段の版と分けるため）。
+  SecureCredentialStore({this.key = 'google_account'})
       : _storage = const FlutterSecureStorage(
           // 署名していない配布版でも動くよう、Keychain Sharing の権限が要らない従来型のキーチェーンを使う
           mOptions: MacOsOptions(usesDataProtectionKeychain: false),
         );
 
-  static const _key = 'google_account';
+  /// 保存するときの名前。
+  final String key;
   final FlutterSecureStorage _storage;
 
   @override
-  Future<String?> read() => _storage.read(key: _key);
+  Future<String?> read() => _storage.read(key: key);
 
   @override
-  Future<void> write(String value) => _storage.write(key: _key, value: value);
+  Future<void> write(String value) => _storage.write(key: key, value: value);
 
   @override
-  Future<void> delete() => _storage.delete(key: _key);
+  Future<void> delete() => _storage.delete(key: key);
 }
 
 class MemoryCredentialStore implements CredentialStore {

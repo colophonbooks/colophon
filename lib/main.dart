@@ -17,10 +17,17 @@ import 'sync/sync_backup.dart';
 import 'sync/sync_engine.dart';
 import 'sync/sync_state.dart';
 
+/// 開発用: 本棚・設定・ログイン情報を、普段の版と分けて置く場所（--dart-define で渡す）。
+/// 試験版が普段の本棚を開いて DB を新しい版へ移行し、配布中の版で開けなくなるのを防ぐ。
+/// フォルダ名ごとに設定とログイン情報も分けるので、フォルダを変えて2つ動かせば2台の同期を試せる。
+const _devDataDir = String.fromEnvironment('COLOPHON_DATA_DIR');
+final _devName = _devDataDir.isEmpty ? '' : p.basename(_devDataDir);
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (_devDataDir.isNotEmpty) SharedPreferences.setPrefix('colophon-dev-$_devName.');
   final prefs = await SharedPreferences.getInstance();
-  final dir = await getApplicationSupportDirectory();
+  final dir = _devDataDir.isNotEmpty ? Directory(_devDataDir) : await getApplicationSupportDirectory();
   await dir.create(recursive: true);
   final dbPath = p.join(dir.path, 'colophon.db');
 
@@ -28,13 +35,16 @@ Future<void> main() async {
     final db = openAppDatabase(dbPath);
     const oauth = GoogleOAuthConfig.fromEnvironment();
     final repository = BookRepository(db);
-    final syncState = PrefsSyncStateStore(prefs);
+    final syncState = FileSyncStateStore(File(p.join(dir.path, 'sync-state.json')));
     final syncBackups = Directory(p.join(dir.path, 'sync-backups'));
     runApp(ColophonApp(
       settings: SettingsController(prefs),
       repository: repository,
       sync: SyncController(
-        oauth.isConfigured ? GoogleAuthService(oauth, SecureCredentialStore()) : const UnconfiguredGoogleAuth(),
+        oauth.isConfigured
+            ? GoogleAuthService(
+                oauth, SecureCredentialStore(key: _devDataDir.isEmpty ? 'google_account' : 'google_account_dev_$_devName'))
+            : const UnconfiguredGoogleAuth(),
         stateStore: syncState,
         backupDirectory: syncBackups,
         engineFactory: (client) => SyncEngine(

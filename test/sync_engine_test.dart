@@ -365,6 +365,25 @@ void main() {
     });
   });
 
+  test('同期の記録は本棚のフォルダのファイルに保存し、壊れていれば未同期として扱う', () async {
+    final dir = await Directory.systemTemp.createTemp('colophon-sync-state');
+    addTearDown(() => dir.delete(recursive: true));
+    final store = FileSyncStateStore(File('${dir.path}/sync-state.json'));
+    expect(store.load().hasSynced, isFalse, reason: 'ファイルがなければ未同期');
+
+    await store.save(SyncState(hasSynced: true, lastSyncAt: t(5), clockOffset: const Duration(seconds: -61)));
+    final loaded = FileSyncStateStore(File('${dir.path}/sync-state.json')).load();
+    expect(loaded.hasSynced, isTrue);
+    expect(loaded.lastSyncAt, t(5));
+    expect(loaded.clockOffset, const Duration(seconds: -61));
+
+    await File('${dir.path}/sync-state.json').writeAsString('{broken');
+    expect(store.load().hasSynced, isFalse);
+
+    await store.clear();
+    expect(await File('${dir.path}/sync-state.json').exists(), isFalse);
+  });
+
   test('初めての同期の前のバックアップは、新しい3つだけ残す', () async {
     final dir = await Directory.systemTemp.createTemp('colophon-sync-backup');
     addTearDown(() => dir.delete(recursive: true));

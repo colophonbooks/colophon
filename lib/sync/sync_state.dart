@@ -1,4 +1,5 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:io';
 
 /// この端末の同期の記録。
 class SyncState {
@@ -20,34 +21,45 @@ abstract class SyncStateStore {
   Future<void> clear();
 }
 
-class PrefsSyncStateStore implements SyncStateStore {
-  PrefsSyncStateStore(this._prefs);
+/// 本棚（DB）と同じフォルダの JSON ファイルに保存する。
+///
+/// 設定（SharedPreferences）に入れないのは、同期の記録は本棚に属するため。本棚のフォルダを
+/// 分けて動かす試験版どうしで記録が混ざらず、本棚を別の場所へ移しても記録が一緒に動く。
+class FileSyncStateStore implements SyncStateStore {
+  FileSyncStateStore(this.file);
 
-  final SharedPreferences _prefs;
-
-  static const _hasSynced = 'syncHasSynced';
-  static const _lastSyncAt = 'syncLastAt';
-  static const _clockOffset = 'syncClockOffsetMs';
+  final File file;
 
   @override
-  SyncState load() => SyncState(
-        hasSynced: _prefs.getBool(_hasSynced) ?? false,
-        lastSyncAt: DateTime.tryParse(_prefs.getString(_lastSyncAt) ?? '')?.toUtc(),
-        clockOffset: Duration(milliseconds: _prefs.getInt(_clockOffset) ?? 0),
+  SyncState load() {
+    try {
+      final j = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+      return SyncState(
+        hasSynced: j['hasSynced'] as bool? ?? false,
+        lastSyncAt: DateTime.tryParse(j['lastSyncAt'] as String? ?? '')?.toUtc(),
+        clockOffset: Duration(milliseconds: j['clockOffsetMs'] as int? ?? 0),
       );
+    } on Object {
+      // ない・壊れている場合は、まだ同期していないものとして扱う
+      return const SyncState();
+    }
+  }
 
   @override
   Future<void> save(SyncState state) async {
-    await _prefs.setBool(_hasSynced, state.hasSynced);
-    if (state.lastSyncAt case final at?) await _prefs.setString(_lastSyncAt, at.toUtc().toIso8601String());
-    await _prefs.setInt(_clockOffset, state.clockOffset.inMilliseconds);
+    // 書きかけで止まっても壊れないよう、別名で書いてから置き換える
+    final temp = File('${file.path}.tmp');
+    await temp.writeAsString(jsonEncode({
+      'hasSynced': state.hasSynced,
+      'lastSyncAt': state.lastSyncAt?.toUtc().toIso8601String(),
+      'clockOffsetMs': state.clockOffset.inMilliseconds,
+    }), flush: true);
+    await temp.rename(file.path);
   }
 
   @override
   Future<void> clear() async {
-    for (final key in [_hasSynced, _lastSyncAt, _clockOffset]) {
-      await _prefs.remove(key);
-    }
+    if (await file.exists()) await file.delete();
   }
 }
 
