@@ -144,6 +144,12 @@ ISBN lookup uses the following public APIs (no registration required). Each resu
 - [Bibliothèque nationale de France](https://catalogue.bnf.fr/) (SRU; data under the Licence Ouverte)
 - [Deutsche Nationalbibliothek](https://www.dnb.de/) (SRU; data under CC0)
 
+## AI assistance
+
+Colophon is developed with the help of an AI coding assistant (Anthropic's Claude, used through Claude Code). Most of the code and documentation was drafted by the assistant. The maintainer reviews and tests every change, decides what is included, and is responsible for the project.
+
+Commits made with the assistant's help end with a `Co-Authored-By:` line naming it. The initial commit does not have this line, but it too was written largely with the assistant.
+
 ## License
 
 Colophon is released under the [MIT License](LICENSE). The third-party packages it uses are distributed under their own licenses (BSD-3-Clause, MIT, Apache-2.0, and MPL-2.0); their notices are bundled with the app and can be viewed under **Settings → Open source licenses**.
