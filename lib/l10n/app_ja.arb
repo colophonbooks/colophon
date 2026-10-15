@@ -252,5 +252,10 @@
   "deleteScopeEverywhereDesc": "ほかのパソコンでも、次の同期のときに書籍とノートが削除されます。",
   "deleteEverywhereSyncFailed": "Google ドライブに接続できなかったため、何も削除していません。ネットワークの接続を確認して、もう一度お試しください。",
   "deleteEverywherePartial": "このパソコンの書籍は削除しましたが、Google ドライブへの反映に失敗しました。次の同期で反映されます。",
-  "deleteEverywhereProgress": "Google ドライブから削除しています…"
+  "deleteEverywhereProgress": "Google ドライブから削除しています…",
+  "bookDeletedElsewhere": "この書籍は、ほかのパソコンで削除されました。",
+  "syncNeedsChoice": "初めての同期の方法を選ぶ必要があります。「今すぐ同期」を押してください。",
+  "syncOnExitTitle": "Google ドライブと同期しています…",
+  "syncOnExitBody": "同期が終わったら終了します。",
+  "syncOnExitSkip": "同期せずに終了"
 }

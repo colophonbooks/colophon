@@ -818,4 +818,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get deleteEverywhereProgress => 'Google ドライブから削除しています…';
+
+  @override
+  String get bookDeletedElsewhere => 'この書籍は、ほかのパソコンで削除されました。';
+
+  @override
+  String get syncNeedsChoice => '初めての同期の方法を選ぶ必要があります。「今すぐ同期」を押してください。';
+
+  @override
+  String get syncOnExitTitle => 'Google ドライブと同期しています…';
+
+  @override
+  String get syncOnExitBody => '同期が終わったら終了します。';
+
+  @override
+  String get syncOnExitSkip => '同期せずに終了';
 }

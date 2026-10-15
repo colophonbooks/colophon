@@ -82,6 +82,7 @@ class SyncSettingsSection extends StatelessWidget {
     if (sync.lastFailure case final failure?) {
       return Text(syncFailureMessage(l, failure), style: TextStyle(color: Theme.of(context).colorScheme.error));
     }
+    if (sync.needsFirstChoice) return Text(l.syncNeedsChoice);
     if (sync.lastRemoteUnreadable) return Text(l.syncWarningUnreadable);
     return null;
   }
@@ -200,6 +201,10 @@ Future<void> syncSignInFlow(BuildContext context) async {
       },
     );
     messenger.showSnackBar(SnackBar(content: Text(l.syncSignInDone)));
+    // ログインしたらすぐ同期する（初めての同期の扱いも、ここで選んでもらう）
+    if (dialogOpen) navigator.pop();
+    dialogOpen = false;
+    if (context.mounted) await syncNowFlow(context);
   } on GoogleSignInException catch (e) {
     switch (e.failure) {
       case GoogleSignInFailure.cancelled:

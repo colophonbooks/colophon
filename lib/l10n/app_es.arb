@@ -252,5 +252,10 @@
   "deleteScopeEverywhereDesc": "Los demás ordenadores también eliminarán sus libros y notas en la próxima sincronización.",
   "deleteEverywhereSyncFailed": "No se pudo conectar con Google Drive, así que no se eliminó nada. Comprueba la conexión de red e inténtalo de nuevo.",
   "deleteEverywherePartial": "Los libros se eliminaron en este ordenador, pero no se pudo enviar la eliminación a Google Drive. Se enviará en la próxima sincronización.",
-  "deleteEverywhereProgress": "Eliminando de Google Drive…"
+  "deleteEverywhereProgress": "Eliminando de Google Drive…",
+  "bookDeletedElsewhere": "Este libro se eliminó en otro ordenador.",
+  "syncNeedsChoice": "Elige cómo combinar este ordenador con Google Drive: pulsa «Sincronizar ahora».",
+  "syncOnExitTitle": "Sincronizando con Google Drive…",
+  "syncOnExitBody": "Colophon se cerrará cuando termine la sincronización.",
+  "syncOnExitSkip": "Cerrar sin sincronizar"
 }

@@ -853,4 +853,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteEverywhereProgress => 'Suppression sur Google Drive…';
+
+  @override
+  String get bookDeletedElsewhere =>
+      'Ce livre a été supprimé sur un autre ordinateur.';
+
+  @override
+  String get syncNeedsChoice =>
+      'Choisissez comment combiner cet ordinateur avec Google Drive : appuyez sur « Synchroniser ».';
+
+  @override
+  String get syncOnExitTitle => 'Synchronisation avec Google Drive…';
+
+  @override
+  String get syncOnExitBody =>
+      'Colophon se fermera à la fin de la synchronisation.';
+
+  @override
+  String get syncOnExitSkip => 'Fermer sans synchroniser';
 }

@@ -37,10 +37,7 @@ Future<void> main() async {
     final repository = BookRepository(db);
     final syncState = FileSyncStateStore(File(p.join(dir.path, 'sync-state.json')));
     final syncBackups = Directory(p.join(dir.path, 'sync-backups'));
-    runApp(ColophonApp(
-      settings: SettingsController(prefs),
-      repository: repository,
-      sync: SyncController(
+    final sync = SyncController(
         oauth.isConfigured
             ? GoogleAuthService(
                 oauth, SecureCredentialStore(key: _devDataDir.isEmpty ? 'google_account' : 'google_account_dev_$_devName'))
@@ -55,8 +52,10 @@ Future<void> main() async {
             await writeSyncBackup(repository, syncBackups, now: DateTime.now());
           },
         ),
-      ),
-    ));
+        autoSync: true);
+    // 利用者の操作でデータが変わったら、少し待ってから同期する
+    repository.onChanged = sync.notifyLocalChange;
+    runApp(ColophonApp(settings: SettingsController(prefs), repository: repository, sync: sync));
   } on SqliteException catch (e) {
     runApp(_StartupErrorApp('Could not open the library database.\n$dbPath\n\n$e'));
   } on NewerSchemaException {

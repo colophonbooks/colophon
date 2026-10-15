@@ -17,6 +17,7 @@ import '../services/isbn_lookup.dart';
 import '../services/search.dart';
 import '../state/library_controller.dart';
 import '../state/settings_controller.dart';
+import '../state/sync_controller.dart';
 import 'app_theme.dart';
 import 'book_viewer.dart';
 import 'common.dart';
@@ -94,6 +95,8 @@ class _BookEditScreenState extends State<BookEditScreen> {
   final _tagInput = TextEditingController();
   final _tagFocus = FocusNode();
   late final AppLifecycleListener _lifecycle;
+  late final SyncController _sync;
+  late int _syncRevision;
 
   Book? _original;
   late String _uuid;
@@ -126,10 +129,46 @@ class _BookEditScreenState extends State<BookEditScreen> {
     }
     // デスクトップでウィンドウを閉じる（×・Alt+F4・Cmd+Q）ときも未保存の確認を出す
     _lifecycle = AppLifecycleListener(onExitRequested: _onExitRequested);
+    _sync = context.read<SyncController>();
+    _syncRevision = _sync.dataRevision;
+    _sync.addListener(_onSyncChanged);
+  }
+
+  /// 同期でデータが変わったら、編集中でなければ最新の内容で表示し直す。
+  /// 編集中は利用者の入力を優先する（保存すれば、そちらが新しい内容になる）。
+  void _onSyncChanged() {
+    if (_sync.dataRevision == _syncRevision) return;
+    _syncRevision = _sync.dataRevision;
+    final id = _original?.id;
+    if (id == null || _dirty || !mounted) return;
+    // ダイアログなどを開いている間は閉じない（閉じるとダイアログの方が閉じてしまう）。
+    // その場合も、保存しようとした時点で削除に気づいて閉じる（_closeIfDeletedElsewhere）
+    if (!(ModalRoute.of(context)?.isCurrent ?? false)) return;
+    final book = context.read<BookRepository>().getBook(id);
+    if (book == null) {
+      _leaveDeletedBook();
+      return;
+    }
+    setState(() => _load(book));
+  }
+
+  /// ほかのパソコンで削除された書籍なら、知らせて閉じ、true を返す。
+  /// 削除された書籍を保存すると、その書籍がすべてのパソコンで復活してしまうため。
+  bool _closeIfDeletedElsewhere() {
+    final id = _original?.id;
+    if (id == null || context.read<BookRepository>().getBook(id) != null) return false;
+    _leaveDeletedBook();
+    return true;
+  }
+
+  void _leaveDeletedBook() {
+    showMessage(context, AppLocalizations.of(context).bookDeletedElsewhere);
+    _close();
   }
 
   @override
   void dispose() {
+    _sync.removeListener(_onSyncChanged);
     _lifecycle.dispose();
     for (final c in [_title, _author, _translator, _supervisor, _publisher, _isbn, _edition, _progress, _tagInput]) {
       c.dispose();
@@ -200,6 +239,7 @@ class _BookEditScreenState extends State<BookEditScreen> {
 
   /// 入力チェックをして保存する。画面は閉じない。保存できたら true。
   bool _saveBook() {
+    if (_closeIfDeletedElsewhere()) return false;
     if (!_formKey.currentState!.validate()) return false;
     final l = AppLocalizations.of(context);
     final now = AppClock.now();
@@ -271,7 +311,9 @@ class _BookEditScreenState extends State<BookEditScreen> {
       if (!_saveBook()) return;
       showMessage(context, l.saved);
     } else {
-      _load(_original);
+      // 編集している間に同期で変わっていることがあるので、最新の内容で表示し直す
+      if (_closeIfDeletedElsewhere()) return;
+      _load(_original?.id == null ? _original : context.read<BookRepository>().getBook(_original!.id!));
     }
     setState(() => _viewMode = true);
   }

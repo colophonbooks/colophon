@@ -259,6 +259,7 @@ Future<bool> _deleteEverywhere(
   bool delivered(SyncResult? r, {required bool mustUpload}) =>
       r is SyncDone && !r.remoteUnreadable && (r.uploaded || !mustUpload);
   try {
+    await sync.whenIdle(); // 自動同期と重なって「失敗」と見えないように
     if (!delivered(await sync.syncNow(firstSync: FirstSyncMode.merge), mustUpload: false)) {
       messenger.showSnackBar(SnackBar(content: Text(l.deleteEverywhereSyncFailed)));
       return false;

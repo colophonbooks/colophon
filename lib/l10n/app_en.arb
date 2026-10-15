@@ -310,5 +310,10 @@
   "deleteScopeEverywhereDesc": "Other computers also delete their books and notes when they next sync.",
   "deleteEverywhereSyncFailed": "Could not reach Google Drive, so nothing was deleted. Check your network connection and try again.",
   "deleteEverywherePartial": "Books were deleted on this computer, but the deletion could not be sent to Google Drive. It will be sent at the next sync.",
-  "deleteEverywhereProgress": "Deleting from Google Drive…"
+  "deleteEverywhereProgress": "Deleting from Google Drive…",
+  "bookDeletedElsewhere": "This book was deleted on another computer.",
+  "syncNeedsChoice": "Choose how to combine this computer with Google Drive: press “Sync now”.",
+  "syncOnExitTitle": "Syncing with Google Drive…",
+  "syncOnExitBody": "Colophon will close when syncing finishes.",
+  "syncOnExitSkip": "Close without syncing"
 }

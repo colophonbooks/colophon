@@ -809,4 +809,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteEverywhereProgress => '正在从 Google 云端硬盘删除…';
+
+  @override
+  String get bookDeletedElsewhere => '此书已在另一台电脑上删除。';
+
+  @override
+  String get syncNeedsChoice => '需要选择首次同步的方式。请点击“立即同步”。';
+
+  @override
+  String get syncOnExitTitle => '正在与 Google 云端硬盘同步…';
+
+  @override
+  String get syncOnExitBody => '同步完成后将退出。';
+
+  @override
+  String get syncOnExitSkip => '不同步直接退出';
 }

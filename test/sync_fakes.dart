@@ -70,12 +70,17 @@ SyncController fakeSyncController(
   GoogleAccount? account,
   SyncStateStore? state,
   Directory? backupDirectory,
+  bool autoSync = false,
+  Duration delay = const Duration(milliseconds: 20),
 }) {
   final store = state ?? MemorySyncStateStore();
   return SyncController(
     FakeGoogleAuth(stored: account),
     stateStore: store,
     backupDirectory: backupDirectory,
+    autoSync: autoSync,
+    startupDelay: delay,
+    changeDelay: delay,
     engineFactory: (_) => SyncEngine(
       repository: repo,
       drive: drive,

@@ -20,6 +20,12 @@ class BookRepository {
 
   final Database db;
 
+  /// 利用者の操作でデータが変わったときに呼ぶ（自動同期の予約に使う）。
+  /// 同期で書き込んだとき（[applySync]）と、すべてのデータの消去では呼ばない。
+  void Function()? onChanged;
+
+  void _changed() => onChanged?.call();
+
   /// トランザクション内で [action] を実行する。入れ子で呼ばれた場合は外側にまとめる
   /// （インポートで複数冊の保存を1つのトランザクションにするため）。
   T transaction<T>(T Function() action) {
@@ -200,6 +206,7 @@ class BookRepository {
 
         _addTags(bookId, book.tags);
         _deleteUnusedTags();
+        _changed();
         return bookId;
       });
 
@@ -276,6 +283,7 @@ class BookRepository {
           UPDATE books SET updated_at = ?
           WHERE id = (SELECT book_id FROM notes WHERE uuid = ?)
         ''', [ts, noteUuid]);
+        _changed();
         return true;
       });
 
@@ -283,6 +291,7 @@ class BookRepository {
   void deleteBook(int id, {DateTime? at}) => transaction(() {
         _markDeleted(id, (at ?? AppClock.now()).toUtc());
         _deleteUnusedTags();
+        _changed();
       });
 
   /// すべてのデータを物理的に消去する（設定画面の「すべてのデータを削除」）。
@@ -307,6 +316,7 @@ class BookRepository {
           _markDeleted(r['id'] as int, afterEachUpdate && after.isAfter(now) ? after : now);
         }
         _deleteUnusedTags();
+        _changed();
       });
 
   void _markDeleted(int id, DateTime at) {
@@ -345,6 +355,7 @@ class BookRepository {
         if (clash.isNotEmpty) return false;
         _touchBooksWithTag(id, at);
         db.execute('UPDATE tags SET name = ?, name_key = ? WHERE id = ?', [name, key, id]);
+        _changed();
         return true;
       });
 
@@ -352,6 +363,7 @@ class BookRepository {
   void deleteTag(int id, {DateTime? at}) => transaction(() {
         _touchBooksWithTag(id, at);
         db.execute('DELETE FROM tags WHERE id = ?', [id]);
+        _changed();
       });
 
   void _touchBooksWithTag(int tagId, DateTime? at) => db.execute('''

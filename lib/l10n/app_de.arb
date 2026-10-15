@@ -252,5 +252,10 @@
   "deleteScopeEverywhereDesc": "Andere Computer löschen ihre Bücher und Notizen bei der nächsten Synchronisierung ebenfalls.",
   "deleteEverywhereSyncFailed": "Google Drive war nicht erreichbar, daher wurde nichts gelöscht. Prüfen Sie die Netzwerkverbindung und versuchen Sie es erneut.",
   "deleteEverywherePartial": "Die Bücher wurden auf diesem Computer gelöscht, aber die Löschung konnte nicht an Google Drive gesendet werden. Sie wird bei der nächsten Synchronisierung gesendet.",
-  "deleteEverywhereProgress": "Wird aus Google Drive gelöscht…"
+  "deleteEverywhereProgress": "Wird aus Google Drive gelöscht…",
+  "bookDeletedElsewhere": "Dieses Buch wurde auf einem anderen Computer gelöscht.",
+  "syncNeedsChoice": "Wählen Sie, wie dieser Computer mit Google Drive zusammengeführt wird: Tippen Sie auf „Jetzt synchronisieren“.",
+  "syncOnExitTitle": "Synchronisierung mit Google Drive…",
+  "syncOnExitBody": "Colophon wird nach der Synchronisierung beendet.",
+  "syncOnExitSkip": "Ohne Synchronisierung beenden"
 }

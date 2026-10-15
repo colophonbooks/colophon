@@ -821,4 +821,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get deleteEverywhereProgress => 'Google 드라이브에서 삭제하는 중…';
+
+  @override
+  String get bookDeletedElsewhere => '이 책은 다른 컴퓨터에서 삭제되었습니다.';
+
+  @override
+  String get syncNeedsChoice => '첫 동기화 방법을 선택해야 합니다. \"지금 동기화\"를 누르세요.';
+
+  @override
+  String get syncOnExitTitle => 'Google 드라이브와 동기화하는 중…';
+
+  @override
+  String get syncOnExitBody => '동기화가 끝나면 종료합니다.';
+
+  @override
+  String get syncOnExitSkip => '동기화하지 않고 종료';
 }

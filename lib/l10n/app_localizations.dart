@@ -1547,6 +1547,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deleting from Google Drive…'**
   String get deleteEverywhereProgress;
+
+  /// No description provided for @bookDeletedElsewhere.
+  ///
+  /// In en, this message translates to:
+  /// **'This book was deleted on another computer.'**
+  String get bookDeletedElsewhere;
+
+  /// No description provided for @syncNeedsChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to combine this computer with Google Drive: press “Sync now”.'**
+  String get syncNeedsChoice;
+
+  /// No description provided for @syncOnExitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing with Google Drive…'**
+  String get syncOnExitTitle;
+
+  /// No description provided for @syncOnExitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Colophon will close when syncing finishes.'**
+  String get syncOnExitBody;
+
+  /// No description provided for @syncOnExitSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Close without syncing'**
+  String get syncOnExitSkip;
 }
 
 class _AppLocalizationsDelegate
