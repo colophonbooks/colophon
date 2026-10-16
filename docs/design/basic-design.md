@@ -4,7 +4,7 @@
 
 | Item | Details |
 |---|---|
-| Scope | Colophon 1.0.0 (DB schema v4 / export format v1 / sync data format v1) |
+| Scope | Colophon 1.1.0 (DB schema v4 / export format v1 / sync data format v1) |
 | Purpose of this document | Defines *what* the app does and *how it behaves*. Implementation-level classes, methods, and SQL are covered in the [Detailed Design](detail-design.md) |
 | Created | 2026-10-14 |
 
@@ -21,6 +21,7 @@
 | 1.6 | 2026-10-15 | Added "Delete all data" to Settings. Documented the package format for each OS and what happens to data on uninstall |
 | 1.7 | 2026-10-15 | Added the app icon ("Recognizability" in the non-functional requirements) |
 | 1.8 | 2026-10-15 | Added sync between computers through Google Drive (F-15: the sync section in Settings, the Google sign-in, first sync, and sync-on-exit dialogs, the scope of "Delete all data", data stored in the cloud, sync states and processes, and the Google external interfaces). Revised the offline, data integrity, privacy, and other non-functional requirements, and removed sync from the future extensions |
+| 1.9 | 2026-10-16 | Updated the target version to 1.1.0 |
 
 ## Contents
 

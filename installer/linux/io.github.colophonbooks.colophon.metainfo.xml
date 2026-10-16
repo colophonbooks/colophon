@@ -22,14 +22,21 @@
       <li>Fetch book details from an ISBN</li>
       <li>Search books and notes</li>
       <li>Export and import (text, JSON + images, SQLite)</li>
+      <li>Optional sync between computers through your own Google Drive</li>
       <li>7 display languages and 6 color themes, including a color-vision friendly theme</li>
     </ul>
   </description>
   <launchable type="desktop-id">io.github.colophonbooks.colophon.desktop</launchable>
-  <url type="homepage">https://github.com/colophonbooks</url>
-  <url type="bugtracker">https://github.com/colophonbooks</url>
+  <url type="homepage">https://colophonbooks.github.io/</url>
+  <url type="bugtracker">https://github.com/colophonbooks/colophon/issues</url>
+  <url type="vcs-browser">https://github.com/colophonbooks/colophon</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="1.1.0" date="2026-10-16">
+      <description>
+        <p>Optional sync between computers through your own Google Drive, and a user guide with animated screenshots.</p>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-10-15"/>
   </releases>
 </component>

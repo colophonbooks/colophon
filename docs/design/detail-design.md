@@ -4,7 +4,7 @@
 
 | Item | Details |
 |---|---|
-| Scope | Colophon 1.0.0 (DB schema v4 / export format v1 / sync data format v1) |
+| Scope | Colophon 1.1.0 (DB schema v4 / export format v1 / sync data format v1) |
 | Purpose of this document | Describes which classes, methods, and SQL implement the functions defined in the [Basic Design](basic-design.md) |
 | Created | 2026-10-14 |
 
@@ -21,6 +21,7 @@
 | 1.6 | 2026-10-15 | Added deleting all data and distribution packages for each OS ([5.15](#515-deleting-all-data-and-distribution-packages)) |
 | 1.7 | 2026-10-15 | Added the app icon source and its output files ([5.15](#515-deleting-all-data-and-distribution-packages)) |
 | 1.8 | 2026-10-15 | Added Google Drive sync ([5.16](#516-google-drive-sync): sign-in, sync data format, merge rules, sync engine, automatic sync, error classification, files, build-time configuration). Updated schema v4 (`books.cover_hash`), `AppClock` for recorded times, `removedNotes` of `saveBook`, `afterEachUpdate` of `deleteAllBooks`, update times on import, the scope of deleting all data, and the related tables, diagrams, and tests |
+| 1.9 | 2026-10-16 | Updated the target version to 1.1.0 |
 
 ## Contents
 
