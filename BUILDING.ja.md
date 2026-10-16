@@ -334,6 +334,8 @@ flutter run -d windows --dart-define-from-file=$HOME/.colophon/dart-defines.json
 | Windows で `Unable to find suitable Visual Studio toolchain` と出る | Visual Studio Installer で「C++ によるデスクトップ開発」が入っているか確認する |
 | Windows で `atlstr.h` が見つからないと出る | Visual Studio Installer で「最新の v143 ビルド ツール用 C++ ATL」を追加する（[Windows の手順 2](#2-visual-studio-2022-をインストールする)） |
 | Linux で `libsecret` に関するエラーが出る | `libsecret-1-dev` を入れる（[Linux の手順 1](#1-必要なパッケージをインストールする)） |
+| Flatpak の作成で `flatpak-builder: コマンドが見つかりません` と出る | `flatpak` と `flatpak-builder` を入れる（例: `sudo apt install flatpak flatpak-builder`）。ディストリビューションの版が古くて失敗する場合は、Flathub の `org.flatpak.Builder` を使う |
+| Flatpak の作成で `Unable to load summary from remote flathub` と出る | `flatpak remotes --user -d` で flathub の URL を確認する。`https://dl.flathub.org/repo/` でなければ、`flatpak remote-delete --user flathub` で消してから、`flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo` で登録し直す（末尾の `flathub.flatpakrepo` まで含める） |
 | 設定画面の同期欄が「このビルドでは同期を使えません」になる | クライアント ID を渡さずにビルドしている。[Google ドライブ同期の設定](#google-ドライブ同期の設定任意)を参照 |
 | Linux で GTK や `pkg-config` に関するエラーが出る | [Linux の手順 1](#1-必要なパッケージをインストールする) のパッケージがすべて入っているか確認する |
 | 以前は通ったビルドが急に失敗する | `flutter clean` → `flutter pub get` を実行してからビルドし直す |

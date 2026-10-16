@@ -334,6 +334,8 @@ The library, sync state, settings, and Google sign-in are then kept apart from t
 | Windows: `Unable to find suitable Visual Studio toolchain` | In the Visual Studio Installer, check that **Desktop development with C++** is installed |
 | Windows: `atlstr.h` not found | In the Visual Studio Installer, add **C++ ATL for latest v143 build tools** ([Windows step 2](#2-install-visual-studio-2022)) |
 | Linux: errors about `libsecret` | Install `libsecret-1-dev` ([Linux step 1](#1-install-the-required-packages)) |
+| Flatpak: `flatpak-builder: command not found` | Install `flatpak` and `flatpak-builder` (for example `sudo apt install flatpak flatpak-builder`). If your distribution's version is too old, use `org.flatpak.Builder` from Flathub |
+| Flatpak: `Unable to load summary from remote flathub` | Check the flathub URL with `flatpak remotes --user -d`. If it is not `https://dl.flathub.org/repo/`, remove it with `flatpak remote-delete --user flathub` and add it again with `flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo` (including the trailing `flathub.flatpakrepo`) |
 | Settings shows "Sync is not available in this build" | The app was built without a client ID. See [Google Drive sync setup](#google-drive-sync-setup-optional) |
 | Linux: errors about GTK or `pkg-config` | Check that every package from [Linux step 1](#1-install-the-required-packages) is installed |
 | A build that used to work suddenly fails | Run `flutter clean`, then `flutter pub get`, and build again |
