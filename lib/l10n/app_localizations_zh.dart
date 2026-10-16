@@ -649,4 +649,179 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsLicenses => '开源许可';
+
+  @override
+  String get settingsSync => '同步';
+
+  @override
+  String get syncGoogleDrive => '通过 Google 云端硬盘同步';
+
+  @override
+  String get syncDesc =>
+      '在登录同一 Google 账号的各台电脑之间保持书籍和笔记一致。数据保存在您的 Google 云端硬盘中仅供本应用使用的私有区域。';
+
+  @override
+  String get syncUnavailable => '此版本无法使用同步（构建时未包含 Google 登录设置）。';
+
+  @override
+  String get syncSignIn => '登录';
+
+  @override
+  String get syncSignOut => '退出登录';
+
+  @override
+  String syncSignedInAs(String email) {
+    return '已登录：$email';
+  }
+
+  @override
+  String get syncSignedIn => '已登录';
+
+  @override
+  String get syncSignInTitle => '在浏览器中登录';
+
+  @override
+  String get syncSignInBody =>
+      '请在浏览器中选择您的 Google 账号，并允许 Colophon 访问。如果浏览器没有打开，或想使用其他浏览器，请复制链接并粘贴到浏览器中。';
+
+  @override
+  String get syncCopyLink => '复制链接';
+
+  @override
+  String get syncLinkCopied => '已复制链接';
+
+  @override
+  String get syncSignInDone => '已登录。';
+
+  @override
+  String get syncSignInDenied => '登录已取消。';
+
+  @override
+  String get syncSignInFailed => '无法登录。请检查网络连接后重试。';
+
+  @override
+  String get syncSignOutTitle => '要退出登录吗？';
+
+  @override
+  String get syncSignOutBody => '将停止此电脑上的同步。此电脑和 Google 云端硬盘中的数据都不会被删除。';
+
+  @override
+  String get syncBrowserPage => '已登录 Colophon。请关闭此标签页并返回应用。';
+
+  @override
+  String get syncNow => '立即同步';
+
+  @override
+  String get syncing => '正在同步…';
+
+  @override
+  String syncLastAt(String time) {
+    return '上次同步：$time';
+  }
+
+  @override
+  String get syncNever => '尚未同步';
+
+  @override
+  String get syncDone => '已同步。';
+
+  @override
+  String get syncFirstTitle => '首次同步';
+
+  @override
+  String syncFirstBody(int local, int remote) {
+    return '此电脑有$local本书，Google 云端硬盘中有$remote本书。请选择如何合并。同步前会自动保存此电脑数据的备份。';
+  }
+
+  @override
+  String get syncFirstMerge => '合并（推荐）';
+
+  @override
+  String get syncFirstMergeDesc => '保留双方的书籍。ISBN 相同的书籍合并为一本。';
+
+  @override
+  String get syncFirstUseRemote => '替换为 Google 云端硬盘的内容';
+
+  @override
+  String get syncFirstUseRemoteDesc => '仅存在于此电脑的书籍和笔记将被删除。';
+
+  @override
+  String get syncFirstUseLocal => '替换为此电脑的内容';
+
+  @override
+  String get syncFirstUseLocalDesc => '仅存在于 Google 云端硬盘的书籍和笔记将从所有同步的电脑中删除。';
+
+  @override
+  String get syncFirstStart => '同步';
+
+  @override
+  String get syncErrorNetwork => '无法连接。请检查网络连接，稍后再试。';
+
+  @override
+  String get syncErrorAuth => 'Colophon 已无权使用您的 Google 云端硬盘。请退出登录后重新登录。';
+
+  @override
+  String get syncErrorNewerFormat => '这些数据由更新版本的 Colophon 同步。请更新应用。';
+
+  @override
+  String get syncErrorRemoteCorrupt => 'Google 云端硬盘中的同步数据已损坏，已停止同步。';
+
+  @override
+  String get syncErrorBusy => '另一台电脑正在同时同步。请稍后再试。';
+
+  @override
+  String get syncErrorMissingCover => '部分封面图片尚未传到。请稍后再试。';
+
+  @override
+  String get syncErrorQuota => 'Google 云端硬盘的存储空间已满。';
+
+  @override
+  String get syncErrorLocalStorage => '无法保存到此电脑。请检查磁盘可用空间。';
+
+  @override
+  String get syncErrorOther => '无法同步。';
+
+  @override
+  String get syncWarningUnreadable => 'Google 云端硬盘中的部分同步数据无法读取，因此此电脑暂未发送更改。';
+
+  @override
+  String get deleteScopeTitle => '删除范围';
+
+  @override
+  String get deleteScopeThisPc => '仅此电脑';
+
+  @override
+  String get deleteScopeThisPcDesc => '将关闭同步（退出登录）。Google 云端硬盘和其他电脑上的数据会保留。';
+
+  @override
+  String get deleteScopeEverywhere => 'Google 云端硬盘和所有电脑';
+
+  @override
+  String get deleteScopeEverywhereDesc => '其他电脑也会在下次同步时删除书籍和笔记。';
+
+  @override
+  String get deleteEverywhereSyncFailed =>
+      '无法连接 Google 云端硬盘，因此未删除任何内容。请检查网络连接后重试。';
+
+  @override
+  String get deleteEverywherePartial =>
+      '已删除此电脑上的书籍，但未能同步到 Google 云端硬盘。将在下次同步时同步。';
+
+  @override
+  String get deleteEverywhereProgress => '正在从 Google 云端硬盘删除…';
+
+  @override
+  String get bookDeletedElsewhere => '此书已在另一台电脑上删除。';
+
+  @override
+  String get syncNeedsChoice => '需要选择首次同步的方式。请点击“立即同步”。';
+
+  @override
+  String get syncOnExitTitle => '正在与 Google 云端硬盘同步…';
+
+  @override
+  String get syncOnExitBody => '同步完成后将退出。';
+
+  @override
+  String get syncOnExitSkip => '不同步直接退出';
 }

@@ -31,10 +31,20 @@ case "$(uname -m)" in
 esac
 echo "Colophon $version の .deb（$arch）を作ります"
 
+# Google ドライブ同期のクライアント設定（リポジトリには含めない。BUILDING.md 参照）
+defines="${COLOPHON_DART_DEFINES:-$HOME/.colophon/dart-defines.json}"
+build_args=(--release)
+if [[ -f "$defines" ]]; then
+  build_args+=("--dart-define-from-file=$defines")
+  echo "同期の設定: $defines"
+else
+  echo "警告: 同期の設定ファイルがないため、同期を使えないアプリになります（$defines）" >&2
+fi
+
 # 繰り返しビルドするとアイコン用フォントの間引き結果が古いまま残ることがあるため、毎回 clean する
 flutter clean
 flutter pub get
-flutter build linux --release
+flutter build linux "${build_args[@]}"
 
 bundle="build/linux/$flutter_arch/release/bundle"
 id="io.github.colophonbooks.colophon"
@@ -57,7 +67,7 @@ Version: $version
 Architecture: $arch
 Maintainer: colophonbooks <https://github.com/colophonbooks>
 Installed-Size: $installed_size
-Depends: libgtk-3-0t64 | libgtk-3-0
+Depends: libgtk-3-0t64 | libgtk-3-0, libsecret-1-0
 Recommends: xdg-desktop-portal
 Section: misc
 Priority: optional

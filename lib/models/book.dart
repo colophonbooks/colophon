@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:uuid/uuid.dart';
 
+import '../services/app_clock.dart';
+
 /// 読書ステータス。DBやエクスポートには [code] を保存し、表示言語に依存させない。
 enum ReadingStatus {
   unset('unset'),
@@ -86,8 +88,8 @@ class Note {
     DateTime? createdAt,
     DateTime? updatedAt,
   })  : uuid = uuid ?? const Uuid().v4(),
-        createdAt = createdAt ?? DateTime.now().toUtc(),
-        updatedAt = updatedAt ?? createdAt ?? DateTime.now().toUtc();
+        createdAt = createdAt ?? AppClock.now(),
+        updatedAt = updatedAt ?? createdAt ?? AppClock.now();
 
   /// 端末をまたいで同じノートだと判別するための ID。
   final String uuid;

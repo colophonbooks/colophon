@@ -37,6 +37,16 @@ $crtDir = Get-ChildItem (Join-Path $vsPath 'VC\Redist\MSVC') -Directory |
 if (-not $crtDir) { throw 'VC++ ランタイムの再配布用 DLL が見つかりません' }
 Write-Host "VC++ ランタイム: $($crtDir.FullName)"
 
+# --- Google ドライブ同期のクライアント設定（リポジトリには含めない。BUILDING.md 参照）
+$defines = if ($env:COLOPHON_DART_DEFINES) { $env:COLOPHON_DART_DEFINES } else { Join-Path $env:USERPROFILE '.colophon\dart-defines.json' }
+$buildArgs = @('build', 'windows', '--release')
+if (Test-Path $defines) {
+  $buildArgs += "--dart-define-from-file=$defines"
+  Write-Host "同期の設定: $defines"
+} else {
+  Write-Warning "同期の設定ファイルがないため、同期を使えないアプリになります（$defines）"
+}
+
 # --- リリース版をビルドする。
 # 繰り返しビルドするとアイコン用フォントの間引き結果が古いまま残り、新しく使ったアイコンが
 # 空白になることがあるため、毎回 clean してから作る。
@@ -44,7 +54,7 @@ flutter clean
 if ($LASTEXITCODE -ne 0) { throw 'flutter clean に失敗しました' }
 flutter pub get
 if ($LASTEXITCODE -ne 0) { throw 'flutter pub get に失敗しました' }
-flutter build windows --release
+flutter @buildArgs
 if ($LASTEXITCODE -ne 0) { throw 'flutter build windows に失敗しました' }
 
 # --- インストーラーを作る

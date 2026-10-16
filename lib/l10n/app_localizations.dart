@@ -1247,6 +1247,336 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open source licenses'**
   String get settingsLicenses;
+
+  /// No description provided for @settingsSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get settingsSync;
+
+  /// No description provided for @syncGoogleDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync with Google Drive'**
+  String get syncGoogleDrive;
+
+  /// No description provided for @syncDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your books and notes the same on every computer signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.'**
+  String get syncDesc;
+
+  /// No description provided for @syncUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync is not available in this build (it was built without Google sign-in settings).'**
+  String get syncUnavailable;
+
+  /// No description provided for @syncSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get syncSignIn;
+
+  /// No description provided for @syncSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get syncSignOut;
+
+  /// No description provided for @syncSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {email}'**
+  String syncSignedInAs(String email);
+
+  /// No description provided for @syncSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in'**
+  String get syncSignedIn;
+
+  /// No description provided for @syncSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with your browser'**
+  String get syncSignInTitle;
+
+  /// No description provided for @syncSignInBody.
+  ///
+  /// In en, this message translates to:
+  /// **'In your browser, choose your Google account and allow Colophon access. If the browser does not open, or you want to use a different browser, copy the link and paste it there.'**
+  String get syncSignInBody;
+
+  /// No description provided for @syncCopyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get syncCopyLink;
+
+  /// No description provided for @syncLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get syncLinkCopied;
+
+  /// No description provided for @syncSignInDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in.'**
+  String get syncSignInDone;
+
+  /// No description provided for @syncSignInDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign-in was cancelled.'**
+  String get syncSignInDenied;
+
+  /// No description provided for @syncSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sign in. Check your network connection and try again.'**
+  String get syncSignInFailed;
+
+  /// No description provided for @syncSignOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out?'**
+  String get syncSignOutTitle;
+
+  /// No description provided for @syncSignOutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing stops on this computer. Nothing is deleted from this computer or from Google Drive.'**
+  String get syncSignOutBody;
+
+  /// No description provided for @syncBrowserPage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are signed in to Colophon. Close this tab and return to the app.'**
+  String get syncBrowserPage;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @syncing.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing…'**
+  String get syncing;
+
+  /// No description provided for @syncLastAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synced: {time}'**
+  String syncLastAt(String time);
+
+  /// No description provided for @syncNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Not synced yet'**
+  String get syncNever;
+
+  /// No description provided for @syncDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Synced.'**
+  String get syncDone;
+
+  /// No description provided for @syncFirstTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'First sync'**
+  String get syncFirstTitle;
+
+  /// No description provided for @syncFirstBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer has {local} books and Google Drive has {remote}. Choose how to combine them. Before syncing, a backup of this computer’s data is saved automatically.'**
+  String syncFirstBody(int local, int remote);
+
+  /// No description provided for @syncFirstMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Combine (recommended)'**
+  String get syncFirstMerge;
+
+  /// No description provided for @syncFirstMergeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps the books from both. Books with the same ISBN become one.'**
+  String get syncFirstMergeDesc;
+
+  /// No description provided for @syncFirstUseRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace with Google Drive'**
+  String get syncFirstUseRemote;
+
+  /// No description provided for @syncFirstUseRemoteDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Books and notes that exist only on this computer are deleted.'**
+  String get syncFirstUseRemoteDesc;
+
+  /// No description provided for @syncFirstUseLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace with this computer'**
+  String get syncFirstUseLocal;
+
+  /// No description provided for @syncFirstUseLocalDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Books and notes that exist only on Google Drive are deleted from every synced computer.'**
+  String get syncFirstUseLocalDesc;
+
+  /// No description provided for @syncFirstStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync'**
+  String get syncFirstStart;
+
+  /// No description provided for @syncErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect. Check your network connection and try again later.'**
+  String get syncErrorNetwork;
+
+  /// No description provided for @syncErrorAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Colophon is no longer allowed to use your Google Drive. Sign out, then sign in again.'**
+  String get syncErrorAuth;
+
+  /// No description provided for @syncErrorNewerFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'This data was synced by a newer version of Colophon. Please update the app.'**
+  String get syncErrorNewerFormat;
+
+  /// No description provided for @syncErrorRemoteCorrupt.
+  ///
+  /// In en, this message translates to:
+  /// **'The sync data on Google Drive is damaged, so syncing stopped.'**
+  String get syncErrorRemoteCorrupt;
+
+  /// No description provided for @syncErrorBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Another computer was syncing at the same time. Try again in a moment.'**
+  String get syncErrorBusy;
+
+  /// No description provided for @syncErrorMissingCover.
+  ///
+  /// In en, this message translates to:
+  /// **'Some cover images have not arrived yet. Try again in a moment.'**
+  String get syncErrorMissingCover;
+
+  /// No description provided for @syncErrorQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Google Drive storage is full.'**
+  String get syncErrorQuota;
+
+  /// No description provided for @syncErrorLocalStorage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save to this computer. Check the free disk space.'**
+  String get syncErrorLocalStorage;
+
+  /// No description provided for @syncErrorOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not sync.'**
+  String get syncErrorOther;
+
+  /// No description provided for @syncWarningUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Part of the sync data on Google Drive could not be read, so this computer did not send its changes.'**
+  String get syncWarningUnreadable;
+
+  /// No description provided for @deleteScopeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What to delete'**
+  String get deleteScopeTitle;
+
+  /// No description provided for @deleteScopeThisPc.
+  ///
+  /// In en, this message translates to:
+  /// **'This computer only'**
+  String get deleteScopeThisPc;
+
+  /// No description provided for @deleteScopeThisPcDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync is turned off (you are signed out). Data on Google Drive and other computers is kept.'**
+  String get deleteScopeThisPcDesc;
+
+  /// No description provided for @deleteScopeEverywhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive and every computer'**
+  String get deleteScopeEverywhere;
+
+  /// No description provided for @deleteScopeEverywhereDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Other computers also delete their books and notes when they next sync.'**
+  String get deleteScopeEverywhereDesc;
+
+  /// No description provided for @deleteEverywhereSyncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach Google Drive, so nothing was deleted. Check your network connection and try again.'**
+  String get deleteEverywhereSyncFailed;
+
+  /// No description provided for @deleteEverywherePartial.
+  ///
+  /// In en, this message translates to:
+  /// **'Books were deleted on this computer, but the deletion could not be sent to Google Drive. It will be sent at the next sync.'**
+  String get deleteEverywherePartial;
+
+  /// No description provided for @deleteEverywhereProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting from Google Drive…'**
+  String get deleteEverywhereProgress;
+
+  /// No description provided for @bookDeletedElsewhere.
+  ///
+  /// In en, this message translates to:
+  /// **'This book was deleted on another computer.'**
+  String get bookDeletedElsewhere;
+
+  /// No description provided for @syncNeedsChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to combine this computer with Google Drive: press “Sync now”.'**
+  String get syncNeedsChoice;
+
+  /// No description provided for @syncOnExitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing with Google Drive…'**
+  String get syncOnExitTitle;
+
+  /// No description provided for @syncOnExitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Colophon will close when syncing finishes.'**
+  String get syncOnExitBody;
+
+  /// No description provided for @syncOnExitSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Close without syncing'**
+  String get syncOnExitSkip;
 }
 
 class _AppLocalizationsDelegate

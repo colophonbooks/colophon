@@ -32,6 +32,8 @@ Install one of the following, and select the **Desktop development with C++** wo
 - [Visual Studio 2022 Community](https://visualstudio.microsoft.com/vs/community/) (free IDE)
 - [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) (build tools only; lighter, and enough if you don't need the IDE)
 
+Also select **C++ ATL for latest v143 build tools** under **Individual components**. It is needed to build the component that stores the sync sign-in.
+
 > Visual Studio and Visual Studio **Code** are different products. Even if you use VS Code as your editor, you still need one of the above to build.
 
 ### 3. Enable Developer Mode
@@ -134,8 +136,10 @@ These steps are for Ubuntu / Debian-based distributions. On other distributions,
 ```sh
 sudo apt-get update -y
 sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa \
-  clang cmake ninja-build pkg-config libgtk-3-dev libstdc++-12-dev
+  clang cmake ninja-build pkg-config libgtk-3-dev libstdc++-12-dev libsecret-1-dev
 ```
+
+`libsecret-1-dev` is used to build the component that stores the sync sign-in in the desktop keyring.
 
 > If `libstdc++-12-dev` is not available, use the version your distribution provides (for example, `libstdc++-14-dev`).
 
@@ -270,6 +274,57 @@ node tool/icon/generate.mjs
 - Windows tends to keep the old icon in previous build output, so run `flutter clean` before building after regenerating (the packaging scripts always clean).
 
 ---
+## Google Drive sync setup (optional)
+
+To build an app that can sync, you need a Google OAuth client ID. The ID is not stored in the repository; you pass it at build time. Builds without it simply show sync as unavailable in Settings, and everything else works.
+
+### 1. Create a client in Google Cloud
+
+1. Create a project in the [Google Cloud console](https://console.cloud.google.com/)
+2. Enable the Google Drive API
+3. In Google Auth Platform, enter the app name and support email, and choose **External** as the audience
+4. Under **Data Access**, add only the scope `https://www.googleapis.com/auth/drive.appdata`
+5. Under **Clients**, create a client of type **Desktop app** and download its JSON
+
+`drive.appdata` is a non-sensitive scope in Google's classification. As Google explains, the client secret of a desktop app cannot be kept secret; Colophon uses it together with PKCE.
+
+### 2. Prepare the settings file
+
+Save the following outside the repository (for example `~/.colophon/dart-defines.json`; on Windows `%USERPROFILE%\.colophon\dart-defines.json`). The values are `client_id` and `client_secret` from the downloaded JSON.
+
+```json
+{
+  "COLOPHON_GOOGLE_CLIENT_ID": "xxxxxxxx.apps.googleusercontent.com",
+  "COLOPHON_GOOGLE_CLIENT_SECRET": "xxxxxxxx"
+}
+```
+
+### 3. Pass it when building or running
+
+```sh
+flutter run -d windows --dart-define-from-file=$HOME/.colophon/dart-defines.json
+flutter build windows --release --dart-define-from-file=$HOME/.colophon/dart-defines.json
+```
+
+The packaging scripts in `installer/` read `~/.colophon/dart-defines.json` automatically when it exists. To keep it elsewhere, set the environment variable `COLOPHON_DART_DEFINES` to its path. Without the file, the scripts print a warning and build an app without sync.
+
+### 4. Before distributing
+
+In Google Auth Platform, under **Audience**, change the publishing status from **Testing** to **In production**. While testing, only the registered test users can sign in, and sign-ins expire after 7 days.
+
+### Running with a test library
+
+Opening your everyday library with a development build can upgrade its database beyond what the released app can open. When testing, pass a separate folder with `COLOPHON_DATA_DIR` at build time:
+
+```sh
+flutter run -d windows --dart-define-from-file=$HOME/.colophon/dart-defines.json \
+  --dart-define=COLOPHON_DATA_DIR=$HOME/.colophon/pc-a
+```
+
+The library, sync state, settings, and Google sign-in are then kept apart from the everyday app. They are separated by folder name, so two builds with different folder names can run side by side to try syncing between two computers on one machine.
+
+---
+
 ## Troubleshooting
 
 | Symptom | What to do |
@@ -277,6 +332,11 @@ node tool/icon/generate.mjs
 | Not sure what is missing | Run `flutter doctor -v` and follow the instructions for items marked `[X]` or `[!]` |
 | Windows: `Building with plugins requires symlink support.` | Enable Developer Mode ([Windows step 3](#3-enable-developer-mode)) |
 | Windows: `Unable to find suitable Visual Studio toolchain` | In the Visual Studio Installer, check that **Desktop development with C++** is installed |
+| Windows: `atlstr.h` not found | In the Visual Studio Installer, add **C++ ATL for latest v143 build tools** ([Windows step 2](#2-install-visual-studio-2022)) |
+| Linux: errors about `libsecret` | Install `libsecret-1-dev` ([Linux step 1](#1-install-the-required-packages)) |
+| Flatpak: `flatpak-builder: command not found` | Install `flatpak` and `flatpak-builder` (for example `sudo apt install flatpak flatpak-builder`). If your distribution's version is too old, use `org.flatpak.Builder` from Flathub |
+| Flatpak: `Unable to load summary from remote flathub` | Check the flathub URL with `flatpak remotes --user -d`. If it is not `https://dl.flathub.org/repo/`, remove it with `flatpak remote-delete --user flathub` and add it again with `flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo` (including the trailing `flathub.flatpakrepo`) |
+| Settings shows "Sync is not available in this build" | The app was built without a client ID. See [Google Drive sync setup](#google-drive-sync-setup-optional) |
 | Linux: errors about GTK or `pkg-config` | Check that every package from [Linux step 1](#1-install-the-required-packages) is installed |
 | A build that used to work suddenly fails | Run `flutter clean`, then `flutter pub get`, and build again |
 | In a release build, newly used icons (such as ★) are blank | Release builds shrink the icon font to the icons in use, and repeated builds can reuse a stale font. Run `flutter clean`, then `flutter pub get`, and build again (this does not happen in debug builds or `flutter test`) |

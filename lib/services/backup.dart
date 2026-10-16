@@ -13,6 +13,7 @@ import '../data/book_repository.dart';
 import '../l10n/app_localizations.dart';
 import '../l10n/labels.dart';
 import '../models/book.dart';
+import 'app_clock.dart';
 import 'cover_image.dart';
 import 'isbn.dart';
 
@@ -281,7 +282,7 @@ Future<List<Book>> readZipBackup(Uint8List bytes) async {
     final coverType = cover == null ? null : mimeTypeOf(cover);
     if (coverType == null) cover = null;
 
-    final now = DateTime.now().toUtc();
+    final now = AppClock.now();
     final createdAt = _date(entry['createdAt']) ?? now;
     books.add(Book(
       uuid: _str(entry['uuid']) ?? const Uuid().v4(),
@@ -383,9 +384,13 @@ DateTime? _date(Object? v) => v is String ? DateTime.tryParse(v)?.toUtc() : null
 /// [ImportMode.merge] では、ID（uuid）または ISBN が既存の書籍と同じものをスキップする。
 /// [ImportMode.replace] では ID の重複だけをスキップする（同じ ISBN の本を複数冊
 /// 登録している利用者もいるため、ISBN で間引くと復元で書籍が欠ける）。
-ImportResult applyImport(BookRepository repo, List<Book> books, ImportMode mode) {
+///
+/// 取り込んだ書籍とノートの更新日時は [now]（既定は今）にする。バックアップ時の日時のままだと、
+/// 同期で「クラウドの方が新しい」と判定され、取り込んだ内容が元に戻されてしまうため。
+ImportResult applyImport(BookRepository repo, List<Book> books, ImportMode mode, {DateTime? now}) {
+  final at = now ?? AppClock.now();
   return repo.transaction(() {
-    if (mode == ImportMode.replace) repo.deleteAllBooks();
+    if (mode == ImportMode.replace) repo.deleteAllBooks(at: at);
     final uuids = repo.existingUuids();
     final isbnKeys = repo.existingIsbnKeys();
     var added = 0;
@@ -410,11 +415,22 @@ ImportResult applyImport(BookRepository repo, List<Book> books, ImportMode mode)
         cover: book.cover,
         coverType: book.coverType,
         thumbnail: book.thumbnail,
-        notes: book.notes,
+        notes: [
+          for (final n in book.notes)
+            Note(
+              uuid: n.uuid,
+              category: n.category,
+              page: n.page,
+              body: n.body,
+              favorite: n.favorite,
+              createdAt: n.createdAt,
+              updatedAt: at,
+            ),
+        ],
         readDates: book.readDates,
         tags: book.tags,
         createdAt: book.createdAt,
-        updatedAt: book.updatedAt,
+        updatedAt: at,
       ));
       uuids.add(book.uuid);
       if (key != null) isbnKeys.add(key);

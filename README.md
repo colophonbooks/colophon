@@ -27,10 +27,13 @@ A book library app for book lovers. Keep track of the books you own, your readin
 | Import | Restore from ZIP or SQLite, either replacing everything or adding to your library (duplicates are skipped) |
 | Delete all data | Erase all books, notes, and settings from the Settings screen and start over (with a two-step confirmation) |
 | Appearance | 6 color themes (Leather, Forest, Ocean, Rose, Monochrome, and Universal for every type of color vision) with light / dark / system brightness |
+| Sync (optional) | Keep the same library on several computers through your own Google Drive. Off until you sign in with Google in Settings; syncs automatically after that |
 
 ## Development
 
 Colophon is built with Flutter 3.47 or later (stable). See [BUILDING.md](BUILDING.md) for how to set up each OS and build the app, and [docs/design/](docs/design/basic-design.md) for the design documents.
+
+Google Drive sync needs a Google OAuth client ID passed at build time; builds without one simply show sync as unavailable. See "Google Drive sync" in [BUILDING.md](BUILDING.md).
 
 ```sh
 flutter pub get
@@ -46,8 +49,9 @@ lib/
   main.dart / app.dart     Startup and app-wide configuration
   models/                  Data types (books, notes, finish dates, etc.)
   data/                    SQLite schema and data access
-  services/                Logic independent of the UI (ISBN, covers, search, export/import, ISBN lookup)
-  state/                   State the screens depend on (settings, book list)
+  services/                Logic independent of the UI (ISBN, covers, search, export/import, ISBN lookup, Google sign-in)
+  sync/                    Google Drive sync (data format, merge rules, Drive access, sync engine)
+  state/                   State the screens depend on (settings, book list, sync)
   ui/                      Screens
   l10n/                    UI strings for each language (app_*.arb)
 test/                      Automated tests
@@ -61,9 +65,15 @@ Your library is saved as `colophon.db` (SQLite) in the app's data folder:
 - macOS: `~/Library/Containers/io.github.colophonbooks.colophon/Data/Library/Application Support/io.github.colophonbooks.colophon/`
 - Linux: `~/.local/share/io.github.colophonbooks.colophon/` (Flatpak: `~/.var/app/io.github.colophonbooks.colophon/`)
 
+When Google Drive sync is used, the same folder also holds `sync-state.json` (when this computer last synced) and `sync-backups/` (a backup taken automatically before the first sync, in the export ZIP format; the latest three are kept). The Google sign-in is stored in the OS's secure storage (Windows: an encrypted file in the same folder; macOS: the keychain; Linux: the desktop keyring).
+
 ### Deleting your data
 
-**Settings → Data → Delete all data** in the app erases all books, notes, and settings and starts over (with a two-step confirmation). What happens on uninstall depends on the OS:
+**Settings → Data → Delete all data** in the app erases all books, notes, and settings and starts over (with a two-step confirmation). If you are signed in for sync, you also choose whether to delete only on this computer (sync is turned off; Google Drive and your other computers keep their data) or on Google Drive and every computer.
+
+To delete only the copy on Google Drive, open Google Drive in a web browser, go to **Settings → Manage apps → Colophon → Options**, and choose **Delete hidden app data**.
+
+What happens on uninstall depends on the OS:
 
 | Package | Library on uninstall |
 |---|---|
@@ -121,14 +131,32 @@ covers/{uuid}.jpg    (only for books with a cover; the extension matches the ima
 - The `uuid` of a book or note identifies the same item across devices (older files without note `uuid`s can still be imported)
 - `favorite`: whether the note is a favorite (missing means `false`)
 
-## Data structure prepared for syncing between devices
+## Google Drive sync
 
-To prepare for a future sync feature (via Google Drive, only when the user turns it on):
+Sync keeps the same library on every computer signed in with the same Google account. It is off until you turn it on.
 
-- Deleted books and notes keep their rows, with the deletion time recorded in `deleted_at` (so that deletions can reach other devices). Their content (cover image, note text) is removed
-- Books and notes are matched by `uuid`, and `updated_at` decides which version is newer
-- Renaming or deleting a tag updates `updated_at` of the books that have that tag
-- "Replace all" import marks books that are not in the file as deleted
+**Turning it on**: **Settings → Sync → Sign in**. Choose your Google account in the browser and allow access, and the first sync starts right away. If both this computer and Google Drive already have books, you choose how to combine them: **Combine** (books with the same ISBN become one), **Replace with Google Drive**, or **Replace with this computer**. A backup of this computer's library is saved before anything changes.
+
+**What is synced**: books, notes, tags, finish dates, and cover images. Settings such as the display language and color theme stay per computer.
+
+**When it syncs**: a few seconds after the app starts, 30 seconds after your last change (at most 5 minutes after the first change while you keep editing), before the app closes if there are unsent changes, and whenever you press **Sync now**. Temporary failures (for example, no network) are retried automatically.
+
+**When two computers changed the same book**: for each book and for each note, the version saved later wins. Notes added on different computers are all kept. Deletions reach the other computers too.
+
+**Privacy**:
+
+- Your data goes only to your own Google Drive. Colophon has no server of its own
+- It is stored in Google Drive's hidden app data folder, which does not appear in the Drive file list and only Colophon can open
+- Colophon asks only for permission to use its own app data folder (`drive.appdata`); it cannot see your other files
+- **Sign out** stops syncing on that computer and revokes Colophon's access token. Nothing is deleted on the computer or on Google Drive
+
+How it works, in short:
+
+- Deleted books and notes keep their rows with the deletion time in `deleted_at`, so that deletions can reach other devices. Their content (cover image, note text) is removed
+- Books and notes are matched by `uuid`, and `updated_at` decides which version is newer. Times are corrected by the difference from Google's server clock
+- Renaming or deleting a tag updates `updated_at` of the books that have that tag, so tags travel with their books
+- Google Drive holds one file with all records (`colophon-sync.json`) and one file per cover image, named by its SHA-256, so that only changed covers are transferred
+- Before uploading, the app checks that no other computer uploaded in the meantime; if one did, it merges again first
 
 ## Adding a display language
 
@@ -145,6 +173,12 @@ ISBN lookup uses the following public APIs (no registration required). Each resu
 - [Library of Congress](https://www.loc.gov/) (SRU)
 - [Bibliothèque nationale de France](https://catalogue.bnf.fr/) (SRU; data under the Licence Ouverte)
 - [Deutsche Nationalbibliothek](https://www.dnb.de/) (SRU; data under CC0)
+
+## AI assistance
+
+Colophon is developed with the help of an AI coding assistant (Anthropic's Claude, used through Claude Code). Most of the code and documentation was drafted by the assistant. The maintainer reviews and tests every change, decides what is included, and is responsible for the project.
+
+Commits made with the assistant's help end with a `Co-Authored-By:` line naming it. The initial commit does not have this line, but it too was written largely with the assistant.
 
 ## License
 

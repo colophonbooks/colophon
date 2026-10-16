@@ -1,7 +1,7 @@
 import 'package:sqlite3/sqlite3.dart';
 
 /// DBスキーマのバージョン。テーブル構成を変えたら上げ、[_migrations] に手順を追加する。
-const int schemaVersion = 3;
+const int schemaVersion = 4;
 
 /// 初版のスキーマ。以降の変更は [_migrations] に追記する（既存の文は書き換えない）。
 const _schemaV1 = [
@@ -80,11 +80,18 @@ const _schemaV3 = [
   'ALTER TABLE notes ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0 CHECK (favorite IN (0, 1))',
 ];
 
+/// v4: 書影の SHA-256（16進）。同期で書影を内容ごとに1ファイルとして扱い、変わったものだけ送るため。
+/// 既存の書影の値は SQL では計算できないので空のままにし、同期データを作るときに埋める。
+const _schemaV4 = [
+  'ALTER TABLE books ADD COLUMN cover_hash TEXT',
+];
+
 /// バージョン N へ上げる手順。キー N の文を実行すると user_version = N になる。
 const Map<int, List<String>> _migrations = {
   1: _schemaV1,
   2: _schemaV2,
   3: _schemaV3,
+  4: _schemaV4,
 };
 
 /// 新しいアプリで作られたDBを古いアプリで開こうとしたときの例外。
