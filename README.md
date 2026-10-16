@@ -6,6 +6,8 @@ A book library app for book lovers. Keep track of the books you own, your readin
 
 - Platforms: Windows / macOS / Linux (iPhone / iPad / Android planned)
 - Languages: English / 日本語 / 简体中文 / Français / Español / Deutsch / 한국어
+- Download: [latest release](https://github.com/colophonbooks/colophon/releases/latest) (Windows)
+- How to use: [user guide with animated screenshots](docs/guide/user-guide.ja.md) (in Japanese; an English version is planned)
 
 ## Features
 
