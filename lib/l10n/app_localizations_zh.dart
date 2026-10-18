@@ -824,4 +824,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get syncOnExitSkip => '不同步直接退出';
+
+  @override
+  String get sortStatusAscending => '状态（未设置→已读完）';
+
+  @override
+  String get sortStatusDescending => '状态（已读完→未设置）';
 }

@@ -8,7 +8,19 @@ import '../services/isbn.dart';
 import '../services/search.dart';
 import '../sync/sync_snapshot.dart';
 
-enum BookSort { recent, title }
+enum BookSort {
+  recent,
+  title,
+
+  /// 未設定 → 未読 → 読書中（読んだ割合の小さい順）→ 読了（最後の読了日の古い順）
+  statusAscending,
+
+  /// 読了（最後の読了日の新しい順）→ 読書中（読んだ割合の大きい順）→ 未読 → 未設定
+  statusDescending,
+}
+
+/// ステータスの並び順（未設定から読了へ）を表す SQL の式。
+const _statusRank = "CASE b.status WHEN 'unset' THEN 0 WHEN 'unread' THEN 1 WHEN 'reading' THEN 2 ELSE 3 END";
 
 /// 書籍データの読み書き。sqlite3 は同期APIなので、各メソッドも同期で完結する。
 ///
@@ -45,14 +57,29 @@ class BookRepository {
       db.select('SELECT COUNT(*) AS c FROM books WHERE deleted_at IS NULL').first['c'] as int;
 
   List<BookSummary> listSummaries({BookSort sort = BookSort.recent}) {
+    // 読書中は読んだ割合（未入力は 0%）、読了は最後の読了日（ない本はその中の最後）で並べ、
+    // 残りは書籍名順にする
     final order = switch (sort) {
       BookSort.recent => 'b.created_at DESC, b.id DESC',
       BookSort.title => 'b.title COLLATE NOCASE ASC, b.id ASC',
+      BookSort.statusAscending => '''
+        $_statusRank ASC,
+        CASE WHEN b.status = 'reading' THEN COALESCE(b.progress, 0) END ASC,
+        CASE WHEN b.status = 'finished' THEN last_read IS NULL END ASC,
+        CASE WHEN b.status = 'finished' THEN last_read END ASC,
+        b.title COLLATE NOCASE ASC, b.id ASC''',
+      BookSort.statusDescending => '''
+        $_statusRank DESC,
+        CASE WHEN b.status = 'reading' THEN COALESCE(b.progress, 0) END DESC,
+        CASE WHEN b.status = 'finished' THEN last_read IS NULL END ASC,
+        CASE WHEN b.status = 'finished' THEN last_read END DESC,
+        b.title COLLATE NOCASE ASC, b.id ASC''',
     };
     final tags = _tagsByBook();
     final rows = db.select('''
       SELECT b.id, b.title, b.author, b.status, b.progress, b.thumbnail, b.created_at, b.updated_at,
-             (SELECT COUNT(*) FROM read_records r WHERE r.book_id = b.id) AS read_count
+             (SELECT COUNT(*) FROM read_records r WHERE r.book_id = b.id) AS read_count,
+             (SELECT MAX(finished_on) FROM read_records r WHERE r.book_id = b.id) AS last_read
       FROM books b
       WHERE b.deleted_at IS NULL
       ORDER BY $order

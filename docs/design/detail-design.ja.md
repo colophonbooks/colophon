@@ -22,6 +22,7 @@
 | 1.7 | 2026-10-15 | アプリアイコンの原本と書き出し先を追加（[5.15](#515-すべてのデータの削除と配布用パッケージ)） |
 | 1.8 | 2026-10-15 | Google ドライブ同期を追加（[5.16](#516-google-ドライブ同期)。ログイン、同期データの形式、統合の規則、同期エンジン、自動同期、エラーの分類、ファイル、ビルド時の設定）。スキーマ v4（`books.cover_hash`）、記録時刻の `AppClock`、`saveBook` の `removedNotes`、`deleteAllBooks` の `afterEachUpdate`、インポート時の更新日時、すべてのデータの削除の範囲、関連する表・図・テストを更新 |
 | 1.9 | 2026-10-16 | 対象のバージョンを 1.1.0 に更新 |
+| 1.10 | 2026-10-18 | 一覧の並べ替えにステータス順（`BookSort.statusAscending`・`statusDescending`）を追加（一覧の取得の SQL） |
 
 ## 目次
 
@@ -765,11 +766,21 @@ ON CONFLICT (uuid) DO UPDATE SET
 
 ```sql
 SELECT b.id, b.title, b.author, b.status, b.progress, b.thumbnail, b.created_at, b.updated_at,
-       (SELECT COUNT(*) FROM read_records r WHERE r.book_id = b.id) AS read_count
+       (SELECT COUNT(*) FROM read_records r WHERE r.book_id = b.id) AS read_count,
+       (SELECT MAX(finished_on) FROM read_records r WHERE r.book_id = b.id) AS last_read
 FROM books b
 WHERE b.deleted_at IS NULL
-ORDER BY b.created_at DESC, b.id DESC;   -- 書籍名順は b.title COLLATE NOCASE ASC, b.id ASC
+ORDER BY {並び順};
 ```
+
+| `BookSort` | `ORDER BY` |
+|---|---|
+| `recent`（登録日の新しい順） | `b.created_at DESC, b.id DESC` |
+| `title`（書籍名順） | `b.title COLLATE NOCASE ASC, b.id ASC` |
+| `statusAscending`（未設定→読了） | ステータスの順位（unset=0, unread=1, reading=2, finished=3）`ASC` → 読書中は `COALESCE(progress, 0) ASC` → 読了は `last_read IS NULL ASC`（読了日なしを最後）, `last_read ASC` → `b.title COLLATE NOCASE ASC, b.id ASC` |
+| `statusDescending`（読了→未設定） | ステータスの順位 `DESC` → 読書中は `COALESCE(progress, 0) DESC` → 読了は `last_read IS NULL ASC`, `last_read DESC` → `b.title COLLATE NOCASE ASC, b.id ASC` |
+
+読書中・読了の条件は `CASE WHEN b.status = … THEN … END` で書き、ほかのステータスでは NULL（並びに影響しない）にする。並び方は `SettingsController` が列挙子の名前で保存する。
 
 **タグの登録と対応付け**
 

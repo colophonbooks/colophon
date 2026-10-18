@@ -871,4 +871,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get syncOnExitSkip => 'Fermer sans synchroniser';
+
+  @override
+  String get sortStatusAscending => 'Statut (Non défini → Lu)';
+
+  @override
+  String get sortStatusDescending => 'Statut (Lu → Non défini)';
 }

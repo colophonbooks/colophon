@@ -257,5 +257,7 @@
   "syncNeedsChoice": "Elige cómo combinar este ordenador con Google Drive: pulsa «Sincronizar ahora».",
   "syncOnExitTitle": "Sincronizando con Google Drive…",
   "syncOnExitBody": "Colophon se cerrará cuando termine la sincronización.",
-  "syncOnExitSkip": "Cerrar sin sincronizar"
+  "syncOnExitSkip": "Cerrar sin sincronizar",
+  "sortStatusAscending": "Estado (Sin definir → Leído)",
+  "sortStatusDescending": "Estado (Leído → Sin definir)"
 }

@@ -22,6 +22,7 @@
 | 1.7 | 2026-10-15 | Added the app icon ("Recognizability" in the non-functional requirements) |
 | 1.8 | 2026-10-15 | Added sync between computers through Google Drive (F-15: the sync section in Settings, the Google sign-in, first sync, and sync-on-exit dialogs, the scope of "Delete all data", data stored in the cloud, sync states and processes, and the Google external interfaces). Revised the offline, data integrity, privacy, and other non-functional requirements, and removed sync from the future extensions |
 | 1.9 | 2026-10-16 | Updated the target version to 1.1.0 |
+| 1.10 | 2026-10-18 | Added sorting the list by status (Not set → Finished / Finished → Not set) (F-09, SC-01) |
 
 ## Contents
 
@@ -90,7 +91,7 @@ To let book lovers manage their personal library and reading records in one plac
 | F-06 | Finish dates | Record multiple finish dates per book. Offers to add today's date when the status becomes Finished |
 | F-07 | Notes | Add, reorder, and delete any number of notes. Each note can be marked as a favorite (★) |
 | F-08 | Tags | Attach multiple tags to a book. Rename or delete tags across all books |
-| F-09 | Library views | Switch between a title list and a cover grid. Sort by recently added or by title |
+| F-09 | Library views | Switch between a title list and a cover grid. Sort by recently added, by title, or by status (two directions) |
 | F-10 | Search | Search book details and note text, with various filters |
 | F-11 | Export | Export as text (optionally with covers), JSON + images (ZIP), or SQLite |
 | F-12 | Import | Restore from ZIP or SQLite by either replacing everything or adding |
@@ -304,7 +305,7 @@ SC-12 appears when the window is closed from any screen (the diagram shows it fr
 | Status display | Shown as icon + text (not relying on color alone). Adds "%" (e.g. "Reading 40%") only when the status is Reading and progress has been entered |
 | Read count | Books finished twice or more show e.g. "Finished ×2" |
 | View switch | Title list ⇔ cover grid (saved on the device) |
-| Sort | Recently added / title (saved on the device) |
+| Sort | Recently added / title / status (Not set → Finished) / status (Finished → Not set) (saved on the device). By status, reading books are ordered by progress (none entered counts as 0%) and finished books by their last finish date (books without one come last in that group); ties are ordered by title. Not set → Finished uses lower progress and older dates first; Finished → Not set uses higher progress and newer dates first |
 | Menu | Manage tags, Export, Import, Settings |
 | + button | Add a new book (SC-03) |
 

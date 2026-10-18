@@ -17,7 +17,7 @@ A book library app for book lovers. Keep track of the books you own, your readin
 | ISBN lookup | Queries national libraries and Open Library in an order chosen from the ISBN (e.g. Japan → National Diet Library, France → BnF); you choose which fields to apply |
 | Covers | Set images manually. Large images (over 2000 px on the long side or over 2 MB) are reduced automatically (can be turned off in Settings) |
 | Viewer mode | Open a book read-only: only filled-in fields, notes with their category and page, no editing controls. Switch to edit mode when needed |
-| Library views | Switch between a title list and a cover grid. Sort by recently added or by title |
+| Library views | Switch between a title list and a cover grid. Sort by recently added, by title, or by status (Not set → Finished, or Finished → Not set) |
 | Reading status | Not set (default), Unread, Reading, Finished. While reading, you can optionally record your progress (%) |
 | Finish dates | Record every time you finish a book. Books read twice or more show the count in the list |
 | Notes | Add as many as you like. Category (Impressions, Learnings, Memo, Excerpt, Other, or none) and page number are optional. Mark notes as favorites (★) to find them later |

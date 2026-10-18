@@ -867,4 +867,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get syncOnExitSkip => 'Cerrar sin sincronizar';
+
+  @override
+  String get sortStatusAscending => 'Estado (Sin definir → Leído)';
+
+  @override
+  String get sortStatusDescending => 'Estado (Leído → Sin definir)';
 }
