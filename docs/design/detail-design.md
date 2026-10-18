@@ -22,6 +22,7 @@
 | 1.7 | 2026-10-15 | Added the app icon source and its output files ([5.15](#515-deleting-all-data-and-distribution-packages)) |
 | 1.8 | 2026-10-15 | Added Google Drive sync ([5.16](#516-google-drive-sync): sign-in, sync data format, merge rules, sync engine, automatic sync, error classification, files, build-time configuration). Updated schema v4 (`books.cover_hash`), `AppClock` for recorded times, `removedNotes` of `saveBook`, `afterEachUpdate` of `deleteAllBooks`, update times on import, the scope of deleting all data, and the related tables, diagrams, and tests |
 | 1.9 | 2026-10-16 | Updated the target version to 1.1.0 |
+| 1.10 | 2026-10-18 | Added sorting the list by status (`BookSort.statusAscending`, `statusDescending`) (the list query) |
 
 ## Contents
 
@@ -765,11 +766,21 @@ ON CONFLICT (uuid) DO UPDATE SET
 
 ```sql
 SELECT b.id, b.title, b.author, b.status, b.progress, b.thumbnail, b.created_at, b.updated_at,
-       (SELECT COUNT(*) FROM read_records r WHERE r.book_id = b.id) AS read_count
+       (SELECT COUNT(*) FROM read_records r WHERE r.book_id = b.id) AS read_count,
+       (SELECT MAX(finished_on) FROM read_records r WHERE r.book_id = b.id) AS last_read
 FROM books b
 WHERE b.deleted_at IS NULL
-ORDER BY b.created_at DESC, b.id DESC;   -- title order: b.title COLLATE NOCASE ASC, b.id ASC
+ORDER BY {sort order};
 ```
+
+| `BookSort` | `ORDER BY` |
+|---|---|
+| `recent` (recently added) | `b.created_at DESC, b.id DESC` |
+| `title` (title) | `b.title COLLATE NOCASE ASC, b.id ASC` |
+| `statusAscending` (Not set → Finished) | status rank (unset=0, unread=1, reading=2, finished=3) `ASC` → for reading, `COALESCE(progress, 0) ASC` → for finished, `last_read IS NULL ASC` (no finish date last), `last_read ASC` → `b.title COLLATE NOCASE ASC, b.id ASC` |
+| `statusDescending` (Finished → Not set) | status rank `DESC` → for reading, `COALESCE(progress, 0) DESC` → for finished, `last_read IS NULL ASC`, `last_read DESC` → `b.title COLLATE NOCASE ASC, b.id ASC` |
+
+The reading and finished conditions are written as `CASE WHEN b.status = … THEN … END`, which is NULL (no effect on the order) for other statuses. `SettingsController` saves the sort by the enum value's name.
 
 **Registering and linking tags**
 

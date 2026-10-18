@@ -52,6 +52,8 @@ class BookListScreen extends StatelessWidget {
             itemBuilder: (_) => [
               PopupMenuItem(value: BookSort.recent, child: Text(l.sortRecent)),
               PopupMenuItem(value: BookSort.title, child: Text(l.sortTitle)),
+              PopupMenuItem(value: BookSort.statusAscending, child: Text(l.sortStatusAscending)),
+              PopupMenuItem(value: BookSort.statusDescending, child: Text(l.sortStatusDescending)),
             ],
           ),
           PopupMenuButton<_MenuAction>(

@@ -833,4 +833,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get syncOnExitSkip => '同期せずに終了';
+
+  @override
+  String get sortStatusAscending => 'ステータス順（未設定→読了）';
+
+  @override
+  String get sortStatusDescending => 'ステータス順（読了→未設定）';
 }

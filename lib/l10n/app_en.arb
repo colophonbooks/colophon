@@ -315,5 +315,7 @@
   "syncNeedsChoice": "Choose how to combine this computer with Google Drive: press “Sync now”.",
   "syncOnExitTitle": "Syncing with Google Drive…",
   "syncOnExitBody": "Colophon will close when syncing finishes.",
-  "syncOnExitSkip": "Close without syncing"
+  "syncOnExitSkip": "Close without syncing",
+  "sortStatusAscending": "Status (Not set → Finished)",
+  "sortStatusDescending": "Status (Finished → Not set)"
 }

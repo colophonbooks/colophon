@@ -257,5 +257,7 @@
   "syncNeedsChoice": "初めての同期の方法を選ぶ必要があります。「今すぐ同期」を押してください。",
   "syncOnExitTitle": "Google ドライブと同期しています…",
   "syncOnExitBody": "同期が終わったら終了します。",
-  "syncOnExitSkip": "同期せずに終了"
+  "syncOnExitSkip": "同期せずに終了",
+  "sortStatusAscending": "ステータス順（未設定→読了）",
+  "sortStatusDescending": "ステータス順（読了→未設定）"
 }

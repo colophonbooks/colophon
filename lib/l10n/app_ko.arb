@@ -257,5 +257,7 @@
   "syncNeedsChoice": "첫 동기화 방법을 선택해야 합니다. \"지금 동기화\"를 누르세요.",
   "syncOnExitTitle": "Google 드라이브와 동기화하는 중…",
   "syncOnExitBody": "동기화가 끝나면 종료합니다.",
-  "syncOnExitSkip": "동기화하지 않고 종료"
+  "syncOnExitSkip": "동기화하지 않고 종료",
+  "sortStatusAscending": "상태순 (미설정 → 완독)",
+  "sortStatusDescending": "상태순 (완독 → 미설정)"
 }

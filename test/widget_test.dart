@@ -26,6 +26,23 @@ void main() {
     return settings;
   }
 
+  testWidgets('並べ替えでステータス順を選ぶと、一覧の並びが変わり、選んだ並び方を覚える', (tester) async {
+    repo.saveBook(sampleBook(title: '読了の本', status: ReadingStatus.finished, createdAt: DateTime.utc(2026, 3, 1)));
+    repo.saveBook(sampleBook(title: '未設定の本', createdAt: DateTime.utc(2026, 1, 1)));
+    final settings = await pumpApp(tester, language: 'ja');
+    double top(String title) => tester.getTopLeft(find.text(title)).dy;
+    expect(top('読了の本'), lessThan(top('未設定の本')), reason: '初期は登録日の新しい順');
+
+    await tester.tap(find.byIcon(Icons.sort));
+    await tester.pumpAndSettle();
+    expect(find.text('ステータス順（読了→未設定）'), findsOneWidget);
+    await tester.tap(find.text('ステータス順（未設定→読了）'));
+    await tester.pumpAndSettle();
+
+    expect(top('未設定の本'), lessThan(top('読了の本')));
+    expect(settings.sort, BookSort.statusAscending);
+  });
+
   testWidgets('初回起動時は言語を選び、選んだ言語で一覧画面を表示する', (tester) async {
     final settings = await pumpApp(tester);
     expect(find.text('Choose your language'), findsOneWidget);

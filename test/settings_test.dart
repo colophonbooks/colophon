@@ -17,6 +17,13 @@ void main() {
     expect(s.exportTextWithCovers, isFalse);
   });
 
+  test('ステータス順の並び方も保存され、次に起動したときに読み込まれる', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    await SettingsController(prefs).setSort(BookSort.statusDescending);
+    expect(SettingsController(prefs).sort, BookSort.statusDescending);
+  });
+
   test('変更した設定は保存され、次に起動したときに読み込まれる', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();

@@ -1577,6 +1577,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close without syncing'**
   String get syncOnExitSkip;
+
+  /// No description provided for @sortStatusAscending.
+  ///
+  /// In en, this message translates to:
+  /// **'Status (Not set → Finished)'**
+  String get sortStatusAscending;
+
+  /// No description provided for @sortStatusDescending.
+  ///
+  /// In en, this message translates to:
+  /// **'Status (Finished → Not set)'**
+  String get sortStatusDescending;
 }
 
 class _AppLocalizationsDelegate

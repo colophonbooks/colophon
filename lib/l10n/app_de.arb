@@ -257,5 +257,7 @@
   "syncNeedsChoice": "Wählen Sie, wie dieser Computer mit Google Drive zusammengeführt wird: Tippen Sie auf „Jetzt synchronisieren“.",
   "syncOnExitTitle": "Synchronisierung mit Google Drive…",
   "syncOnExitBody": "Colophon wird nach der Synchronisierung beendet.",
-  "syncOnExitSkip": "Ohne Synchronisierung beenden"
+  "syncOnExitSkip": "Ohne Synchronisierung beenden",
+  "sortStatusAscending": "Status (Nicht festgelegt → Gelesen)",
+  "sortStatusDescending": "Status (Gelesen → Nicht festgelegt)"
 }

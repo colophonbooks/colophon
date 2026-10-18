@@ -155,6 +155,44 @@ void main() {
     expect(repo.listSummaries(sort: BookSort.title).first.readCount, 2);
   });
 
+  group('ステータス順', () {
+    setUp(() {
+      // 登録順は並び順と無関係にする
+      for (final b in [
+        sampleBook(title: '読了・日付なし', status: ReadingStatus.finished),
+        sampleBook(title: '読書中80', status: ReadingStatus.reading, progress: 80),
+        sampleBook(title: '未設定B'),
+        sampleBook(title: '読了・新', status: ReadingStatus.finished,
+            readDates: [const LocalDate(2025, 1, 1), const LocalDate(2026, 3, 1)]),
+        sampleBook(title: '読書中・割合なし', status: ReadingStatus.reading),
+        sampleBook(title: '未読', status: ReadingStatus.unread),
+        sampleBook(title: '未設定A'),
+        sampleBook(title: '読書中10', status: ReadingStatus.reading, progress: 10),
+        sampleBook(title: '読了・旧', status: ReadingStatus.finished, readDates: [const LocalDate(2025, 6, 1)]),
+      ]) {
+        repo.saveBook(b);
+      }
+    });
+
+    test('未設定から読了へ: 読書中は割合の小さい順（未入力は 0%）、読了は最後の読了日の古い順、同じなら書籍名順', () {
+      expect(repo.listSummaries(sort: BookSort.statusAscending).map((b) => b.title), [
+        '未設定A', '未設定B',
+        '未読',
+        '読書中・割合なし', '読書中10', '読書中80',
+        '読了・旧', '読了・新', '読了・日付なし',
+      ]);
+    });
+
+    test('読了から未設定へ: 読了は最後の読了日の新しい順（日付なしは最後）、読書中は割合の大きい順', () {
+      expect(repo.listSummaries(sort: BookSort.statusDescending).map((b) => b.title), [
+        '読了・新', '読了・旧', '読了・日付なし',
+        '読書中80', '読書中10', '読書中・割合なし',
+        '未読',
+        '未設定A', '未設定B',
+      ]);
+    });
+  });
+
   group('削除（同期に備えて削除済みの印を残す）', () {
     test('削除した書籍は読み込まれず、使われなくなったタグは消える', () {
       final keep = repo.saveBook(sampleBook(title: '残す', tags: ['共通']));

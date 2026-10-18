@@ -836,4 +836,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get syncOnExitSkip => '동기화하지 않고 종료';
+
+  @override
+  String get sortStatusAscending => '상태순 (미설정 → 완독)';
+
+  @override
+  String get sortStatusDescending => '상태순 (완독 → 미설정)';
 }
