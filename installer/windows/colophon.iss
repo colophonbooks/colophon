@@ -1,12 +1,12 @@
 ﻿; Colophon の Windows 用インストーラー（Inno Setup 6）
 ; 通常は build-installer.ps1 から作る。手で作る場合:
-;   ISCC.exe /DAppVersion=1.1.0 /DCrtDir="<VC++ 再配布 DLL のフォルダ>" colophon.iss
+;   ISCC.exe /DAppVersion=1.2.0 /DCrtDir="<VC++ 再配布 DLL のフォルダ>" colophon.iss
 
 #define AppName "Colophon"
 #define AppPublisher "colophonbooks"
 #define AppExeName "colophon.exe"
 #ifndef AppVersion
-  #define AppVersion "1.1.0"
+  #define AppVersion "1.2.0"
 #endif
 #ifndef SourceDir
   #define SourceDir "..\..\build\windows\x64\runner\Release"

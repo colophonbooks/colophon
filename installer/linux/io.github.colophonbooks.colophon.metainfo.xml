@@ -32,6 +32,11 @@
   <url type="vcs-browser">https://github.com/colophonbooks/colophon</url>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="1.2.0" date="2026-10-18">
+      <description>
+        <p>Sort the library by reading status, from Not set to Finished or the reverse.</p>
+      </description>
+    </release>
     <release version="1.1.0" date="2026-10-16">
       <description>
         <p>Optional sync between computers through your own Google Drive, and a user guide with animated screenshots.</p>
