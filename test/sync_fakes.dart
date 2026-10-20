@@ -53,8 +53,7 @@ class FakeGoogleAuth implements GoogleAuth {
 
   /// 同期エンジンはメモリ上の Drive を使うので、通信しないクライアントを返す。
   @override
-  AutoRefreshingAuthClient clientFor(GoogleAccount account) =>
-      autoRefreshingClient(ClientId('test'), account.credentials, MockClient((_) async => http.Response('', 200)));
+  http.Client clientFor(GoogleAccount account) => MockClient((_) async => http.Response('', 200));
 
   @override
   Future<void> signOut(GoogleAccount account) async {

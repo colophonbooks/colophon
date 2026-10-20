@@ -660,7 +660,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get syncDesc =>
-      '同じ Google アカウントでログインしたパソコンどうしで、書籍とノートを揃えます。データは、あなたの Google ドライブの中にある、このアプリ専用の非公開の領域に保存されます。';
+      '同じ Google アカウントでログインした端末どうしで、書籍とノートを揃えます。データは、あなたの Google ドライブの中にある、このアプリ専用の非公開の領域に保存されます。';
 
   @override
   String get syncUnavailable => 'このビルドでは同期を使えません（Google ログインの設定を含めずに作られています）。';
@@ -706,7 +706,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get syncSignOutBody =>
-      'このパソコンでの同期を止めます。このパソコンと Google ドライブのデータは、どちらも削除されません。';
+      'この端末での同期を止めます。この端末と Google ドライブのデータは、どちらも削除されません。';
 
   @override
   String get syncBrowserPage => 'Colophon にログインしました。このタブを閉じて、アプリに戻ってください。';
@@ -733,7 +733,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String syncFirstBody(int local, int remote) {
-    return 'このパソコンに$local冊、Google ドライブに$remote冊の書籍があります。どのように合わせるか選んでください。同期の前に、このパソコンのデータのバックアップを自動で保存します。';
+    return 'この端末に$local冊、Google ドライブに$remote冊の書籍があります。どのように合わせるか選んでください。同期の前に、この端末のデータのバックアップを自動で保存します。';
   }
 
   @override
@@ -746,14 +746,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get syncFirstUseRemote => 'Google ドライブの内容に置き換える';
 
   @override
-  String get syncFirstUseRemoteDesc => 'このパソコンだけにある書籍とノートは削除されます。';
+  String get syncFirstUseRemoteDesc => 'この端末だけにある書籍とノートは削除されます。';
 
   @override
-  String get syncFirstUseLocal => 'このパソコンの内容に置き換える';
+  String get syncFirstUseLocal => 'この端末の内容に置き換える';
 
   @override
   String get syncFirstUseLocalDesc =>
-      'Google ドライブだけにある書籍とノートは、同期しているすべてのパソコンから削除されます。';
+      'Google ドライブだけにある書籍とノートは、同期しているすべての端末から削除されます。';
 
   @override
   String get syncFirstStart => '同期する';
@@ -774,7 +774,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get syncErrorRemoteCorrupt => 'Google ドライブの同期データが壊れているため、同期を中止しました。';
 
   @override
-  String get syncErrorBusy => 'ほかのパソコンの同期と重なりました。しばらくしてからもう一度お試しください。';
+  String get syncErrorBusy => 'ほかの端末の同期と重なりました。しばらくしてからもう一度お試しください。';
 
   @override
   String get syncErrorMissingCover => '表紙の画像がまだ届いていません。しばらくしてからもう一度お試しください。';
@@ -783,30 +783,30 @@ class AppLocalizationsJa extends AppLocalizations {
   String get syncErrorQuota => 'Google ドライブの空き容量が足りません。';
 
   @override
-  String get syncErrorLocalStorage => 'このパソコンへの保存に失敗しました。ディスクの空き容量を確認してください。';
+  String get syncErrorLocalStorage => 'この端末への保存に失敗しました。空き容量を確認してください。';
 
   @override
   String get syncErrorOther => '同期できませんでした。';
 
   @override
   String get syncWarningUnreadable =>
-      'Google ドライブの同期データの一部が読めなかったため、このパソコンからの送信を見合わせました。';
+      'Google ドライブの同期データの一部が読めなかったため、この端末からの送信を見合わせました。';
 
   @override
   String get deleteScopeTitle => '削除する範囲';
 
   @override
-  String get deleteScopeThisPc => 'このパソコンだけ';
+  String get deleteScopeThisPc => 'この端末だけ';
 
   @override
   String get deleteScopeThisPcDesc =>
-      '同期をオフにします（ログアウトします）。Google ドライブとほかのパソコンのデータは残ります。';
+      '同期をオフにします（ログアウトします）。Google ドライブとほかの端末のデータは残ります。';
 
   @override
-  String get deleteScopeEverywhere => 'Google ドライブとすべてのパソコン';
+  String get deleteScopeEverywhere => 'Google ドライブとすべての端末';
 
   @override
-  String get deleteScopeEverywhereDesc => 'ほかのパソコンでも、次の同期のときに書籍とノートが削除されます。';
+  String get deleteScopeEverywhereDesc => 'ほかの端末でも、次の同期のときに書籍とノートが削除されます。';
 
   @override
   String get deleteEverywhereSyncFailed =>
@@ -814,13 +814,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get deleteEverywherePartial =>
-      'このパソコンの書籍は削除しましたが、Google ドライブへの反映に失敗しました。次の同期で反映されます。';
+      'この端末の書籍は削除しましたが、Google ドライブへの反映に失敗しました。次の同期で反映されます。';
 
   @override
   String get deleteEverywhereProgress => 'Google ドライブから削除しています…';
 
   @override
-  String get bookDeletedElsewhere => 'この書籍は、ほかのパソコンで削除されました。';
+  String get bookDeletedElsewhere => 'この書籍は、ほかの端末で削除されました。';
 
   @override
   String get syncNeedsChoice => '初めての同期の方法を選ぶ必要があります。「今すぐ同期」を押してください。';

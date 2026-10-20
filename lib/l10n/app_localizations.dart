@@ -1263,7 +1263,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncDesc.
   ///
   /// In en, this message translates to:
-  /// **'Keep your books and notes the same on every computer signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.'**
+  /// **'Keep your books and notes the same on every device signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.'**
   String get syncDesc;
 
   /// No description provided for @syncUnavailable.
@@ -1347,7 +1347,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncSignOutBody.
   ///
   /// In en, this message translates to:
-  /// **'Syncing stops on this computer. Nothing is deleted from this computer or from Google Drive.'**
+  /// **'Syncing stops on this device. Nothing is deleted from this device or from Google Drive.'**
   String get syncSignOutBody;
 
   /// No description provided for @syncBrowserPage.
@@ -1395,7 +1395,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncFirstBody.
   ///
   /// In en, this message translates to:
-  /// **'This computer has {local} books and Google Drive has {remote}. Choose how to combine them. Before syncing, a backup of this computer’s data is saved automatically.'**
+  /// **'This device has {local} books and Google Drive has {remote}. Choose how to combine them. Before syncing, a backup of this device’s data is saved automatically.'**
   String syncFirstBody(int local, int remote);
 
   /// No description provided for @syncFirstMerge.
@@ -1419,19 +1419,19 @@ abstract class AppLocalizations {
   /// No description provided for @syncFirstUseRemoteDesc.
   ///
   /// In en, this message translates to:
-  /// **'Books and notes that exist only on this computer are deleted.'**
+  /// **'Books and notes that exist only on this device are deleted.'**
   String get syncFirstUseRemoteDesc;
 
   /// No description provided for @syncFirstUseLocal.
   ///
   /// In en, this message translates to:
-  /// **'Replace with this computer'**
+  /// **'Replace with this device'**
   String get syncFirstUseLocal;
 
   /// No description provided for @syncFirstUseLocalDesc.
   ///
   /// In en, this message translates to:
-  /// **'Books and notes that exist only on Google Drive are deleted from every synced computer.'**
+  /// **'Books and notes that exist only on Google Drive are deleted from every synced device.'**
   String get syncFirstUseLocalDesc;
 
   /// No description provided for @syncFirstStart.
@@ -1467,7 +1467,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncErrorBusy.
   ///
   /// In en, this message translates to:
-  /// **'Another computer was syncing at the same time. Try again in a moment.'**
+  /// **'Another device was syncing at the same time. Try again in a moment.'**
   String get syncErrorBusy;
 
   /// No description provided for @syncErrorMissingCover.
@@ -1485,7 +1485,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncErrorLocalStorage.
   ///
   /// In en, this message translates to:
-  /// **'Could not save to this computer. Check the free disk space.'**
+  /// **'Could not save to this device. Check the free storage space.'**
   String get syncErrorLocalStorage;
 
   /// No description provided for @syncErrorOther.
@@ -1497,7 +1497,7 @@ abstract class AppLocalizations {
   /// No description provided for @syncWarningUnreadable.
   ///
   /// In en, this message translates to:
-  /// **'Part of the sync data on Google Drive could not be read, so this computer did not send its changes.'**
+  /// **'Part of the sync data on Google Drive could not be read, so this device did not send its changes.'**
   String get syncWarningUnreadable;
 
   /// No description provided for @deleteScopeTitle.
@@ -1509,25 +1509,25 @@ abstract class AppLocalizations {
   /// No description provided for @deleteScopeThisPc.
   ///
   /// In en, this message translates to:
-  /// **'This computer only'**
+  /// **'This device only'**
   String get deleteScopeThisPc;
 
   /// No description provided for @deleteScopeThisPcDesc.
   ///
   /// In en, this message translates to:
-  /// **'Sync is turned off (you are signed out). Data on Google Drive and other computers is kept.'**
+  /// **'Sync is turned off (you are signed out). Data on Google Drive and other devices is kept.'**
   String get deleteScopeThisPcDesc;
 
   /// No description provided for @deleteScopeEverywhere.
   ///
   /// In en, this message translates to:
-  /// **'Google Drive and every computer'**
+  /// **'Google Drive and every device'**
   String get deleteScopeEverywhere;
 
   /// No description provided for @deleteScopeEverywhereDesc.
   ///
   /// In en, this message translates to:
-  /// **'Other computers also delete their books and notes when they next sync.'**
+  /// **'Other devices also delete their books and notes when they next sync.'**
   String get deleteScopeEverywhereDesc;
 
   /// No description provided for @deleteEverywhereSyncFailed.
@@ -1539,7 +1539,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteEverywherePartial.
   ///
   /// In en, this message translates to:
-  /// **'Books were deleted on this computer, but the deletion could not be sent to Google Drive. It will be sent at the next sync.'**
+  /// **'Books were deleted on this device, but the deletion could not be sent to Google Drive. It will be sent at the next sync.'**
   String get deleteEverywherePartial;
 
   /// No description provided for @deleteEverywhereProgress.
@@ -1551,13 +1551,13 @@ abstract class AppLocalizations {
   /// No description provided for @bookDeletedElsewhere.
   ///
   /// In en, this message translates to:
-  /// **'This book was deleted on another computer.'**
+  /// **'This book was deleted on another device.'**
   String get bookDeletedElsewhere;
 
   /// No description provided for @syncNeedsChoice.
   ///
   /// In en, this message translates to:
-  /// **'Choose how to combine this computer with Google Drive: press “Sync now”.'**
+  /// **'Choose how to combine this device with Google Drive: press “Sync now”.'**
   String get syncNeedsChoice;
 
   /// No description provided for @syncOnExitTitle.

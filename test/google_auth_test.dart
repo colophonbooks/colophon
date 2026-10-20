@@ -172,27 +172,27 @@ void main() {
     test('ログインするとコードを交換し、メールアドレスと一緒に保存する', () async {
       final auth = GoogleAuthService(_config, store, httpClient: mock());
       final flow = await auth.beginSignIn(successPage: '');
-      await _visit(_callback(flow.authorizationUri, {'code': 'auth-code'}));
+      await _visit(_callback(flow.authorizationUri!, {'code': 'auth-code'}));
       final account = await flow.result;
 
       expect(account.email, 'reader@example.com');
-      expect(account.credentials.refreshToken, 'refresh-1');
+      expect(account.credentials!.refreshToken, 'refresh-1');
 
       final token = requests.firstWhere((r) => r.url.path == '/token');
       expect(token.bodyFields['code'], 'auth-code');
-      expect(token.bodyFields['redirect_uri'], flow.authorizationUri.queryParameters['redirect_uri']);
+      expect(token.bodyFields['redirect_uri'], flow.authorizationUri!.queryParameters['redirect_uri']);
       expect(codeChallengeFor(token.bodyFields['code_verifier']!),
-          flow.authorizationUri.queryParameters['code_challenge']);
+          flow.authorizationUri!.queryParameters['code_challenge']);
 
       final restored = await auth.restore();
       expect(restored?.email, 'reader@example.com');
-      expect(restored?.credentials.refreshToken, 'refresh-1');
+      expect(restored?.credentials?.refreshToken, 'refresh-1');
     });
 
     test('メールアドレスが取れなくてもログインは成功する', () async {
       final auth = GoogleAuthService(_config, store, httpClient: mock(aboutFails: true));
       final flow = await auth.beginSignIn(successPage: '');
-      await _visit(_callback(flow.authorizationUri, {'code': 'auth-code'}));
+      await _visit(_callback(flow.authorizationUri!, {'code': 'auth-code'}));
       expect((await flow.result).email, isNull);
       expect(store.value, isNotNull);
     });
@@ -204,9 +204,14 @@ void main() {
         flow.result,
         throwsA(isA<GoogleSignInException>().having((e) => e.failure, 'failure', GoogleSignInFailure.denied)),
       );
-      await _visit(_callback(flow.authorizationUri, {'error': 'access_denied'}));
+      await _visit(_callback(flow.authorizationUri!, {'error': 'access_denied'}));
       await expectation;
       expect(store.value, isNull);
+    });
+
+    test('トークンのない保存内容（スマホでの形式）は、パソコンではログインしていない扱いにする', () async {
+      store.value = jsonEncode(const GoogleAccount(email: 'a@example.com').toJson());
+      expect(await GoogleAuthService(_config, store, httpClient: mock()).restore(), isNull);
     });
 
     test('保存内容が壊れていればログインしていない扱いにする', () async {
@@ -230,10 +235,10 @@ void main() {
       final account = GoogleAccount(credentials: _credentials(), email: 'a@example.com');
       final back = GoogleAccount.fromJson(jsonDecode(jsonEncode(account.toJson())) as Map<String, dynamic>);
       expect(back.email, account.email);
-      expect(back.credentials.accessToken.data, 'access-1');
-      expect(back.credentials.accessToken.expiry, account.credentials.accessToken.expiry);
-      expect(back.credentials.refreshToken, 'refresh-1');
-      expect(back.credentials.scopes, googleDriveScopes);
+      expect(back.credentials!.accessToken.data, 'access-1');
+      expect(back.credentials!.accessToken.expiry, account.credentials!.accessToken.expiry);
+      expect(back.credentials!.refreshToken, 'refresh-1');
+      expect(back.credentials!.scopes, googleDriveScopes);
     });
   });
 

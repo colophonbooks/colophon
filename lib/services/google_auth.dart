@@ -189,20 +189,23 @@ class LoopbackSignIn {
 
 /// ログイン情報（アクセストークンと更新用トークン）と、表示用のメールアドレス。
 class GoogleAccount {
-  const GoogleAccount({required this.credentials, this.email});
+  const GoogleAccount({this.credentials, this.email});
 
   factory GoogleAccount.fromJson(Map<String, dynamic> json) => GoogleAccount(
-        credentials: AccessCredentials.fromJson(json['credentials'] as Map<String, dynamic>),
+        credentials: json['credentials'] == null
+            ? null
+            : AccessCredentials.fromJson(json['credentials'] as Map<String, dynamic>),
         email: json['email'] as String?,
       );
 
-  final AccessCredentials credentials;
+  /// パソコンでのトークン。スマホ・タブレットでは OS がトークンを管理するので持たない（null）。
+  final AccessCredentials? credentials;
   final String? email;
 
   GoogleAccount copyWith({AccessCredentials? credentials}) =>
       GoogleAccount(credentials: credentials ?? this.credentials, email: email);
 
-  Map<String, dynamic> toJson() => {'credentials': credentials.toJson(), 'email': email};
+  Map<String, dynamic> toJson() => {'credentials': credentials?.toJson(), 'email': email};
 }
 
 abstract class CredentialStore {
@@ -258,20 +261,21 @@ abstract class GoogleAuth {
   /// 保存してあるログイン情報。なければ null。読めない（壊れている）場合も null。
   Future<GoogleAccount?> restore();
 
-  /// ブラウザでのログインを始める。[GoogleSignInFlow.result] を待つとログイン情報が得られ、保存される。
+  /// ログインを始める。[GoogleSignInFlow.result] を待つとログイン情報が得られ、保存される。
   Future<GoogleSignInFlow> beginSignIn({required String successPage});
 
-  /// 自動で更新されるアクセストークン付きの HTTP クライアント。更新されたトークンは保存し直す。
-  AutoRefreshingAuthClient clientFor(GoogleAccount account);
+  /// Google ドライブを呼ぶための、アクセストークン付きの HTTP クライアント。トークンは必要に応じて更新する。
+  http.Client clientFor(GoogleAccount account);
 
   /// トークンを Google 側でも無効にし、保存したログイン情報を消す。通信に失敗しても手元の情報は消す。
   Future<void> signOut(GoogleAccount account);
 }
 
 class GoogleSignInFlow {
-  GoogleSignInFlow({required this.authorizationUri, required this.result, required this.cancel});
+  GoogleSignInFlow({this.authorizationUri, required this.result, required this.cancel});
 
-  final Uri authorizationUri;
+  /// ブラウザで開く URL（パソコン）。スマホ・タブレットは OS のログイン画面を使うので null。
+  final Uri? authorizationUri;
   final Future<GoogleAccount> result;
   final Future<void> Function() cancel;
 }
@@ -291,7 +295,8 @@ class GoogleAuthService implements GoogleAuth {
     try {
       final raw = await store.read();
       if (raw == null) return null;
-      return GoogleAccount.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      final account = GoogleAccount.fromJson(jsonDecode(raw) as Map<String, dynamic>);
+      return account.credentials == null ? null : account;
     } on Object {
       // 壊れた・形式の古い保存内容は使わず、ログインし直してもらう
       return null;
@@ -342,7 +347,7 @@ class GoogleAuthService implements GoogleAuth {
 
   @override
   AutoRefreshingAuthClient clientFor(GoogleAccount account) {
-    final client = autoRefreshingClient(config._clientId, account.credentials, http.Client());
+    final client = autoRefreshingClient(config._clientId, account.credentials!, http.Client());
     client.credentialUpdates.listen((credentials) {
       unawaited(store.write(jsonEncode(account.copyWith(credentials: credentials).toJson())));
     });
@@ -351,7 +356,8 @@ class GoogleAuthService implements GoogleAuth {
 
   @override
   Future<void> signOut(GoogleAccount account) async {
-    final token = account.credentials.refreshToken ?? account.credentials.accessToken.data;
+    final credentials = account.credentials!;
+    final token = credentials.refreshToken ?? credentials.accessToken.data;
     try {
       await _http.post(Uri.https('oauth2.googleapis.com', '/revoke'), body: {'token': token});
     } on Object {
@@ -375,7 +381,7 @@ class UnconfiguredGoogleAuth implements GoogleAuth {
   Future<GoogleSignInFlow> beginSignIn({required String successPage}) => throw UnsupportedError('not configured');
 
   @override
-  AutoRefreshingAuthClient clientFor(GoogleAccount account) => throw UnsupportedError('not configured');
+  http.Client clientFor(GoogleAccount account) => throw UnsupportedError('not configured');
 
   @override
   Future<void> signOut(GoogleAccount account) async {}

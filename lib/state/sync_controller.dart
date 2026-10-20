@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:googleapis_auth/googleapis_auth.dart';
+import 'package:http/http.dart' as http;
 
 import '../services/app_clock.dart';
 import '../services/google_auth.dart';
@@ -34,6 +34,7 @@ class SyncController extends ChangeNotifier {
     this.startupDelay = const Duration(seconds: 3),
     this.changeDelay = const Duration(seconds: 30),
     this.maxChangeDelay = const Duration(minutes: 5),
+    this.resumeSyncAfter = const Duration(minutes: 5),
     this.retryDelays = const [
       Duration(minutes: 1),
       Duration(minutes: 2),
@@ -54,7 +55,7 @@ class SyncController extends ChangeNotifier {
   final GoogleAuth _auth;
   final SyncStateStore _stateStore;
   /// 同期エンジンを作る。null なら同期しない（テスト用）。
-  final SyncEngine Function(AutoRefreshingAuthClient client)? engineFactory;
+  final SyncEngine Function(http.Client client)? engineFactory;
 
   /// 初めての同期の前に取るバックアップの置き場所。すべてのデータを削除するときに一緒に消す。
   final Directory? backupDirectory;
@@ -71,12 +72,15 @@ class SyncController extends ChangeNotifier {
   /// 最初の変更からの最長の待ち時間。編集し続けていても、これを過ぎたら同期する。
   final Duration maxChangeDelay;
 
+  /// スマホ・タブレットでアプリに戻ったとき、前回の同期からこれだけ経っていれば同期する。
+  final Duration resumeSyncAfter;
+
   /// 一時的な失敗（通信できないなど）のあと、自動で再試行するまでの待ち時間（回数ごと。最後の値を繰り返す）。
   final List<Duration> retryDelays;
   SyncAuthState _state;
   GoogleAccount? _account;
   GoogleSignInFlow? _flow;
-  AutoRefreshingAuthClient? _client;
+  http.Client? _client;
   bool _disposed = false;
 
   bool _syncing = false;
@@ -121,7 +125,7 @@ class SyncController extends ChangeNotifier {
   bool get lastRemoteUnreadable => _lastRemoteUnreadable;
 
   /// Drive API を呼ぶためのクライアント。ログインしていなければ null。
-  AutoRefreshingAuthClient? get client {
+  http.Client? get client {
     final account = _account;
     if (account == null) return null;
     return _client ??= _auth.clientFor(account);
@@ -179,7 +183,30 @@ class SyncController extends ChangeNotifier {
     if (_dirty || _again) scheduleSync(changeDelay);
   }
 
-  /// ブラウザでログインする。[openBrowser] には認可 URL が渡される。
+  /// スマホ・タブレットでアプリが裏に回った。終了の操作がなく、裏に回ったまま OS に止められることが
+  /// あるため、まだ送っていない変更があれば、変更後の待ち時間を待たずに今送る。
+  void onBackgrounded() {
+    if (!hasUnsentChanges) return;
+    _timer?.cancel();
+    _timer = null;
+    unawaited(syncNow());
+  }
+
+  /// スマホ・タブレットでアプリに戻った。裏に回っている間にほかの端末で変わっているかもしれないので、
+  /// しばらく同期していなければ同期する（切り替えるたびに通信しないよう、間を空ける）。
+  void onResumed() {
+    if (_state != SyncAuthState.signedIn) return;
+    // 通信できずに失敗した後は、予約した再試行を待つ（通信できない間に、戻るたびに試さない）
+    final failure = _lastFailure;
+    if (failure != null && _isTemporary(failure)) return;
+    final last = _lastSyncAt;
+    // 前回の同期の時刻は、サーバーの時計で補正した時刻で記録している
+    if (last != null && AppClock.now().difference(last) < resumeSyncAfter) return;
+    scheduleSync(Duration.zero);
+  }
+
+  /// ログインする。パソコンではブラウザを使い、[openBrowser] に認可 URL が渡される
+  /// （スマホ・タブレットは OS のログイン画面が出るので呼ばれない）。
   /// 失敗・取り消し時は [GoogleSignInException] を投げ、ログアウト状態に戻る。
   Future<void> signIn({
     required String successPage,
@@ -196,7 +223,8 @@ class SyncController extends ChangeNotifier {
     _set(SyncAuthState.signingIn);
     try {
       // ブラウザが開けなくても、画面に出した URL をコピーして続けられるので待ち続ける
-      unawaited(openBrowser(flow.authorizationUri).catchError((Object _) {}));
+      final uri = flow.authorizationUri;
+      if (uri != null) unawaited(openBrowser(uri).catchError((Object _) {}));
       _account = await flow.result;
       _lastFailure = null;
       _set(SyncAuthState.signedIn);

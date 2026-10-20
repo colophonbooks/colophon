@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 以降の自動バックアップと機種変更時の移行。内容と理由は backup_rules.xml と同じ。 -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="file" path="sync-state.json" />
+        <exclude domain="file" path="sync-backups" />
+        <exclude domain="sharedpref" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="file" path="sync-state.json" />
+        <exclude domain="file" path="sync-backups" />
+        <exclude domain="sharedpref" path="." />
+    </device-transfer>
+</data-extraction-rules>

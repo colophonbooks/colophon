@@ -202,6 +202,63 @@ void main() {
       expect(SyncSnapshot.decode(drive.files.values.single.bytes).books.single.title, '終了直前の本');
     });
 
+    test('スマホでアプリが裏に回ったら、まだ送っていない変更を待たずに送る', () async {
+      final sync = fakeSyncController(repo, drive: drive, account: fakeAccount(), autoSync: true,
+          delay: const Duration(hours: 1));
+      addTearDown(sync.dispose);
+      repo.onChanged = sync.notifyLocalChange;
+      await settle(sync);
+
+      sync.onBackgrounded();
+      await sync.whenIdle();
+      expect(drive.uploads, 0, reason: '送るものがなければ通信しない');
+
+      repo.saveBook(book('u1', '裏に回る前の本'));
+      sync.onBackgrounded();
+      await waitUntil(() => drive.uploads == 1);
+      await sync.whenIdle();
+      expect(SyncSnapshot.decode(drive.files.values.single.bytes).books.single.title, '裏に回る前の本');
+    });
+
+    test('スマホでアプリに戻ったら、しばらく同期していなければ同期し、直後なら同期しない', () async {
+      final sync = fakeSyncController(repo, drive: drive, account: fakeAccount(), autoSync: true,
+          delay: const Duration(hours: 1));
+      addTearDown(sync.dispose);
+      await settle(sync);
+      await putCloudBooks(drive, [SyncBook(uuid: 'c1', title: 'ほかの端末の本', createdAt: t(0), updatedAt: t(1))]);
+
+      sync.onResumed();
+      await waitUntil(() => sync.lastSyncAt != null);
+      await sync.whenIdle();
+      expect(repo.getAllBooks().single.title, 'ほかの端末の本', reason: '前回の同期がないので同期する');
+
+      final last = sync.lastSyncAt;
+      sync.onResumed();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(sync.lastSyncAt, last, reason: '同期した直後なので通信しない');
+    });
+
+    test('スマホでアプリに戻っても、ログインしていなければ同期せず、通信できずに失敗した後は再試行の予定を待つ', () async {
+      final signedOut = fakeSyncController(repo, drive: drive, autoSync: true, delay: const Duration(hours: 1));
+      addTearDown(signedOut.dispose);
+      await settle(signedOut);
+      signedOut.onResumed();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(drive.uploads, 0);
+
+      final flaky = _FlakyDrive(1, const SocketException('offline'));
+      final sync = _controller(repo, flaky, retry: const [Duration(hours: 1)]);
+      addTearDown(sync.dispose);
+      await settle(sync);
+      await sync.syncNow();
+      expect(sync.lastFailure, SyncFailure.network);
+
+      sync.onResumed();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(flaky.failures, 0);
+      expect(sync.lastFailure, SyncFailure.network, reason: '戻っただけでは試し直さない（1時間後の再試行を待つ）');
+    });
+
     test('通信できずに失敗したら、少し待って自動で再試行する', () async {
       final flaky = _FlakyDrive(1, const SocketException('offline'));
       final sync = _controller(repo, flaky);
@@ -293,6 +350,40 @@ void main() {
       return sync;
     }
 
+    /// アプリが裏に回る（前面 → 操作不可 → 非表示）。
+    void hideApp(WidgetTester tester) {
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    }
+
+    testWidgets('スマホでは、アプリが裏に回ると送っていない変更を同期する', (tester) async {
+      final drive = MemoryDriveStore();
+      final sync = await pumpWithChange(tester, drive);
+      addTearDown(() => tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed));
+      repo.saveBook(book('u1', '裏に回る前の本'));
+
+      hideApp(tester);
+      await tester.runAsync(sync.whenIdle);
+
+      expect(SyncSnapshot.decode(drive.files.values.single.bytes).books.single.title, '裏に回る前の本');
+    });
+
+    testWidgets('パソコンでは、最小化しても同期しない（変更から少し待って同期する）',
+        variant: TargetPlatformVariant.only(TargetPlatform.windows), (tester) async {
+      final drive = MemoryDriveStore();
+      final sync = await pumpWithChange(tester, drive);
+      addTearDown(() => tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed));
+      repo.saveBook(book('u1', '最小化する前の本'));
+
+      hideApp(tester);
+      await tester.runAsync(sync.whenIdle);
+
+      expect(drive.uploads, 0);
+      // 変更から1時間後の同期の予約が残るので、画面ごと片付けて取りやめる
+      await tester.pumpWidget(const SizedBox());
+      sync.dispose();
+    });
+
     testWidgets('送っていない変更があれば「同期しています」を出し、同期してから終了する', (tester) async {
       final drive = _GatedDrive();
       await pumpWithChange(tester, drive);
@@ -383,7 +474,7 @@ void main() {
 
       await tester.tap(find.text('保存'));
       await tester.pumpAndSettle();
-      expect(find.text('この書籍は、ほかのパソコンで削除されました。'), findsOneWidget);
+      expect(find.text('この書籍は、ほかの端末で削除されました。'), findsOneWidget);
       expect(repo.getAllBooks(), isEmpty, reason: '削除された書籍を復活させない');
     });
 
@@ -393,7 +484,7 @@ void main() {
       await putCloudBooks(drive, [SyncBook.tombstone(x.uuid, createdAt: x.createdAt, at: t(30))]);
       await tester.runAsync(() => sync.syncNow());
       await tester.pumpAndSettle();
-      expect(find.text('この書籍は、ほかのパソコンで削除されました。'), findsOneWidget);
+      expect(find.text('この書籍は、ほかの端末で削除されました。'), findsOneWidget);
       expect(find.textContaining('まだ書籍がありません'), findsOneWidget, reason: '一覧に戻る');
     });
   });

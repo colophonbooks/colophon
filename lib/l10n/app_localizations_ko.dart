@@ -661,7 +661,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get syncDesc =>
-      '같은 Google 계정으로 로그인한 컴퓨터끼리 책과 노트를 똑같이 맞춥니다. 데이터는 Google 드라이브 안의 이 앱 전용 비공개 영역에 저장됩니다.';
+      '같은 Google 계정으로 로그인한 기기끼리 책과 노트를 똑같이 맞춥니다. 데이터는 Google 드라이브 안의 이 앱 전용 비공개 영역에 저장됩니다.';
 
   @override
   String get syncUnavailable =>
@@ -708,7 +708,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get syncSignOutBody =>
-      '이 컴퓨터에서 동기화를 중지합니다. 이 컴퓨터와 Google 드라이브의 데이터는 삭제되지 않습니다.';
+      '이 기기에서 동기화를 중지합니다. 이 기기와 Google 드라이브의 데이터는 삭제되지 않습니다.';
 
   @override
   String get syncBrowserPage => 'Colophon에 로그인했습니다. 이 탭을 닫고 앱으로 돌아가세요.';
@@ -735,7 +735,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String syncFirstBody(int local, int remote) {
-    return '이 컴퓨터에 $local권, Google 드라이브에 $remote권의 책이 있습니다. 어떻게 합칠지 선택하세요. 동기화 전에 이 컴퓨터 데이터의 백업을 자동으로 저장합니다.';
+    return '이 기기에 $local권, Google 드라이브에 $remote권의 책이 있습니다. 어떻게 합칠지 선택하세요. 동기화 전에 이 기기 데이터의 백업을 자동으로 저장합니다.';
   }
 
   @override
@@ -748,14 +748,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncFirstUseRemote => 'Google 드라이브 내용으로 바꾸기';
 
   @override
-  String get syncFirstUseRemoteDesc => '이 컴퓨터에만 있는 책과 노트는 삭제됩니다.';
+  String get syncFirstUseRemoteDesc => '이 기기에만 있는 책과 노트는 삭제됩니다.';
 
   @override
-  String get syncFirstUseLocal => '이 컴퓨터 내용으로 바꾸기';
+  String get syncFirstUseLocal => '이 기기 내용으로 바꾸기';
 
   @override
   String get syncFirstUseLocalDesc =>
-      'Google 드라이브에만 있는 책과 노트는 동기화된 모든 컴퓨터에서 삭제됩니다.';
+      'Google 드라이브에만 있는 책과 노트는 동기화된 모든 기기에서 삭제됩니다.';
 
   @override
   String get syncFirstStart => '동기화';
@@ -776,7 +776,7 @@ class AppLocalizationsKo extends AppLocalizations {
       'Google 드라이브의 동기화 데이터가 손상되어 동기화를 중지했습니다.';
 
   @override
-  String get syncErrorBusy => '다른 컴퓨터가 동시에 동기화하고 있었습니다. 잠시 후 다시 시도하세요.';
+  String get syncErrorBusy => '다른 기기가 동시에 동기화하고 있었습니다. 잠시 후 다시 시도하세요.';
 
   @override
   String get syncErrorMissingCover =>
@@ -786,30 +786,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String get syncErrorQuota => 'Google 드라이브 저장 공간이 가득 찼습니다.';
 
   @override
-  String get syncErrorLocalStorage => '이 컴퓨터에 저장하지 못했습니다. 디스크 여유 공간을 확인하세요.';
+  String get syncErrorLocalStorage => '이 기기에 저장하지 못했습니다. 저장 공간을 확인하세요.';
 
   @override
   String get syncErrorOther => '동기화할 수 없습니다.';
 
   @override
   String get syncWarningUnreadable =>
-      'Google 드라이브의 동기화 데이터 일부를 읽을 수 없어, 이 컴퓨터의 변경 내용 전송을 보류했습니다.';
+      'Google 드라이브의 동기화 데이터 일부를 읽을 수 없어, 이 기기의 변경 내용 전송을 보류했습니다.';
 
   @override
   String get deleteScopeTitle => '삭제할 범위';
 
   @override
-  String get deleteScopeThisPc => '이 컴퓨터만';
+  String get deleteScopeThisPc => '이 기기만';
 
   @override
   String get deleteScopeThisPcDesc =>
-      '동기화를 끕니다(로그아웃). Google 드라이브와 다른 컴퓨터의 데이터는 남습니다.';
+      '동기화를 끕니다(로그아웃). Google 드라이브와 다른 기기의 데이터는 남습니다.';
 
   @override
-  String get deleteScopeEverywhere => 'Google 드라이브와 모든 컴퓨터';
+  String get deleteScopeEverywhere => 'Google 드라이브와 모든 기기';
 
   @override
-  String get deleteScopeEverywhereDesc => '다른 컴퓨터에서도 다음 동기화 때 책과 노트가 삭제됩니다.';
+  String get deleteScopeEverywhereDesc => '다른 기기에서도 다음 동기화 때 책과 노트가 삭제됩니다.';
 
   @override
   String get deleteEverywhereSyncFailed =>
@@ -817,13 +817,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get deleteEverywherePartial =>
-      '이 컴퓨터의 책은 삭제했지만 Google 드라이브에 반영하지 못했습니다. 다음 동기화 때 반영됩니다.';
+      '이 기기의 책은 삭제했지만 Google 드라이브에 반영하지 못했습니다. 다음 동기화 때 반영됩니다.';
 
   @override
   String get deleteEverywhereProgress => 'Google 드라이브에서 삭제하는 중…';
 
   @override
-  String get bookDeletedElsewhere => '이 책은 다른 컴퓨터에서 삭제되었습니다.';
+  String get bookDeletedElsewhere => '이 책은 다른 기기에서 삭제되었습니다.';
 
   @override
   String get syncNeedsChoice => '첫 동기화 방법을 선택해야 합니다. \"지금 동기화\"를 누르세요.';

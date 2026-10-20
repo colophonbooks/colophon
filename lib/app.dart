@@ -14,6 +14,7 @@ import 'state/sync_controller.dart';
 import 'ui/app_theme.dart';
 import 'ui/barcode_scanner.dart';
 import 'ui/book_list_screen.dart';
+import 'ui/common.dart';
 import 'ui/language_select_screen.dart';
 
 /// 終了時の「同期しています」の画面を、どの画面の上にも出すため。
@@ -102,7 +103,17 @@ class _SyncBeforeExitState extends State<_SyncBeforeExit> {
   @override
   void initState() {
     super.initState();
-    _lifecycle = AppLifecycleListener(onExitRequested: _syncThenExit);
+    _lifecycle = AppLifecycleListener(
+      onExitRequested: _syncThenExit,
+      // スマホ・タブレットには終了の操作がないので、裏に回ったときと戻ったときに同期する
+      // （パソコンでは、最小化のたびに同期しないよう呼ばない）
+      onHide: () {
+        if (isMobilePlatform) context.read<SyncController>().onBackgrounded();
+      },
+      onShow: () {
+        if (isMobilePlatform) context.read<SyncController>().onResumed();
+      },
+    );
   }
 
   /// 送っていない変更があれば、「同期しています」の画面を出して同期してから終了する。

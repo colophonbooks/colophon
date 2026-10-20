@@ -10,12 +10,14 @@ import 'app.dart';
 import 'data/app_database.dart';
 import 'data/book_repository.dart';
 import 'services/google_auth.dart';
+import 'services/google_auth_mobile.dart';
 import 'state/settings_controller.dart';
 import 'state/sync_controller.dart';
 import 'sync/drive_store.dart';
 import 'sync/sync_backup.dart';
 import 'sync/sync_engine.dart';
 import 'sync/sync_state.dart';
+import 'ui/common.dart';
 
 /// 開発用: 本棚・設定・ログイン情報を、普段の版と分けて置く場所（--dart-define で渡す）。
 /// 試験版が普段の本棚を開いて DB を新しい版へ移行し、配布中の版で開けなくなるのを防ぐ。
@@ -37,11 +39,15 @@ Future<void> main() async {
     final repository = BookRepository(db);
     final syncState = FileSyncStateStore(File(p.join(dir.path, 'sync-state.json')));
     final syncBackups = Directory(p.join(dir.path, 'sync-backups'));
+    final credentials =
+        SecureCredentialStore(key: _devDataDir.isEmpty ? 'google_account' : 'google_account_dev_$_devName');
     final sync = SyncController(
-        oauth.isConfigured
-            ? GoogleAuthService(
-                oauth, SecureCredentialStore(key: _devDataDir.isEmpty ? 'google_account' : 'google_account_dev_$_devName'))
-            : const UnconfiguredGoogleAuth(),
+        isMobilePlatform
+            // iPhone・iPad は、Google Cloud の iOS 用クライアントを設定するまで使えない
+            ? MobileGoogleAuth(credentials, isConfigured: Platform.isAndroid)
+            : oauth.isConfigured
+                ? GoogleAuthService(oauth, credentials)
+                : const UnconfiguredGoogleAuth(),
         stateStore: syncState,
         backupDirectory: syncBackups,
         engineFactory: (client) => SyncEngine(

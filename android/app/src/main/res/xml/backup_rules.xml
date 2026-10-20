@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android の自動バックアップ（Android 11 まで）。本棚（DB）は残し、同期の記録とログインの印は含めない。
+     含めると、機種変更や入れ直しで復元したときに「同期済み」のまま別のアカウントと初めての同期の確認なしに
+     まとめてしまう。ログインの印（安全な保管場所）は、復元しても鍵が戻らず読めないため、設定ごと除く。 -->
+<full-backup-content>
+    <exclude domain="file" path="sync-state.json" />
+    <exclude domain="file" path="sync-backups" />
+    <exclude domain="sharedpref" path="." />
+</full-backup-content>

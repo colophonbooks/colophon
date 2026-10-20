@@ -684,7 +684,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get syncDesc =>
-      'Gardez vos livres et vos notes identiques sur tous les ordinateurs connectés au même compte Google. Les données sont enregistrées dans un espace privé de votre Google Drive, réservé à l’application.';
+      'Gardez vos livres et vos notes identiques sur tous les appareils connectés au même compte Google. Les données sont enregistrées dans un espace privé de votre Google Drive, réservé à l’application.';
 
   @override
   String get syncUnavailable =>
@@ -732,7 +732,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get syncSignOutBody =>
-      'La synchronisation s’arrête sur cet ordinateur. Rien n’est supprimé de cet ordinateur ni de Google Drive.';
+      'La synchronisation s’arrête sur cet appareil. Rien n’est supprimé de cet appareil ni de Google Drive.';
 
   @override
   String get syncBrowserPage =>
@@ -760,7 +760,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String syncFirstBody(int local, int remote) {
-    return 'Cet ordinateur contient $local livres et Google Drive $remote. Choisissez comment les combiner. Avant la synchronisation, une sauvegarde des données de cet ordinateur est enregistrée automatiquement.';
+    return 'Cet appareil contient $local livres et Google Drive $remote. Choisissez comment les combiner. Avant la synchronisation, une sauvegarde des données de cet appareil est enregistrée automatiquement.';
   }
 
   @override
@@ -775,14 +775,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get syncFirstUseRemoteDesc =>
-      'Les livres et notes présents uniquement sur cet ordinateur sont supprimés.';
+      'Les livres et notes présents uniquement sur cet appareil sont supprimés.';
 
   @override
-  String get syncFirstUseLocal => 'Remplacer par cet ordinateur';
+  String get syncFirstUseLocal => 'Remplacer par cet appareil';
 
   @override
   String get syncFirstUseLocalDesc =>
-      'Les livres et notes présents uniquement sur Google Drive sont supprimés de tous les ordinateurs synchronisés.';
+      'Les livres et notes présents uniquement sur Google Drive sont supprimés de tous les appareils synchronisés.';
 
   @override
   String get syncFirstStart => 'Synchroniser';
@@ -805,7 +805,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get syncErrorBusy =>
-      'Un autre ordinateur se synchronisait en même temps. Réessayez dans un instant.';
+      'Un autre appareil se synchronisait en même temps. Réessayez dans un instant.';
 
   @override
   String get syncErrorMissingCover =>
@@ -817,31 +817,31 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get syncErrorLocalStorage =>
-      'Impossible d’enregistrer sur cet ordinateur. Vérifiez l’espace disque disponible.';
+      'Impossible d’enregistrer sur cet appareil. Vérifiez l’espace de stockage disponible.';
 
   @override
   String get syncErrorOther => 'Synchronisation impossible.';
 
   @override
   String get syncWarningUnreadable =>
-      'Une partie des données de synchronisation sur Google Drive est illisible ; cet ordinateur n’a pas envoyé ses modifications.';
+      'Une partie des données de synchronisation sur Google Drive est illisible ; cet appareil n’a pas envoyé ses modifications.';
 
   @override
   String get deleteScopeTitle => 'Que supprimer';
 
   @override
-  String get deleteScopeThisPc => 'Cet ordinateur uniquement';
+  String get deleteScopeThisPc => 'Cet appareil uniquement';
 
   @override
   String get deleteScopeThisPcDesc =>
-      'La synchronisation est désactivée (vous êtes déconnecté). Les données sur Google Drive et les autres ordinateurs sont conservées.';
+      'La synchronisation est désactivée (vous êtes déconnecté). Les données sur Google Drive et les autres appareils sont conservées.';
 
   @override
-  String get deleteScopeEverywhere => 'Google Drive et tous les ordinateurs';
+  String get deleteScopeEverywhere => 'Google Drive et tous les appareils';
 
   @override
   String get deleteScopeEverywhereDesc =>
-      'Les autres ordinateurs suppriment aussi leurs livres et notes lors de leur prochaine synchronisation.';
+      'Les autres appareils suppriment aussi leurs livres et notes lors de leur prochaine synchronisation.';
 
   @override
   String get deleteEverywhereSyncFailed =>
@@ -849,18 +849,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteEverywherePartial =>
-      'Les livres ont été supprimés sur cet ordinateur, mais la suppression n’a pas pu être envoyée à Google Drive. Elle le sera lors de la prochaine synchronisation.';
+      'Les livres ont été supprimés sur cet appareil, mais la suppression n’a pas pu être envoyée à Google Drive. Elle le sera lors de la prochaine synchronisation.';
 
   @override
   String get deleteEverywhereProgress => 'Suppression sur Google Drive…';
 
   @override
   String get bookDeletedElsewhere =>
-      'Ce livre a été supprimé sur un autre ordinateur.';
+      'Ce livre a été supprimé sur un autre appareil.';
 
   @override
   String get syncNeedsChoice =>
-      'Choisissez comment combiner cet ordinateur avec Google Drive : appuyez sur « Synchroniser ».';
+      'Choisissez comment combiner cet appareil avec Google Drive : appuyez sur « Synchroniser ».';
 
   @override
   String get syncOnExitTitle => 'Synchronisation avec Google Drive…';

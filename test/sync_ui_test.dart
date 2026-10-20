@@ -185,7 +185,7 @@ void main() {
       await tester.tap(find.text('今すぐ同期'));
       await tester.pumpAndSettle();
       expect(find.text('初めての同期'), findsOneWidget);
-      expect(find.textContaining('このパソコンに1冊、Google ドライブに2冊'), findsOneWidget);
+      expect(find.textContaining('この端末に1冊、Google ドライブに2冊'), findsOneWidget);
 
       await tester.tap(find.text('キャンセル'));
       await tester.pumpAndSettle();
@@ -219,7 +219,7 @@ void main() {
       await tester.pumpAndSettle();
       final cloud = SyncSnapshot.decode(drive.files.values.single.bytes);
 
-      await deleteAll(tester, scope: 'このパソコンだけ');
+      await deleteAll(tester, scope: 'この端末だけ');
       expect(repo.countBooks(), 0);
       expect(sync.state, SyncAuthState.signedOut);
       expect(SyncSnapshot.decode(drive.files.values.single.bytes).toJson(), cloud.toJson());
@@ -243,7 +243,7 @@ void main() {
         fileId: drive.files.keys.single,
       );
 
-      await deleteAll(tester, scope: 'Google ドライブとすべてのパソコン');
+      await deleteAll(tester, scope: 'Google ドライブとすべての端末');
       expect(repo.countBooks(), 0);
       expect(sync.state, SyncAuthState.signedOut);
       final cloud = SyncSnapshot.decode(drive.files.values.single.bytes);
@@ -271,7 +271,7 @@ void main() {
         fileId: drive.files.entries.firstWhere((e) => e.value.name == syncSnapshotFileName).key,
       );
 
-      await deleteAll(tester, scope: 'Google ドライブとすべてのパソコン');
+      await deleteAll(tester, scope: 'Google ドライブとすべての端末');
       final cloud = SyncSnapshot.decode(drive.files.values.single.bytes);
       expect(cloud.books.every((b) => b.isDeleted), isTrue);
       expect(drive.files.values.where((f) => f.name.startsWith(syncCoverPrefix)), isEmpty);
@@ -287,7 +287,7 @@ void main() {
         contentType: 'application/json',
       );
 
-      await deleteAll(tester, scope: 'Google ドライブとすべてのパソコン');
+      await deleteAll(tester, scope: 'Google ドライブとすべての端末');
       expect(repo.countBooks(), 1);
       expect(sync.state, SyncAuthState.signedIn);
     });
@@ -298,7 +298,7 @@ void main() {
       await pumpApp(tester, sync);
       await drive.upload(syncSnapshotFileName, Uint8List.fromList('{broken'.codeUnits), contentType: 'application/json');
 
-      await deleteAll(tester, scope: 'Google ドライブとすべてのパソコン');
+      await deleteAll(tester, scope: 'Google ドライブとすべての端末');
       expect(find.textContaining('何も削除していません'), findsOneWidget);
       expect(repo.countBooks(), 1);
       expect(sync.state, SyncAuthState.signedIn);

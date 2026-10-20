@@ -658,7 +658,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get syncDesc =>
-      '在登录同一 Google 账号的各台电脑之间保持书籍和笔记一致。数据保存在您的 Google 云端硬盘中仅供本应用使用的私有区域。';
+      '在登录同一 Google 账号的各台设备之间保持书籍和笔记一致。数据保存在您的 Google 云端硬盘中仅供本应用使用的私有区域。';
 
   @override
   String get syncUnavailable => '此版本无法使用同步（构建时未包含 Google 登录设置）。';
@@ -703,7 +703,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get syncSignOutTitle => '要退出登录吗？';
 
   @override
-  String get syncSignOutBody => '将停止此电脑上的同步。此电脑和 Google 云端硬盘中的数据都不会被删除。';
+  String get syncSignOutBody => '将停止此设备上的同步。此设备和 Google 云端硬盘中的数据都不会被删除。';
 
   @override
   String get syncBrowserPage => '已登录 Colophon。请关闭此标签页并返回应用。';
@@ -730,7 +730,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String syncFirstBody(int local, int remote) {
-    return '此电脑有$local本书，Google 云端硬盘中有$remote本书。请选择如何合并。同步前会自动保存此电脑数据的备份。';
+    return '此设备有$local本书，Google 云端硬盘中有$remote本书。请选择如何合并。同步前会自动保存此设备数据的备份。';
   }
 
   @override
@@ -743,13 +743,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get syncFirstUseRemote => '替换为 Google 云端硬盘的内容';
 
   @override
-  String get syncFirstUseRemoteDesc => '仅存在于此电脑的书籍和笔记将被删除。';
+  String get syncFirstUseRemoteDesc => '仅存在于此设备的书籍和笔记将被删除。';
 
   @override
-  String get syncFirstUseLocal => '替换为此电脑的内容';
+  String get syncFirstUseLocal => '替换为此设备的内容';
 
   @override
-  String get syncFirstUseLocalDesc => '仅存在于 Google 云端硬盘的书籍和笔记将从所有同步的电脑中删除。';
+  String get syncFirstUseLocalDesc => '仅存在于 Google 云端硬盘的书籍和笔记将从所有同步的设备中删除。';
 
   @override
   String get syncFirstStart => '同步';
@@ -767,7 +767,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get syncErrorRemoteCorrupt => 'Google 云端硬盘中的同步数据已损坏，已停止同步。';
 
   @override
-  String get syncErrorBusy => '另一台电脑正在同时同步。请稍后再试。';
+  String get syncErrorBusy => '另一台设备正在同时同步。请稍后再试。';
 
   @override
   String get syncErrorMissingCover => '部分封面图片尚未传到。请稍后再试。';
@@ -776,28 +776,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get syncErrorQuota => 'Google 云端硬盘的存储空间已满。';
 
   @override
-  String get syncErrorLocalStorage => '无法保存到此电脑。请检查磁盘可用空间。';
+  String get syncErrorLocalStorage => '无法保存到此设备。请检查可用存储空间。';
 
   @override
   String get syncErrorOther => '无法同步。';
 
   @override
-  String get syncWarningUnreadable => 'Google 云端硬盘中的部分同步数据无法读取，因此此电脑暂未发送更改。';
+  String get syncWarningUnreadable => 'Google 云端硬盘中的部分同步数据无法读取，因此此设备暂未发送更改。';
 
   @override
   String get deleteScopeTitle => '删除范围';
 
   @override
-  String get deleteScopeThisPc => '仅此电脑';
+  String get deleteScopeThisPc => '仅此设备';
 
   @override
-  String get deleteScopeThisPcDesc => '将关闭同步（退出登录）。Google 云端硬盘和其他电脑上的数据会保留。';
+  String get deleteScopeThisPcDesc => '将关闭同步（退出登录）。Google 云端硬盘和其他设备上的数据会保留。';
 
   @override
-  String get deleteScopeEverywhere => 'Google 云端硬盘和所有电脑';
+  String get deleteScopeEverywhere => 'Google 云端硬盘和所有设备';
 
   @override
-  String get deleteScopeEverywhereDesc => '其他电脑也会在下次同步时删除书籍和笔记。';
+  String get deleteScopeEverywhereDesc => '其他设备也会在下次同步时删除书籍和笔记。';
 
   @override
   String get deleteEverywhereSyncFailed =>
@@ -805,13 +805,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteEverywherePartial =>
-      '已删除此电脑上的书籍，但未能同步到 Google 云端硬盘。将在下次同步时同步。';
+      '已删除此设备上的书籍，但未能同步到 Google 云端硬盘。将在下次同步时同步。';
 
   @override
   String get deleteEverywhereProgress => '正在从 Google 云端硬盘删除…';
 
   @override
-  String get bookDeletedElsewhere => '此书已在另一台电脑上删除。';
+  String get bookDeletedElsewhere => '此书已在另一台设备上删除。';
 
   @override
   String get syncNeedsChoice => '需要选择首次同步的方式。请点击“立即同步”。';

@@ -675,7 +675,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncDesc =>
-      'Keep your books and notes the same on every computer signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.';
+      'Keep your books and notes the same on every device signed in to the same Google account. Data is stored in a private, app-only area of your Google Drive.';
 
   @override
   String get syncUnavailable =>
@@ -723,7 +723,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncSignOutBody =>
-      'Syncing stops on this computer. Nothing is deleted from this computer or from Google Drive.';
+      'Syncing stops on this device. Nothing is deleted from this device or from Google Drive.';
 
   @override
   String get syncBrowserPage =>
@@ -751,7 +751,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String syncFirstBody(int local, int remote) {
-    return 'This computer has $local books and Google Drive has $remote. Choose how to combine them. Before syncing, a backup of this computer’s data is saved automatically.';
+    return 'This device has $local books and Google Drive has $remote. Choose how to combine them. Before syncing, a backup of this device’s data is saved automatically.';
   }
 
   @override
@@ -766,14 +766,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncFirstUseRemoteDesc =>
-      'Books and notes that exist only on this computer are deleted.';
+      'Books and notes that exist only on this device are deleted.';
 
   @override
-  String get syncFirstUseLocal => 'Replace with this computer';
+  String get syncFirstUseLocal => 'Replace with this device';
 
   @override
   String get syncFirstUseLocalDesc =>
-      'Books and notes that exist only on Google Drive are deleted from every synced computer.';
+      'Books and notes that exist only on Google Drive are deleted from every synced device.';
 
   @override
   String get syncFirstStart => 'Sync';
@@ -796,7 +796,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncErrorBusy =>
-      'Another computer was syncing at the same time. Try again in a moment.';
+      'Another device was syncing at the same time. Try again in a moment.';
 
   @override
   String get syncErrorMissingCover =>
@@ -807,31 +807,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get syncErrorLocalStorage =>
-      'Could not save to this computer. Check the free disk space.';
+      'Could not save to this device. Check the free storage space.';
 
   @override
   String get syncErrorOther => 'Could not sync.';
 
   @override
   String get syncWarningUnreadable =>
-      'Part of the sync data on Google Drive could not be read, so this computer did not send its changes.';
+      'Part of the sync data on Google Drive could not be read, so this device did not send its changes.';
 
   @override
   String get deleteScopeTitle => 'What to delete';
 
   @override
-  String get deleteScopeThisPc => 'This computer only';
+  String get deleteScopeThisPc => 'This device only';
 
   @override
   String get deleteScopeThisPcDesc =>
-      'Sync is turned off (you are signed out). Data on Google Drive and other computers is kept.';
+      'Sync is turned off (you are signed out). Data on Google Drive and other devices is kept.';
 
   @override
-  String get deleteScopeEverywhere => 'Google Drive and every computer';
+  String get deleteScopeEverywhere => 'Google Drive and every device';
 
   @override
   String get deleteScopeEverywhereDesc =>
-      'Other computers also delete their books and notes when they next sync.';
+      'Other devices also delete their books and notes when they next sync.';
 
   @override
   String get deleteEverywhereSyncFailed =>
@@ -839,18 +839,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteEverywherePartial =>
-      'Books were deleted on this computer, but the deletion could not be sent to Google Drive. It will be sent at the next sync.';
+      'Books were deleted on this device, but the deletion could not be sent to Google Drive. It will be sent at the next sync.';
 
   @override
   String get deleteEverywhereProgress => 'Deleting from Google Drive…';
 
   @override
-  String get bookDeletedElsewhere =>
-      'This book was deleted on another computer.';
+  String get bookDeletedElsewhere => 'This book was deleted on another device.';
 
   @override
   String get syncNeedsChoice =>
-      'Choose how to combine this computer with Google Drive: press “Sync now”.';
+      'Choose how to combine this device with Google Drive: press “Sync now”.';
 
   @override
   String get syncOnExitTitle => 'Syncing with Google Drive…';
