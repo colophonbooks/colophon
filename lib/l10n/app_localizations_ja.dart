@@ -847,5 +847,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get coverFromGallery => '写真から選ぶ';
 
   @override
-  String get coverCameraUnavailable => 'カメラを使えませんでした。カメラの使用を許可しているか確認してください。';
+  String get cameraUnavailable => 'カメラを使えませんでした。カメラの使用を許可しているか確認してください。';
+
+  @override
+  String get scanBarcode => 'バーコードを読み取る';
+
+  @override
+  String get scanBarcodeToAdd => 'バーコードで追加';
+
+  @override
+  String get scanBarcodeHint =>
+      '裏表紙にあるISBNのバーコード（978か979で始まるもの）を写してください。2段ある場合は上の段です。';
+
+  @override
+  String get flashlight => 'ライト';
 }

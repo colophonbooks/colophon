@@ -262,5 +262,9 @@
   "sortStatusDescending": "Status (Gelesen → Nicht festgelegt)",
   "coverFromCamera": "Foto aufnehmen",
   "coverFromGallery": "Aus Fotos auswählen",
-  "coverCameraUnavailable": "Die Kamera konnte nicht verwendet werden. Prüfen Sie, ob der Kamerazugriff erlaubt ist."
+  "cameraUnavailable": "Die Kamera konnte nicht verwendet werden. Prüfen Sie, ob der Kamerazugriff erlaubt ist.",
+  "scanBarcode": "Barcode scannen",
+  "scanBarcodeToAdd": "Per Barcode hinzufügen",
+  "scanBarcodeHint": "Richten Sie die Kamera auf den ISBN-Barcode auf der Rückseite (beginnt mit 978 oder 979). Bei zwei Barcodes verwenden Sie den oberen.",
+  "flashlight": "Taschenlampe"
 }

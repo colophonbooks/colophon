@@ -25,6 +25,14 @@ bool isValidIsbn(String input) {
   return false;
 }
 
+/// 本のバーコード（EAN-13）の値が ISBN なら、その ISBN を返す。
+/// 裏表紙の2段のバーコードのうち、下の段（192 で始まる分類・価格のコード）や、
+/// 雑誌・ほかの商品のバーコードは ISBN ではないので null。
+String? isbnFromBarcode(String? value) {
+  if (value == null || !RegExp(r'^97[89]\d{10}$').hasMatch(value)) return null;
+  return isValidIsbn(value) ? value : null;
+}
+
 /// 同一書籍の判定用キー。ISBN-10 は ISBN-13 に変換してそろえる。
 /// 正しい ISBN でなければ null（「不明」などの自由入力どうしを同一書籍とみなさないため）。
 String? isbnMatchKey(String? input) {

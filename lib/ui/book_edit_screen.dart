@@ -21,15 +21,19 @@ import '../state/library_controller.dart';
 import '../state/settings_controller.dart';
 import '../state/sync_controller.dart';
 import 'app_theme.dart';
+import 'barcode_scanner.dart';
 import 'book_viewer.dart';
 import 'common.dart';
 import 'isbn_lookup_dialog.dart';
 
 /// 書籍の登録・編集画面。[bookId] が null なら新規登録。
 class BookEditScreen extends StatefulWidget {
-  const BookEditScreen({super.key, this.bookId});
+  const BookEditScreen({super.key, this.bookId, this.initialIsbn});
 
   final int? bookId;
+
+  /// 新しい本の登録で、バーコードから読み取った ISBN。入れておき、開いたらすぐ書籍情報を取得する。
+  final String? initialIsbn;
 
   @override
   State<BookEditScreen> createState() => _BookEditScreenState();
@@ -37,6 +41,18 @@ class BookEditScreen extends StatefulWidget {
 
 /// 未保存の変更があるままビューアへ切り替えるときの選択。
 enum _LeaveEdit { save, discard }
+
+/// [controller] の文字が変わったときだけ [onChanged] を呼ぶ。
+/// 入力欄はカーソルを置いただけ（選択範囲が変わっただけ）でも通知するため、そのまま使うと、
+/// 欄を押して何も打たずに戻っても「保存していない変更」の確認が出てしまう。
+void _listenToTextChanges(TextEditingController controller, VoidCallback onChanged) {
+  var last = controller.text;
+  controller.addListener(() {
+    if (controller.text == last) return;
+    last = controller.text;
+    onChanged();
+  });
+}
 
 /// 編集中のノート1件分。
 class _NoteDraft {
@@ -47,8 +63,8 @@ class _NoteDraft {
         page = TextEditingController(text: original?.page?.toString() ?? ''),
         body = TextEditingController(text: original?.body ?? '') {
     if (onChanged != null) {
-      page.addListener(onChanged);
-      body.addListener(onChanged);
+      _listenToTextChanges(page, onChanged);
+      _listenToTextChanges(body, onChanged);
     }
   }
 
@@ -96,6 +112,7 @@ class _BookEditScreenState extends State<BookEditScreen> {
   final _progress = TextEditingController();
   final _tagInput = TextEditingController();
   final _tagFocus = FocusNode();
+  final _titleFocus = FocusNode();
   late final AppLifecycleListener _lifecycle;
   late final SyncController _sync;
   late int _syncRevision;
@@ -126,8 +143,17 @@ class _BookEditScreenState extends State<BookEditScreen> {
     _uuid = book?.uuid ?? const Uuid().v4();
     _viewMode = book != null;
     _load(book);
+    if (book == null && widget.initialIsbn != null) {
+      // 入力の監視を始める前に入れる（読み取っただけでは「保存していない変更」としない）
+      _isbn.text = widget.initialIsbn!;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        // 見つからなかったときは手で入力することになるため、書籍名の欄から始められるようにする
+        if (!await _lookupIsbn() && mounted) _titleFocus.requestFocus();
+      });
+    }
     for (final c in [_title, _author, _translator, _supervisor, _publisher, _isbn, _edition, _progress, _tagInput]) {
-      c.addListener(_markDirty);
+      _listenToTextChanges(c, _markDirty);
     }
     // デスクトップでウィンドウを閉じる（×・Alt+F4・Cmd+Q）ときも未保存の確認を出す
     _lifecycle = AppLifecycleListener(onExitRequested: _onExitRequested);
@@ -176,6 +202,7 @@ class _BookEditScreenState extends State<BookEditScreen> {
       c.dispose();
     }
     _tagFocus.dispose();
+    _titleFocus.dispose();
     for (final n in _notes) {
       n.dispose();
     }
@@ -454,7 +481,7 @@ class _BookEditScreenState extends State<BookEditScreen> {
           .pickImage(source: source, maxWidth: maxSide, maxHeight: maxSide, requestFullMetadata: false);
     } on PlatformException {
       // カメラがない端末（iPhone のシミュレータなど）、カメラの使用を許可していない、写真を取り出せない、など
-      if (mounted) showMessage(context, source == ImageSource.camera ? l.coverCameraUnavailable : l.coverLoadFailed);
+      if (mounted) showMessage(context, source == ImageSource.camera ? l.cameraUnavailable : l.coverLoadFailed);
       return null;
     }
     return picked?.readAsBytes();
@@ -500,11 +527,20 @@ class _BookEditScreenState extends State<BookEditScreen> {
   // ISBN
   // ---------------------------------------------------------------------------
 
-  Future<void> _lookupIsbn() async {
+  /// ISBN のバーコードを読み取って入れ、続けて書籍情報を取得する。
+  Future<void> _scanIsbn() async {
+    final isbn = await context.read<IsbnScanner>()(context);
+    if (isbn == null || !mounted) return;
+    setState(() => _isbn.text = isbn);
+    await _lookupIsbn();
+  }
+
+  /// 書籍情報を取得して、選んだ項目を反映する。取得できて確認画面を出したら true。
+  Future<bool> _lookupIsbn() async {
     final l = AppLocalizations.of(context);
     if (!isValidIsbn(_isbn.text)) {
       showMessage(context, l.isbnLookupInvalid);
-      return;
+      return false;
     }
     final service = context.read<IsbnLookupService>();
     LookupResult? result;
@@ -512,12 +548,12 @@ class _BookEditScreenState extends State<BookEditScreen> {
       result = await runWithProgress(context, () => service.lookup(_isbn.text));
     } on LookupException {
       if (mounted) showMessage(context, l.lookupFailed);
-      return;
+      return false;
     }
-    if (!mounted) return;
+    if (!mounted) return false;
     if (result == null) {
       showMessage(context, l.lookupNotFound);
-      return;
+      return false;
     }
     final fields = {
       LookupField.title: _title,
@@ -532,12 +568,13 @@ class _BookEditScreenState extends State<BookEditScreen> {
       result: result,
       current: {for (final e in fields.entries) e.key: e.value.text},
     );
-    if (selected == null || !mounted) return;
+    if (selected == null || !mounted) return true;
     setState(() {
       for (final e in selected.entries) {
         fields[e.key]!.text = e.value;
       }
     });
+    return true;
   }
 
   // ---------------------------------------------------------------------------
@@ -713,7 +750,9 @@ class _BookEditScreenState extends State<BookEditScreen> {
         padding: const EdgeInsets.only(bottom: 12),
         child: TextFormField(
           controller: _title,
-          autofocus: _isNew,
+          focusNode: _titleFocus,
+          // バーコードから開いたときは書籍情報の取得結果を先に見せるため、キーボードを出さない
+          autofocus: _isNew && widget.initialIsbn == null,
           decoration: InputDecoration(labelText: '${l.fieldTitle} *'),
           // 書影がないときの仮表紙に書籍名を出しているため、入力のたびに再描画する
           onChanged: (_) => setState(() {}),
@@ -744,6 +783,15 @@ class _BookEditScreenState extends State<BookEditScreen> {
               ),
             ),
             const SizedBox(width: 8),
+            if (isMobilePlatform)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, right: 8),
+                child: IconButton.filledTonal(
+                  tooltip: l.scanBarcode,
+                  icon: const Icon(Icons.barcode_reader),
+                  onPressed: _scanIsbn,
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: IconButton.filledTonal(

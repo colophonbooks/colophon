@@ -838,5 +838,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get coverFromGallery => '从相册选择';
 
   @override
-  String get coverCameraUnavailable => '无法使用相机。请确认已允许使用相机。';
+  String get cameraUnavailable => '无法使用相机。请确认已允许使用相机。';
+
+  @override
+  String get scanBarcode => '扫描条形码';
+
+  @override
+  String get scanBarcodeToAdd => '扫码添加';
+
+  @override
+  String get scanBarcodeHint => '请对准封底的 ISBN 条形码（以 978 或 979 开头）。如有两行，请对准上面一行。';
+
+  @override
+  String get flashlight => '手电筒';
 }

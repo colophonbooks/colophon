@@ -1602,11 +1602,35 @@ abstract class AppLocalizations {
   /// **'Choose from photos'**
   String get coverFromGallery;
 
-  /// No description provided for @coverCameraUnavailable.
+  /// No description provided for @cameraUnavailable.
   ///
   /// In en, this message translates to:
   /// **'The camera could not be used. Check that camera access is allowed.'**
-  String get coverCameraUnavailable;
+  String get cameraUnavailable;
+
+  /// No description provided for @scanBarcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan barcode'**
+  String get scanBarcode;
+
+  /// No description provided for @scanBarcodeToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add by barcode'**
+  String get scanBarcodeToAdd;
+
+  /// No description provided for @scanBarcodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at the ISBN barcode on the back cover (it starts with 978 or 979). If there are two rows, use the upper one.'**
+  String get scanBarcodeHint;
+
+  /// No description provided for @flashlight.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashlight'**
+  String get flashlight;
 }
 
 class _AppLocalizationsDelegate

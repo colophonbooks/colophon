@@ -881,6 +881,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get coverFromGallery => 'Elegir de las fotos';
 
   @override
-  String get coverCameraUnavailable =>
+  String get cameraUnavailable =>
       'No se ha podido usar la cámara. Comprueba que el acceso a la cámara está permitido.';
+
+  @override
+  String get scanBarcode => 'Escanear código de barras';
+
+  @override
+  String get scanBarcodeToAdd => 'Añadir con código de barras';
+
+  @override
+  String get scanBarcodeHint =>
+      'Apunta al código de barras ISBN de la contraportada (empieza por 978 o 979). Si hay dos, usa el de arriba.';
+
+  @override
+  String get flashlight => 'Linterna';
 }

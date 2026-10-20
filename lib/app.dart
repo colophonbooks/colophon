@@ -12,6 +12,7 @@ import 'state/library_controller.dart';
 import 'state/settings_controller.dart';
 import 'state/sync_controller.dart';
 import 'ui/app_theme.dart';
+import 'ui/barcode_scanner.dart';
 import 'ui/book_list_screen.dart';
 import 'ui/language_select_screen.dart';
 
@@ -25,6 +26,7 @@ class ColophonApp extends StatelessWidget {
     required this.repository,
     this.lookupService,
     this.sync,
+    this.isbnScanner = scanIsbnWithCamera,
   });
 
   final SettingsController settings;
@@ -35,6 +37,9 @@ class ColophonApp extends StatelessWidget {
 
   /// 省略すると同期を使えない状態になる（テスト用）。
   final SyncController? sync;
+
+  /// バーコードの読み取り。テストでカメラの代わりに使う関数を渡す。
+  final IsbnScanner isbnScanner;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +53,7 @@ class ColophonApp extends StatelessWidget {
           sync?.onLocalDataChanged = library.reload;
           return library;
         }),
+        Provider<IsbnScanner>.value(value: isbnScanner),
         Provider<IsbnLookupService>(
           create: (_) => lookupService ?? IsbnLookupService(),
           dispose: (_, service) => service.close(),

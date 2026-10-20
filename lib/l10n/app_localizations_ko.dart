@@ -850,6 +850,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get coverFromGallery => '앨범에서 선택';
 
   @override
-  String get coverCameraUnavailable =>
-      '카메라를 사용할 수 없어요. 카메라 사용이 허용되어 있는지 확인해 주세요.';
+  String get cameraUnavailable => '카메라를 사용할 수 없어요. 카메라 사용이 허용되어 있는지 확인해 주세요.';
+
+  @override
+  String get scanBarcode => '바코드 스캔';
+
+  @override
+  String get scanBarcodeToAdd => '바코드로 추가';
+
+  @override
+  String get scanBarcodeHint =>
+      '뒤표지의 ISBN 바코드(978 또는 979로 시작)를 비춰 주세요. 두 줄이면 위쪽을 비춰 주세요.';
+
+  @override
+  String get flashlight => '손전등';
 }

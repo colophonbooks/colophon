@@ -885,6 +885,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get coverFromGallery => 'Choisir dans les photos';
 
   @override
-  String get coverCameraUnavailable =>
+  String get cameraUnavailable =>
       'Impossible d’utiliser l’appareil photo. Vérifiez que l’accès à l’appareil photo est autorisé.';
+
+  @override
+  String get scanBarcode => 'Scanner le code-barres';
+
+  @override
+  String get scanBarcodeToAdd => 'Ajouter par code-barres';
+
+  @override
+  String get scanBarcodeHint =>
+      'Visez le code-barres ISBN au dos du livre (il commence par 978 ou 979). S’il y en a deux, visez celui du haut.';
+
+  @override
+  String get flashlight => 'Lampe torche';
 }

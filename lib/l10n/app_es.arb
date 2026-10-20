@@ -262,5 +262,9 @@
   "sortStatusDescending": "Estado (Leído → Sin definir)",
   "coverFromCamera": "Hacer una foto",
   "coverFromGallery": "Elegir de las fotos",
-  "coverCameraUnavailable": "No se ha podido usar la cámara. Comprueba que el acceso a la cámara está permitido."
+  "cameraUnavailable": "No se ha podido usar la cámara. Comprueba que el acceso a la cámara está permitido.",
+  "scanBarcode": "Escanear código de barras",
+  "scanBarcodeToAdd": "Añadir con código de barras",
+  "scanBarcodeHint": "Apunta al código de barras ISBN de la contraportada (empieza por 978 o 979). Si hay dos, usa el de arriba.",
+  "flashlight": "Linterna"
 }

@@ -874,6 +874,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get coverFromGallery => 'Choose from photos';
 
   @override
-  String get coverCameraUnavailable =>
+  String get cameraUnavailable =>
       'The camera could not be used. Check that camera access is allowed.';
+
+  @override
+  String get scanBarcode => 'Scan barcode';
+
+  @override
+  String get scanBarcodeToAdd => 'Add by barcode';
+
+  @override
+  String get scanBarcodeHint =>
+      'Point the camera at the ISBN barcode on the back cover (it starts with 978 or 979). If there are two rows, use the upper one.';
+
+  @override
+  String get flashlight => 'Flashlight';
 }

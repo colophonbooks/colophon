@@ -262,5 +262,9 @@
   "sortStatusDescending": "状态（已读完→未设置）",
   "coverFromCamera": "拍照",
   "coverFromGallery": "从相册选择",
-  "coverCameraUnavailable": "无法使用相机。请确认已允许使用相机。"
+  "cameraUnavailable": "无法使用相机。请确认已允许使用相机。",
+  "scanBarcode": "扫描条形码",
+  "scanBarcodeToAdd": "扫码添加",
+  "scanBarcodeHint": "请对准封底的 ISBN 条形码（以 978 或 979 开头）。如有两行，请对准上面一行。",
+  "flashlight": "手电筒"
 }

@@ -262,5 +262,9 @@
   "sortStatusDescending": "ステータス順（読了→未設定）",
   "coverFromCamera": "カメラで撮る",
   "coverFromGallery": "写真から選ぶ",
-  "coverCameraUnavailable": "カメラを使えませんでした。カメラの使用を許可しているか確認してください。"
+  "cameraUnavailable": "カメラを使えませんでした。カメラの使用を許可しているか確認してください。",
+  "scanBarcode": "バーコードを読み取る",
+  "scanBarcodeToAdd": "バーコードで追加",
+  "scanBarcodeHint": "裏表紙にあるISBNのバーコード（978か979で始まるもの）を写してください。2段ある場合は上の段です。",
+  "flashlight": "ライト"
 }

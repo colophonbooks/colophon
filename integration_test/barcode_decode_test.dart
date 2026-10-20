@@ -1,0 +1,32 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:colophon/services/isbn.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:path_provider/path_provider.dart';
+
+/// 実機・エミュレータ・シミュレータで動かす確認（カメラの代わりに画像を読ませる）。
+/// エミュレータの仮想カメラには任意の画像を写しにくいため、端末のバーコード読み取り機能そのものを画像で確かめる。
+///   flutter test integration_test/barcode_decode_test.dart -d <端末>
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('裏表紙の2段のバーコードから、上の段の ISBN だけを読み取る', (tester) async {
+    // 上の段: ISBN 9784309226712、下の段: 分類・価格のコード 1920022018007（EAN-13 を拡大した白黒画像）
+    final file = File('${(await getTemporaryDirectory()).path}/isbn_back.png');
+    await file.writeAsBytes(base64Decode(_twoRowBarcodePng));
+
+    final controller = MobileScannerController();
+    addTearDown(controller.dispose);
+    final capture = await controller.analyzeImage(file.path, formats: const [BarcodeFormat.ean13]);
+    final values = capture?.barcodes.map((b) => b.rawValue).toList() ?? [];
+
+    expect(values, contains('9784309226712'));
+    expect(values.map(isbnFromBarcode).whereType<String>(), ['9784309226712']);
+  });
+}
+
+const _twoRowBarcodePng =
+    'iVBORw0KGgoAAAANSUhEUgAAA7gAAAGkCAAAAAA+2dZOAAAGYklEQVR42u3TwQ6CMBBF0f7/T+OGFUkzb9oaNZ67AymFwTMuST/XMAIJXEngSgJXAlcSuJLAlcCVBK4kcCVwJYErCVxJ4ErgSgJXErgSuJLAlQSuBK4kcCWBK4ErCVxJ4EoCVwJXEriSwJXAlQSuJHAlcCWBKwlcCVxJ4EoCVxK4EriSwJUErgSuJHAlgSuBKwlcSeBK4EoCVxK4ksCVwJUEriRwJXAlgSsJXAnc0xvcVcfPZr+n+6Tnq32r69N13f3TOXb3X53z7rpqHul368519z3e9X7gggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy644IILLrjgggsuuOCCCy64kj4fuBK4ksCVBK4EriRwJYErgSsJXEngSuBKAlcSuJLAlcCVBK4kcCVwJYErCVwJXEngSgJXAlcSuJLAlQSuBK4kcCWBK4ErCVxJ4ErgSgJXErgSuJLAlQSuJHAlcCWBKwlcCVxJ4EoCVwJXEriSwJXANQIJXEngSgJXAlcSuJLAlcCVBK4kcCVwj29wNztOr5+tq86n+49J1XOu3r/7fum69Lg7193nTL/b6efsrkv/l6v3ARdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwQUXXHDBBRdccMEFF1xwwZX0PYErgSsJXEngSuBKAlcSuBK4ksCVBK4EriRwJYErCVwJXEngSgJXAlcSuJLAlcCVBK4kcCVwJYErCVxJ4ErgSgJXErgSuJLAlQSuBK4kcCWBK4ErCVxJ4EoCVwJXEriSwJXAlQSuJHAlcCWBKwlcCVwjkMCVBK4kcCVwJYErCVwJXEngSgJX+rte/+l0RO84qk0AAAAASUVORK5CYII=';

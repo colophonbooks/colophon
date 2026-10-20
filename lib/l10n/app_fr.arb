@@ -262,5 +262,9 @@
   "sortStatusDescending": "Statut (Lu → Non défini)",
   "coverFromCamera": "Prendre une photo",
   "coverFromGallery": "Choisir dans les photos",
-  "coverCameraUnavailable": "Impossible d’utiliser l’appareil photo. Vérifiez que l’accès à l’appareil photo est autorisé."
+  "cameraUnavailable": "Impossible d’utiliser l’appareil photo. Vérifiez que l’accès à l’appareil photo est autorisé.",
+  "scanBarcode": "Scanner le code-barres",
+  "scanBarcodeToAdd": "Ajouter par code-barres",
+  "scanBarcodeHint": "Visez le code-barres ISBN au dos du livre (il commence par 978 ou 979). S’il y en a deux, visez celui du haut.",
+  "flashlight": "Lampe torche"
 }

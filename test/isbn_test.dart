@@ -38,4 +38,19 @@ void main() {
       expect(isbnMatchKey('9784309226713'), isNull);
     });
   });
+
+  group('isbnFromBarcode', () {
+    test('978・979 で始まり、チェックディジットが正しいバーコードは ISBN として返す', () {
+      expect(isbnFromBarcode('9784309226712'), '9784309226712');
+      expect(isbnFromBarcode('9791032305690'), '9791032305690');
+    });
+
+    test('裏表紙の下の段（192 で始まる分類・価格）や、ほかの商品・読み違いは ISBN ではない', () {
+      expect(isbnFromBarcode('1920022018007'), isNull);
+      expect(isbnFromBarcode('4901234567894'), isNull);
+      expect(isbnFromBarcode('9784309226713'), isNull, reason: 'チェックディジット違い（読み違い）');
+      expect(isbnFromBarcode('978430922671'), isNull);
+      expect(isbnFromBarcode(null), isNull);
+    });
+  });
 }

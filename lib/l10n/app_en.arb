@@ -320,5 +320,9 @@
   "sortStatusDescending": "Status (Finished → Not set)",
   "coverFromCamera": "Take a photo",
   "coverFromGallery": "Choose from photos",
-  "coverCameraUnavailable": "The camera could not be used. Check that camera access is allowed."
+  "cameraUnavailable": "The camera could not be used. Check that camera access is allowed.",
+  "scanBarcode": "Scan barcode",
+  "scanBarcodeToAdd": "Add by barcode",
+  "scanBarcodeHint": "Point the camera at the ISBN barcode on the back cover (it starts with 978 or 979). If there are two rows, use the upper one.",
+  "flashlight": "Flashlight"
 }

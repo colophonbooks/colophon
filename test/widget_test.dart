@@ -428,6 +428,7 @@ void main() {
     await tester.tap(find.text('書籍を追加'));
     await tester.pumpAndSettle();
     await tester.enterText(find.widgetWithText(TextFormField, '書籍名 *'), '途中まで');
+    await tester.pump(); // 入力で「保存していない変更」になったことを画面に反映させる
     // 端末の「戻る」操作（Android の戻るボタン、Esc キー等）と同じ経路で戻る
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
