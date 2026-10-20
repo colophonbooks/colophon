@@ -485,6 +485,10 @@ class _BookEditScreenState extends State<BookEditScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    // 表示/編集の切り替えと保存の文字を出すと、狭い画面では題名が押し出され、はみ出すこともあるため、
+    // アイコンだけにする（文字はツールチップで伝え、読み上げにも使われる）。
+    // 文字付きはドイツ語・フランス語で約 660 の幅が要るので、スマホとタブレットの境（600）より広く取る
+    final compact = isCompact(context, 700);
     return PopScope(
       canPop: !_dirty,
       onPopInvokedWithResult: (didPop, _) {
@@ -492,7 +496,11 @@ class _BookEditScreenState extends State<BookEditScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_isNew ? l.newBookTitle : (_viewMode ? l.viewBookTitle : l.editBookTitle)),
+          // スマホの幅の編集中は、ボタンに押されて題名が「書籍…」と切れるため出さない
+          // （編集中であることは、表示/編集の切り替えで分かる）
+          title: compact && !_isNew && !_viewMode
+              ? null
+              : Text(_isNew ? l.newBookTitle : (_viewMode ? l.viewBookTitle : l.editBookTitle)),
           actions: [
             if (!_isNew)
               Padding(
@@ -500,8 +508,18 @@ class _BookEditScreenState extends State<BookEditScreen> {
                 child: SegmentedButton<bool>(
                   showSelectedIcon: false,
                   segments: [
-                    ButtonSegment(value: true, icon: const Icon(Icons.visibility_outlined), label: Text(l.viewMode)),
-                    ButtonSegment(value: false, icon: const Icon(Icons.edit_outlined), label: Text(l.editMode)),
+                    ButtonSegment(
+                      value: true,
+                      icon: const Icon(Icons.visibility_outlined),
+                      label: compact ? null : Text(l.viewMode),
+                      tooltip: compact ? l.viewMode : null,
+                    ),
+                    ButtonSegment(
+                      value: false,
+                      icon: const Icon(Icons.edit_outlined),
+                      label: compact ? null : Text(l.editMode),
+                      tooltip: compact ? l.editMode : null,
+                    ),
                   ],
                   selected: {_viewMode},
                   onSelectionChanged: (s) => _setViewMode(s.single),
@@ -516,16 +534,24 @@ class _BookEditScreenState extends State<BookEditScreen> {
                 ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: FilledButton.icon(
-                  icon: const Icon(Icons.check),
-                  label: Text(l.save),
-                  onPressed: _save,
-                ),
+                child: compact
+                    ? IconButton.filled(
+                        tooltip: l.save,
+                        // アプリバーがボタンのアイコン色を一律に決めるため、塗りつぶしの上で読める色を明示する
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        icon: const Icon(Icons.check),
+                        onPressed: _save,
+                      )
+                    : FilledButton.icon(
+                        icon: const Icon(Icons.check),
+                        label: Text(l.save),
+                        onPressed: _save,
+                      ),
               ),
             ],
           ],
         ),
-        body: _viewMode ? BookViewer(book: _original!) : CallbackShortcuts(
+        body: ScreenBody(child: _viewMode ? BookViewer(book: _original!) : CallbackShortcuts(
           bindings: {
             const SingleActivator(LogicalKeyboardKey.keyS, control: true): _save,
             const SingleActivator(LogicalKeyboardKey.keyS, meta: true): _save,
@@ -567,7 +593,7 @@ class _BookEditScreenState extends State<BookEditScreen> {
               ],
             ),
           ),
-        ),
+        )),
       ),
     );
   }
@@ -675,6 +701,8 @@ class _BookEditScreenState extends State<BookEditScreen> {
     return [
       DropdownButtonFormField<ReadingStatus>(
         initialValue: _status,
+        // 端末の文字サイズを大きくしたスマホでも欄に収まるよう、長いステータス名は末尾を省略する
+        isExpanded: true,
         decoration: InputDecoration(labelText: l.fieldStatus),
         items: [
           for (final s in ReadingStatus.values)
@@ -682,7 +710,11 @@ class _BookEditScreenState extends State<BookEditScreen> {
               value: s,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: [Icon(statusIcon(s), size: 18), const SizedBox(width: 8), Text(l.status(s))],
+                children: [
+                  Icon(statusIcon(s), size: 18),
+                  const SizedBox(width: 8),
+                  Flexible(child: Text(l.status(s), overflow: TextOverflow.ellipsis)),
+                ],
               ),
             ),
         ],
@@ -798,6 +830,9 @@ class _SectionTitle extends StatelessWidget {
       );
 }
 
+/// ノートの見出し行（分類・ページと4つのボタン）を1行に並べられる幅。
+const _noteHeaderCompactWidth = 480.0;
+
 class _NoteCard extends StatelessWidget {
   const _NoteCard({
     super.key,
@@ -823,68 +858,86 @@ class _NoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final category = DropdownButtonFormField<NoteCategory?>(
+      initialValue: draft.category,
+      isDense: true,
+      // 欄の幅に合わせ、長い分類名（言語によっては長くなる）は末尾を省略して収める
+      isExpanded: true,
+      decoration: InputDecoration(labelText: l.noteCategory),
+      items: [
+        for (final c in <NoteCategory?>[null, ...NoteCategory.values])
+          DropdownMenuItem(value: c, child: Text(l.category(c), overflow: TextOverflow.ellipsis)),
+      ],
+      onChanged: onCategoryChanged,
+    );
+    final page = SizedBox(
+      width: 100,
+      child: TextFormField(
+        controller: draft.page,
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        decoration: InputDecoration(labelText: l.notePage, isDense: true),
+        validator: (v) {
+          final t = v?.trim() ?? '';
+          if (t.isEmpty) return null;
+          final n = int.tryParse(t);
+          return (n == null || n < 1) ? l.pageInvalid : null;
+        },
+      ),
+    );
+    final buttons = [
+      FavoriteButton(favorite: draft.favorite, onPressed: onFavoriteToggled),
+      IconButton(
+        tooltip: l.moveUp,
+        icon: const Icon(Icons.arrow_upward),
+        onPressed: canMoveUp ? onMoveUp : null,
+      ),
+      IconButton(
+        tooltip: l.moveDown,
+        icon: const Icon(Icons.arrow_downward),
+        onPressed: canMoveDown ? onMoveDown : null,
+      ),
+      IconButton(
+        tooltip: l.deleteNote,
+        icon: const Icon(Icons.delete_outline),
+        onPressed: onDelete,
+      ),
+    ];
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(12, 8, 4, 12),
         child: Column(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Wrap(
-                    spacing: 12,
-                    runSpacing: 8,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 180,
-                        child: DropdownButtonFormField<NoteCategory?>(
-                          initialValue: draft.category,
-                          isDense: true,
-                          decoration: InputDecoration(labelText: l.noteCategory),
-                          items: [
-                            for (final c in <NoteCategory?>[null, ...NoteCategory.values])
-                              DropdownMenuItem(value: c, child: Text(l.category(c))),
-                          ],
-                          onChanged: onCategoryChanged,
+            LayoutBuilder(
+              // 分類・ページと4つのボタンを1行に並べると、スマホの幅では分類の欄が入りきらない。
+              // 狭いときはボタンを上の行に分け、分類の欄を残りの幅いっぱいに広げる
+              builder: (context, constraints) => constraints.maxWidth < _noteHeaderCompactWidth
+                  ? Column(
+                      children: [
+                        Row(mainAxisAlignment: MainAxisAlignment.end, children: buttons),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [Expanded(child: category), const SizedBox(width: 12), page],
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 100,
-                        child: TextFormField(
-                          controller: draft.page,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          decoration: InputDecoration(labelText: l.notePage, isDense: true),
-                          validator: (v) {
-                            final t = v?.trim() ?? '';
-                            if (t.isEmpty) return null;
-                            final n = int.tryParse(t);
-                            return (n == null || n < 1) ? l.pageInvalid : null;
-                          },
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: Wrap(
+                            spacing: 12,
+                            runSpacing: 8,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [SizedBox(width: 180, child: category), page],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                FavoriteButton(favorite: draft.favorite, onPressed: onFavoriteToggled),
-                IconButton(
-                  tooltip: l.moveUp,
-                  icon: const Icon(Icons.arrow_upward),
-                  onPressed: canMoveUp ? onMoveUp : null,
-                ),
-                IconButton(
-                  tooltip: l.moveDown,
-                  icon: const Icon(Icons.arrow_downward),
-                  onPressed: canMoveDown ? onMoveDown : null,
-                ),
-                IconButton(
-                  tooltip: l.deleteNote,
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: onDelete,
-                ),
-              ],
+                        ...buttons,
+                      ],
+                    ),
             ),
             const SizedBox(height: 8),
             Padding(

@@ -78,7 +78,7 @@ class BookListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: books.isEmpty
+      body: ScreenBody(child: books.isEmpty
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
@@ -87,7 +87,7 @@ class BookListScreen extends StatelessWidget {
             )
           : settings.gridView
               ? _BookGrid(books: books)
-              : _BookList(books: books),
+              : _BookList(books: books)),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
         label: Text(l.addBook),

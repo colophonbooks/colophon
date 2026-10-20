@@ -156,6 +156,28 @@ class StatusBadge extends StatelessWidget {
   }
 }
 
+/// これより狭い画面（スマホの縦向き）では、ボタンの文字を省くなど詰めた配置にする。
+/// 600 は Material Design でスマホとタブレットを分ける幅。
+const compactWidth = 600.0;
+
+/// 中身に使える幅が [threshold] より狭いか。
+/// 画面の幅から、横向きのときのカメラの切り欠きなど左右の OS の余白を除いて判定する
+/// （[ScreenBody] がその分を空けるため、画面の幅のままでは広く見積もってはみ出す）。
+bool isCompact(BuildContext context, [double threshold = compactWidth]) =>
+    MediaQuery.sizeOf(context).width - MediaQuery.paddingOf(context).horizontal < threshold;
+
+/// 画面の本文。スマホのジェスチャーバーや横向きの切り欠きに、下端や左右の項目が隠れないよう空ける。
+/// 各画面のリストは余白を自分で指定していて、OS の余白を足さないため、ここで避ける。
+/// アプリ全体（MaterialApp.builder）で空けると、ダイアログの暗転やアプリバーの背景まで端に届かなくなる。
+class ScreenBody extends StatelessWidget {
+  const ScreenBody({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(top: false, child: child);
+}
+
 /// 画面幅が広いときに中身を読みやすい幅に収める。
 class ContentWidth extends StatelessWidget {
   const ContentWidth({super.key, required this.child, this.maxWidth = 760});

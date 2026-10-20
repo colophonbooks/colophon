@@ -88,7 +88,7 @@ class _TagManagerScreenState extends State<TagManagerScreen> {
     final l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l.tagsTitle)),
-      body: _tags.isEmpty
+      body: ScreenBody(child: _tags.isEmpty
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
@@ -113,7 +113,7 @@ class _TagManagerScreenState extends State<TagManagerScreen> {
                     ),
                   ),
               ],
-            ),
+            )),
     );
   }
 }

@@ -23,6 +23,7 @@ class SettingsScreen extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final settings = context.watch<SettingsController>();
     final current = settings.locale?.languageCode;
+    final compact = isCompact(context);
     final sectionStyle = Theme.of(context).textTheme.titleSmall?.copyWith(
           color: Theme.of(context).colorScheme.primary,
         );
@@ -34,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l.settingsTitle)),
-      body: ListView(
+      body: ScreenBody(child: ListView(
         children: [
           ContentWidth(
             child: Column(
@@ -76,20 +77,22 @@ class SettingsScreen extends StatelessWidget {
                       Text(l.settingsBrightness, style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 8),
                       SegmentedButton<ThemeMode>(
+                        // スマホの幅では、アイコンがあると「OSに合わせる」などが折り返して窮屈になるため、文字だけにする
+                        showSelectedIcon: !compact,
                         segments: [
                           ButtonSegment(
                             value: ThemeMode.system,
-                            icon: const Icon(Icons.brightness_auto),
+                            icon: compact ? null : const Icon(Icons.brightness_auto),
                             label: Text(l.brightnessSystem),
                           ),
                           ButtonSegment(
                             value: ThemeMode.light,
-                            icon: const Icon(Icons.light_mode),
+                            icon: compact ? null : const Icon(Icons.light_mode),
                             label: Text(l.brightnessLight),
                           ),
                           ButtonSegment(
                             value: ThemeMode.dark,
-                            icon: const Icon(Icons.dark_mode),
+                            icon: compact ? null : const Icon(Icons.dark_mode),
                             label: Text(l.brightnessDark),
                           ),
                         ],
@@ -138,7 +141,7 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
+      )),
     );
   }
 }

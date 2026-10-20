@@ -138,7 +138,7 @@ class _SearchScreenState extends State<SearchScreen> {
           },
         ),
       ),
-      body: CustomScrollView(
+      body: ScreenBody(child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(child: ContentWidth(maxWidth: 960, child: _buildOptions(l))),
           SliverToBoxAdapter(
@@ -170,7 +170,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
         ],
-      ),
+      )),
     );
   }
 
