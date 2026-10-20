@@ -1,7 +1,7 @@
 {
   "name": "colophon-icon-generator",
   "private": true,
-  "description": "Renders the Colophon app icon for Windows, macOS and Linux. See generate.mjs.",
+  "description": "Renders the Colophon app icon for Windows, macOS, Linux, iOS and Android. See generate.mjs.",
   "type": "module",
   "scripts": {
     "generate": "node generate.mjs"
