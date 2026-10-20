@@ -842,4 +842,14 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get sortStatusDescending => '상태순 (완독 → 미설정)';
+
+  @override
+  String get coverFromCamera => '사진 찍기';
+
+  @override
+  String get coverFromGallery => '앨범에서 선택';
+
+  @override
+  String get coverCameraUnavailable =>
+      '카메라를 사용할 수 없어요. 카메라 사용이 허용되어 있는지 확인해 주세요.';
 }

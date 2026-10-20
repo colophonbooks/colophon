@@ -866,4 +866,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sortStatusDescending => 'Status (Finished → Not set)';
+
+  @override
+  String get coverFromCamera => 'Take a photo';
+
+  @override
+  String get coverFromGallery => 'Choose from photos';
+
+  @override
+  String get coverCameraUnavailable =>
+      'The camera could not be used. Check that camera access is allowed.';
 }

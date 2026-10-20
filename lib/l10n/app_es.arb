@@ -259,5 +259,8 @@
   "syncOnExitBody": "Colophon se cerrará cuando termine la sincronización.",
   "syncOnExitSkip": "Cerrar sin sincronizar",
   "sortStatusAscending": "Estado (Sin definir → Leído)",
-  "sortStatusDescending": "Estado (Leído → Sin definir)"
+  "sortStatusDescending": "Estado (Leído → Sin definir)",
+  "coverFromCamera": "Hacer una foto",
+  "coverFromGallery": "Elegir de las fotos",
+  "coverCameraUnavailable": "No se ha podido usar la cámara. Comprueba que el acceso a la cámara está permitido."
 }

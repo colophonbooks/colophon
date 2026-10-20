@@ -259,5 +259,8 @@
   "syncOnExitBody": "Colophon wird nach der Synchronisierung beendet.",
   "syncOnExitSkip": "Ohne Synchronisierung beenden",
   "sortStatusAscending": "Status (Nicht festgelegt → Gelesen)",
-  "sortStatusDescending": "Status (Gelesen → Nicht festgelegt)"
+  "sortStatusDescending": "Status (Gelesen → Nicht festgelegt)",
+  "coverFromCamera": "Foto aufnehmen",
+  "coverFromGallery": "Aus Fotos auswählen",
+  "coverCameraUnavailable": "Die Kamera konnte nicht verwendet werden. Prüfen Sie, ob der Kamerazugriff erlaubt ist."
 }

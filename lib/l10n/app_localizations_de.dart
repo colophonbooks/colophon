@@ -875,4 +875,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get sortStatusDescending => 'Status (Gelesen → Nicht festgelegt)';
+
+  @override
+  String get coverFromCamera => 'Foto aufnehmen';
+
+  @override
+  String get coverFromGallery => 'Aus Fotos auswählen';
+
+  @override
+  String get coverCameraUnavailable =>
+      'Die Kamera konnte nicht verwendet werden. Prüfen Sie, ob der Kamerazugriff erlaubt ist.';
 }

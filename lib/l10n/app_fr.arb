@@ -259,5 +259,8 @@
   "syncOnExitBody": "Colophon se fermera à la fin de la synchronisation.",
   "syncOnExitSkip": "Fermer sans synchroniser",
   "sortStatusAscending": "Statut (Non défini → Lu)",
-  "sortStatusDescending": "Statut (Lu → Non défini)"
+  "sortStatusDescending": "Statut (Lu → Non défini)",
+  "coverFromCamera": "Prendre une photo",
+  "coverFromGallery": "Choisir dans les photos",
+  "coverCameraUnavailable": "Impossible d’utiliser l’appareil photo. Vérifiez que l’accès à l’appareil photo est autorisé."
 }

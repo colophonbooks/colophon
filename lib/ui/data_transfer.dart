@@ -78,7 +78,8 @@ Future<void> runExport(BuildContext context) async {
         _ExportFormat.zip => (await exportZipInBackground(repo.getAllBooks()), 'zip', 'application/zip'),
         _ExportFormat.sqlite => (exportSqlite(repo.db), 'sqlite', 'application/vnd.sqlite3'),
       };
-    });    final saved = await FilePicker.saveFile(
+    });
+    final saved = await FilePicker.saveFile(
       dialogTitle: l.exportTitle,
       fileName: 'colophon-$stamp.$ext',
       bytes: bytes,
@@ -97,10 +98,12 @@ Future<void> runImport(BuildContext context) async {
   final repo = context.read<BookRepository>();
   final library = context.read<LibraryController>();
 
+  // Android・iOS のファイル選択は拡張子ではなくファイルの種類で絞り込み、.sqlite の種類を知らないため、
+  // 絞り込むと SQLite のファイルを選べなくなる。中身は読み込むときに確かめるので、スマホでは絞り込まない
   final file = await FilePicker.pickFile(
     dialogTitle: l.importTitle,
-    type: FileType.custom,
-    allowedExtensions: ['zip', 'sqlite', 'sqlite3', 'db'],
+    type: isMobilePlatform ? FileType.any : FileType.custom,
+    allowedExtensions: isMobilePlatform ? null : ['zip', 'sqlite', 'sqlite3', 'db'],
   );
   if (file == null || !context.mounted) return;
 

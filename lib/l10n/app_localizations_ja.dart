@@ -839,4 +839,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get sortStatusDescending => 'ステータス順（読了→未設定）';
+
+  @override
+  String get coverFromCamera => 'カメラで撮る';
+
+  @override
+  String get coverFromGallery => '写真から選ぶ';
+
+  @override
+  String get coverCameraUnavailable => 'カメラを使えませんでした。カメラの使用を許可しているか確認してください。';
 }

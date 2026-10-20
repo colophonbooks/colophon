@@ -877,4 +877,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sortStatusDescending => 'Statut (Lu → Non défini)';
+
+  @override
+  String get coverFromCamera => 'Prendre une photo';
+
+  @override
+  String get coverFromGallery => 'Choisir dans les photos';
+
+  @override
+  String get coverCameraUnavailable =>
+      'Impossible d’utiliser l’appareil photo. Vérifiez que l’accès à l’appareil photo est autorisé.';
 }

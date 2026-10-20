@@ -1,8 +1,10 @@
+import 'dart:io' show FileSystemException;
 import 'dart:ui' show AppExitResponse;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -377,14 +379,25 @@ class _BookEditScreenState extends State<BookEditScreen> {
   // 書影
   // ---------------------------------------------------------------------------
 
+  /// 書影を選んでいる最中か。画像とボタンのどちらからも開けるため、素早く2回押して選択画面が重なるのを防ぐ。
+  bool _pickingCover = false;
+
   Future<void> _pickCover() async {
+    if (_pickingCover) return;
+    _pickingCover = true;
+    try {
+      await _pickCoverOnce();
+    } finally {
+      _pickingCover = false;
+    }
+  }
+
+  Future<void> _pickCoverOnce() async {
     final l = AppLocalizations.of(context);
     final autoResize = context.read<SettingsController>().autoResize;
-    final file = await FilePicker.pickFile(type: FileType.image);
-    if (file == null || !mounted) return;
     try {
-      final bytes = await file.readAsBytes();
-      if (!mounted) return;
+      final bytes = isMobilePlatform ? await _takeOrChoosePhoto(autoResize: autoResize) : await _chooseImageFile();
+      if (bytes == null || !mounted) return;
       final processed = await runWithProgress(context, () => processCover(bytes, autoResize: autoResize));
       if (!mounted) return;
       _change(() {
@@ -395,7 +408,56 @@ class _BookEditScreenState extends State<BookEditScreen> {
       if (processed.resized) showMessage(context, l.coverResized(processed.width, processed.height));
     } on CoverImageException {
       if (mounted) showMessage(context, l.coverLoadFailed);
+    } on FileSystemException {
+      // 選んだファイルが読めないとき（選んだ直後に消された、アクセスできない場所にある、など）
+      if (mounted) showMessage(context, l.coverLoadFailed);
     }
+  }
+
+  /// パソコンでは、書影にする画像ファイルを選ばせる。選ばなければ null。
+  Future<Uint8List?> _chooseImageFile() async {
+    final file = await FilePicker.pickFile(type: FileType.image);
+    return file?.readAsBytes();
+  }
+
+  /// スマホ・タブレットでは、本を手元で撮れるよう、カメラか写真の一覧から選ばせる。選ばなければ null。
+  Future<Uint8List?> _takeOrChoosePhoto({required bool autoResize}) async {
+    final l = AppLocalizations.of(context);
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: Text(l.coverFromCamera),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(l.coverFromGallery),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (source == null || !mounted) return null;
+    // 最近のスマホの写真（数千万画素）をそのまま読むと、縮小に時間とメモリがかかる。
+    // 自動縮小が有効なら端末側で縮めてから受け取る（そのため「縮小しました」の知らせは出ない）。
+    // 撮影情報は使わないので求めない（求めると iOS では写真の一覧を開くたびに、写真全体へのアクセス許可を確認される）。
+    final maxSide = autoResize ? coverMaxSide.toDouble() : null;
+    final XFile? picked;
+    try {
+      picked = await ImagePicker()
+          .pickImage(source: source, maxWidth: maxSide, maxHeight: maxSide, requestFullMetadata: false);
+    } on PlatformException {
+      // カメラがない端末（iPhone のシミュレータなど）、カメラの使用を許可していない、写真を取り出せない、など
+      if (mounted) showMessage(context, source == ImageSource.camera ? l.coverCameraUnavailable : l.coverLoadFailed);
+      return null;
+    }
+    return picked?.readAsBytes();
   }
 
   // ---------------------------------------------------------------------------

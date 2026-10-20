@@ -1589,6 +1589,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status (Finished → Not set)'**
   String get sortStatusDescending;
+
+  /// No description provided for @coverFromCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get coverFromCamera;
+
+  /// No description provided for @coverFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from photos'**
+  String get coverFromGallery;
+
+  /// No description provided for @coverCameraUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'The camera could not be used. Check that camera access is allowed.'**
+  String get coverCameraUnavailable;
 }
 
 class _AppLocalizationsDelegate

@@ -830,4 +830,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sortStatusDescending => '状态（已读完→未设置）';
+
+  @override
+  String get coverFromCamera => '拍照';
+
+  @override
+  String get coverFromGallery => '从相册选择';
+
+  @override
+  String get coverCameraUnavailable => '无法使用相机。请确认已允许使用相机。';
 }

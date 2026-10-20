@@ -259,5 +259,8 @@
   "syncOnExitBody": "同步完成后将退出。",
   "syncOnExitSkip": "不同步直接退出",
   "sortStatusAscending": "状态（未设置→已读完）",
-  "sortStatusDescending": "状态（已读完→未设置）"
+  "sortStatusDescending": "状态（已读完→未设置）",
+  "coverFromCamera": "拍照",
+  "coverFromGallery": "从相册选择",
+  "coverCameraUnavailable": "无法使用相机。请确认已允许使用相机。"
 }

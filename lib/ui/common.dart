@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -155,6 +154,11 @@ class StatusBadge extends StatelessWidget {
     );
   }
 }
+
+/// スマホ・タブレット（Android・iOS）で動いているか。
+/// テストでは debugDefaultTargetPlatformOverride で切り替えられる（既定は Android 扱い）。
+bool get isMobilePlatform =>
+    defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS;
 
 /// これより狭い画面（スマホの縦向き）では、ボタンの文字を省くなど詰めた配置にする。
 /// 600 は Material Design でスマホとタブレットを分ける幅。
