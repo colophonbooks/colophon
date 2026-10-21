@@ -25,6 +25,9 @@ import 'ui/common.dart';
 const _devDataDir = String.fromEnvironment('COLOPHON_DATA_DIR');
 final _devName = _devDataDir.isEmpty ? '' : p.basename(_devDataDir);
 
+/// iPhone・iPad の Google ログインに使う iOS 用のクライアント ID（dart-defines.json で渡す。BUILDING.md 参照）。
+const _iosClientId = String.fromEnvironment('COLOPHON_GOOGLE_IOS_CLIENT_ID');
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (_devDataDir.isNotEmpty) SharedPreferences.setPrefix('colophon-dev-$_devName.');
@@ -43,8 +46,12 @@ Future<void> main() async {
         SecureCredentialStore(key: _devDataDir.isEmpty ? 'google_account' : 'google_account_dev_$_devName');
     final sync = SyncController(
         isMobilePlatform
-            // iPhone・iPad は、Google Cloud の iOS 用クライアントを設定するまで使えない
-            ? MobileGoogleAuth(credentials, isConfigured: Platform.isAndroid)
+            // iPhone・iPad は、iOS 用のクライアント ID を設定したビルドだけ使える
+            ? MobileGoogleAuth(
+                credentials,
+                isConfigured: Platform.isAndroid || _iosClientId.isNotEmpty,
+                iosClientId: Platform.isIOS ? _iosClientId : null,
+              )
             : oauth.isConfigured
                 ? GoogleAuthService(oauth, credentials)
                 : const UnconfiguredGoogleAuth(),

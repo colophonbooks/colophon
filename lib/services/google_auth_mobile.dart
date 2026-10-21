@@ -15,14 +15,17 @@ import 'google_auth.dart';
 /// Android は、アプリの識別子と署名の指紋で Google Cloud に登録したアプリだと見分けられるので、
 /// アプリにクライアント ID を持たせなくてよい。ログイン（本人確認）の段階は使わず、
 /// ドライブの許可だけを求める（本人確認にはウェブ用のクライアント ID が別に要るため）。
+/// iOS はクライアント ID が要る（[iosClientId]。ログイン後にアプリへ戻る URL スキームも Info.plist に要る）。
 class MobileGoogleAuth implements GoogleAuth {
   MobileGoogleAuth(
     this.store, {
     this.isConfigured = true,
+    String? iosClientId,
     http.Client? httpClient,
     http.Client Function()? newApiClient,
   })  : _http = httpClient ?? http.Client(),
-        _newApiClient = newApiClient ?? http.Client.new;
+        _newApiClient = newApiClient ?? http.Client.new,
+        _os = _OsAuthorization(iosClientId);
 
   /// 表示用のメールアドレスだけを保存する（保存してあれば、ログインしている）。
   final CredentialStore store;
@@ -35,7 +38,7 @@ class MobileGoogleAuth implements GoogleAuth {
   /// 同期でドライブを呼ぶときの通信路（テストで差し替える）。
   final http.Client Function() _newApiClient;
 
-  late final _os = _OsAuthorization();
+  final _OsAuthorization _os;
 
   @override
   Future<GoogleAccount?> restore() async {
@@ -101,6 +104,8 @@ class MobileGoogleAuth implements GoogleAuth {
         break;
       }
     }
+    // iOS は OS 側にログインしたアカウントを覚えていて、消さないと次のログインで別のアカウントを選べない
+    await _os.signOut();
     await store.delete();
   }
 }
@@ -113,13 +118,28 @@ bool _isCancel(gsi.GoogleSignInException e) =>
 
 /// OS からトークンをもらう窓口。
 class _OsAuthorization {
+  _OsAuthorization(this._iosClientId);
+
+  /// iOS 用のクライアント ID（Android では使わない）。
+  final String? _iosClientId;
   Future<void>? _initialized;
 
   /// プラグインの初期化は1回だけ（2回目はエラーになる）。失敗したら、次に呼ばれたときにやり直す。
-  Future<void> _init() => _initialized ??= gsi.GoogleSignIn.instance.initialize().catchError((Object e) {
+  Future<void> _init() =>
+      _initialized ??= gsi.GoogleSignIn.instance.initialize(clientId: _iosClientId).catchError((Object e) {
         _initialized = null;
         throw e;
       });
+
+  /// OS 側のログインの記録を消す。失敗しても、アプリのログアウトは済ませる。
+  Future<void> signOut() async {
+    try {
+      await _init();
+      await gsi.GoogleSignIn.instance.signOut();
+    } on Object {
+      // 次のログインで、前のアカウントがそのまま使われることがあるだけ
+    }
+  }
 
   /// [email] のアカウントのトークン。[prompt] なら、必要に応じて OS の画面を出す。
   /// 画面を出さずにもらえなければ [AccessDeniedException]。

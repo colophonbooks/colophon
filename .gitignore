@@ -50,3 +50,6 @@ app.*.map.json
 # App icon generator (tool/icon)
 /tool/icon/node_modules/
 /tool/icon/package-lock.json
+
+# iOS の Google ログインの設定（tool/ios/write-google-signin-config.sh が dart-defines.json から作る）
+/ios/Flutter/GoogleSignIn.xcconfig

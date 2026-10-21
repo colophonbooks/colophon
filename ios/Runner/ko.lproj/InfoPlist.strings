@@ -1,0 +1,5 @@
+/* カメラ（バーコードの読み取り・書影の撮影） */
+"NSCameraUsageDescription" = "책의 바코드를 스캔하고 표지를 촬영하기 위해 카메라를 사용해요.";
+
+/* 写真（書影に使う写真の選択） */
+"NSPhotoLibraryUsageDescription" = "선택한 사진을 책 표지로 사용해요.";

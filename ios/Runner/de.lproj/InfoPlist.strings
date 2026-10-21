@@ -1,0 +1,5 @@
+/* カメラ（バーコードの読み取り・書影の撮影） */
+"NSCameraUsageDescription" = "Colophon verwendet die Kamera, um den Barcode eines Buches zu scannen und das Cover zu fotografieren.";
+
+/* 写真（書影に使う写真の選択） */
+"NSPhotoLibraryUsageDescription" = "Colophon verwendet die von Ihnen ausgewählten Fotos als Buchcover.";

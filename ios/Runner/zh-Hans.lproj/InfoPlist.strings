@@ -1,0 +1,5 @@
+/* カメラ（バーコードの読み取り・書影の撮影） */
+"NSCameraUsageDescription" = "Colophon 使用相机扫描书籍的条形码并拍摄封面。";
+
+/* 写真（書影に使う写真の選択） */
+"NSPhotoLibraryUsageDescription" = "Colophon 会将您选择的照片用作书籍封面。";

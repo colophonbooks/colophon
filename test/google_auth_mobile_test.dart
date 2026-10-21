@@ -152,7 +152,18 @@ void main() {
     expect(revoke.bodyFields['token'], 'token-1');
     expect(platform.requests.single.email, 'reader@example.com');
     expect(platform.cleared, ['token-1']);
+    expect(platform.signOuts, 1, reason: 'iOS では、OS 側のログインも消さないと次に別のアカウントを選べない');
     expect(store.value, isNull);
+  });
+
+  test('iOS 用のクライアント ID を渡すと、それでプラグインを初期化する（Android では渡さない）', () async {
+    platform.tokens = ['token-1', 'token-2'];
+    await MobileGoogleAuth(store, httpClient: googleApis(), iosClientId: 'ios-123.apps.googleusercontent.com')
+        .beginSignIn(successPage: '')
+        .then((flow) => flow.result);
+    await auth().beginSignIn(successPage: '').then((flow) => flow.result);
+
+    expect(platform.initClientIds, ['ios-123.apps.googleusercontent.com', null]);
   });
 
   test('ログアウトの取り消しが断られたら（期限切れのトークン）、もらい直して1回だけ送り直す', () async {
@@ -174,9 +185,11 @@ class _FakeSignInPlatform extends gsi.GoogleSignInPlatform {
   gsi.GoogleSignInException? error;
   final requests = <gsi.AuthorizationRequestDetails>[];
   final cleared = <String>[];
+  final initClientIds = <String?>[];
+  var signOuts = 0;
 
   @override
-  Future<void> init(gsi.InitParameters params) async {}
+  Future<void> init(gsi.InitParameters params) async => initClientIds.add(params.clientId);
 
   @override
   Future<gsi.ClientAuthorizationTokenData?> clientAuthorizationTokensForScopes(
@@ -212,7 +225,7 @@ class _FakeSignInPlatform extends gsi.GoogleSignInPlatform {
       null;
 
   @override
-  Future<void> signOut(gsi.SignOutParams params) async {}
+  Future<void> signOut(gsi.SignOutParams params) async => signOuts++;
 
   @override
   Future<void> disconnect(gsi.DisconnectParams params) async {}
